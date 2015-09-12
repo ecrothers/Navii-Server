@@ -3,37 +3,37 @@ package navii;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.*;
-import transitobjects.ClientNaviiPayload;
-import transitobjects.CreateNaviiPayload;
+import transitobjects.ClientAttractionPayload;
+import transitobjects.CreateAttractionPayload;
 import transitobjects.JsonResponse;
 
 import java.util.concurrent.atomic.AtomicLong;
 
 @RestController
 @RequestMapping(value = "/navii")
-public class NaviiController {
-    static final Logger logger = LoggerFactory.getLogger(NaviiController.class);
+public class AttractionController {
+    static final Logger logger = LoggerFactory.getLogger(AttractionController.class);
 
     private final AtomicLong naviiCounter = new AtomicLong();
 
     // TODO: More than just one sample navii
-    Navii localTestNavii;
+    Attraction localTestAttraction;
 
     @RequestMapping(value="/", method=RequestMethod.POST)
-    public String createNavii(@RequestBody CreateNaviiPayload navii) {
+    public String createAttraction(@RequestBody CreateAttractionPayload navii) {
                             /*@RequestParam(value="name") String name,
                              @RequestParam(value="creatorId") long creatorId) {*/
-        localTestNavii = new Navii(navii);
-        long newId = localTestNavii.getId();
+        localTestAttraction = new Attraction(navii);
+        long newId = localTestAttraction.getId();
 
-        return "{\"Result\": \"OK\", \"NaviiId\": \"" + newId + "\"}"; // success
+        return "{\"Result\": \"OK\", \"AttractionId\": \"" + newId + "\"}"; // success
     }
 
     @RequestMapping(value="/", method=RequestMethod.GET)
-    public ClientNaviiPayload getNavii(@RequestParam(value="id") long id) {
+    public ClientAttractionPayload getAttraction(@RequestParam(value="id") long id) {
         // TODO
-        if (localTestNavii.getId() == id) {
-            return localTestNavii.getClientPayload(); // success
+        if (localTestAttraction.getId() == id) {
+            return localTestAttraction.getClientPayload(); // success
         } else {
             return null; // failure TODO: better error handling
         }
