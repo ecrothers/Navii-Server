@@ -1,0 +1,92 @@
+Use naviiDB;
+
+CREATE TABLE IF NOT EXISTS Users (
+	UserID INT NOT NULL AUTO_INCREMENT,
+	Username VARCHAR(16) NOT NULL,
+	Password CHAR(64) NOT NULL,
+	PassSalt CHAR(64) NOT NULL, 
+	isFacebook TINYINT(1) ,
+	PRIMARY KEY (UserID),
+	UNIQUE(Username)
+);
+
+CREATE TABLE IF NOT EXISTS Attractions (
+	AttractionID INT NOT NULL AUTO_INCREMENT,	
+	Name VARCHAR(256),
+	Location VARCHAR(256),
+	PhotoURI VARCHAR(256),
+	BlurbURI VARCHAR(256),
+	Price DECIMAL(10,2),
+	DURATION INT,
+	PRIMARY KEY (AttractionID)
+);
+
+CREATE TABLE IF NOT EXISTS Itineraries (
+	ItineraryID INT NOT NULL AUTO_INCREMENT,
+	TotalCost DECIMAL(10,2),
+	StartDate DATETIME,
+	EndDate	 DATETIME,
+	Tags VARCHAR(256),
+	Description VARCHAR(256),
+	AuthorID INT,
+	PRIMARY KEY (ItineraryID),
+	FOREIGN KEY (AuthorID) REFERENCES Users(UserID) ON DELETE SET NULL
+);
+
+
+CREATE TABLE IF NOT EXISTS Activities (
+	ActivityID INT NOT NULL AUTO_INCREMENT,
+	StartTime DATETIME,
+	EndTime DATETIME,
+	ItineraryID INT,
+	AttractionID INT NOT NULL,
+	PRIMARY KEY (ActivityID),
+	FOREIGN KEY (AttractionID) REFERENCES Attractions(AttractionID) ON DELETE CASCADE,
+	-- Discuss with group
+	FOREIGN KEY (ItineraryID) REFERENCES Itineraries(ItineraryID) ON DELETE SET NULL 
+);
+
+CREATE TABLE IF NOT EXISTS Cuisines (
+	CuisineID INT,
+	PRIMARY KEY (CuisineID)
+);
+
+CREATE TABLE IF NOT EXISTS Atmospheres (
+	AtmosphereID INT,
+	PRIMARY KEY (AtmosphereID)
+);
+
+CREATE TABLE IF NOT EXISTS Diets (
+	DietID INT,
+	PRIMARY KEY (DietID)
+);
+
+CREATE TABLE IF NOT EXISTS Types (
+	TypeID INT,
+	PRIMARY KEY (TypeID)
+);
+
+CREATE TABLE IF NOT EXISTS Restaurants (
+	RestaurantID INT NOT NULL AUTO_INCREMENT,
+	CuisineID INT,
+	RankOfLife INT,
+	AtmosphereID INT, 
+	DietID INT,
+	AttractionID INT,
+	PRIMARY KEY (RestaurantID),
+	FOREIGN KEY (AttractionID) REFERENCES Attractions(AttractionID) ON DELETE CASCADE,
+	FOREIGN KEY (CuisineID) REFERENCES Cuisines(CuisineID) ON DELETE CASCADE,
+	FOREIGN KEY (AtmosphereID) REFERENCES Atmospheres(AtmosphereID) ON DELETE CASCADE,
+	FOREIGN KEY (DietID) REFERENCES Diets(DietID) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS PointOfInterests (
+	PointOfInterestsID INT NOT NULL AUTO_INCREMENT,
+	TypeID INT,
+	ActivityLevel INT,
+	CulturalAuthenticity TINYINT(1),
+	PRIMARY KEY (PointOfInterestsID),
+	FOREIGN KEY (TypeID) REFERENCES Types(TypeID) ON DELETE SET NULL
+);
+
+
