@@ -24,7 +24,6 @@ public class Attraction extends AttractionCore {
         this.setLatitude(cfp.getLatitude());
         this.setLongitude(cfp.getLongitude());
         this.setName(cfp.getName());
-        this.setRange(cfp.getRange());
     }
 
     public ClientAttractionPayload getClientPayload() {
@@ -34,7 +33,6 @@ public class Attraction extends AttractionCore {
         c.setLatitude(this.getLatitude());
         c.setLongitude(this.getLongitude());
         c.setName(this.getName());
-        c.setRange(this.getRange());
 
         return c;
     }

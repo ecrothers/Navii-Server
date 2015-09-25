@@ -9,7 +9,6 @@ public abstract class AttractionCore {
     private double latitude;
     private double longitude;
     private long author;
-    private int range;
 
     public String getName() {
         return name;
@@ -31,10 +30,6 @@ public abstract class AttractionCore {
         return author;
     }
 
-    public int getRange() {
-        return range;
-    }
-
     public void setName(String name) {
         this.name = name;
     }
@@ -53,9 +48,5 @@ public abstract class AttractionCore {
 
     public void setAuthor(long author) {
         this.author = author;
-    }
-
-    public void setRange(int range) {
-        this.range = range;
     }
 }
