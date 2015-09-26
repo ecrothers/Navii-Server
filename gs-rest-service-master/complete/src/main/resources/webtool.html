@@ -1,83 +1,79 @@
 <!DOCTYPE html>
 <html>
+<!-- TODO: Ensure there are not duplicate attractions -->
 <head lang="en">
     <meta charset="UTF-8">
-    <title></title>
+    <title>Itinerary Entry Webtool</title>
     <script>
-        var counter = 1;
+        var counter = 0;
         var limit = 6;
+        function addExistingInput(divName){
+            if (counter == limit)  {
+                alert("Limit of adding " + counter + " attractions");
+            }
+            else {
+                counter++;
+                var newdiv = document.createElement('div');
+                newdiv.innerHTML = "<b>Attraction " + counter + "</b>" +
+                "<table style='width:100%'> \
+                <tr> \
+                <td>Attraction Id:</td> \
+                <td><input type='text' name='attraction_id['" + counter + "]'></td> \
+                </tr>\
+                </table> \
+                <br>";
+                document.getElementById(divName).appendChild(newdiv);
+            }
+        }
         function addInput(divName){
             if (counter == limit)  {
                 alert("Limit of adding " + counter + " attractions");
             }
             else {
+                counter++;
                 var newdiv = document.createElement('div');
-                newdiv.innerHTML = "<b>Attraction " + (counter + 1) + "</b>" +
+                newdiv.innerHTML = "<b>Attraction " + counter + "</b>" +
                 "<table style='width:100%'> \
                 <tr> \
                 <td>Attraction Name:</td> \
-                <td><input type='text' name='attraction_name[]'></td> \
+                <td><input type='text' name='attraction_name['" + counter + "]'></td> \
                 </tr> \
                 <tr> \
                 <td>Price:</td> \
-                <td><input type='text' name='price[]'></td> \
+                <td><input type='text' name='price[" + counter + "]'></td> \
                 </tr> \
                 <tr> \
                 <td>Duration:</td> \
-                <td><input type='text' name='duration[]'></td> \
+                <td><input type='text' name='duration[" + counter + "]'></td> \
                 </tr> \
                 <tr> \
                 <td>Blurb (link):</td> \
-                <td><input type='text' name='blurb[]'></td> \
+                <td><input type='text' name='blurb[" + counter + "]'></td> \
                 </tr> \
                 <tr> \
                 <td>Photo (link):</td> \
-                <td><input type='text' name='photo[]'></td> \
+                <td><input type='text' name='photo[" + counter + "]'></td> \
                 </tr> \
                 <tr> \
                 <td>Location:</td> \
-                <td><input type='text' name='location[]'></td> \
+                <td><input type='text' name='location[" + counter + "]'></td> \
+                </tr> \
+                <tr> \
+                <td>Tags:</td> \
+                <td><input type='text' name='tags[" + counter + "]'></td> \
                 </tr> \
                 </table><br>"
                 document.getElementById(divName).appendChild(newdiv);
-                counter++;
             }
         }
     </script>
 </head>
-<body>
+<body onload="addInput('inDiv')">
 <form>
     <div id="inDiv">
-        <b>Attraction 1</b>
-        <table style="width:100%">
-            <tr>
-                <td>Attraction Name:</td>
-                <td><input type="text" name="attraction_name"></td>
-            </tr>
-            <tr>
-                <td>Price:</td>
-                <td><input type="text" name="price"></td>
-            </tr>
-            <tr>
-                <td>Duration:</td>
-                <td><input type="text" name="duration"></td>
-            </tr>
-            <tr>
-                <td>Blurb (link):</td>
-                <td><input type="text" name="blurb"></td>
-            </tr>
-            <tr>
-                <td>Photo (link):</td>
-                <td><input type="text" name="photo"></td>
-            </tr>
-            <tr>
-                <td>Location:</td>
-                <td><input type="text" name="location"></td>
-            </tr>
-        </table>
-        <br>
     </div>
-    <input type="button" value="Add another attraction" onClick="addInput('inDiv');"><br><br><br>
+    <input type="button" value="Add new attraction" onClick="addInput('inDiv');">
+    <input type="button" value="Add existing attraction" onClick="addExistingInput('inDiv');"><br><br><br>
     <input type="submit" value="Submit Itinerary">
 </form>
 </body>
