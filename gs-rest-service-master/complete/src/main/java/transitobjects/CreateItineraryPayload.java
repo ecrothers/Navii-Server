@@ -9,7 +9,10 @@ import java.util.LinkedList;
  * Created by LocalEvan on 2015-07-22.
  */
 public class CreateItineraryPayload extends AttractionCore {
-    LinkedList<Long> attractionIds;
+    private LinkedList<Long> attractionIds;
+    private Date startDate;
+    private Date endDate;
+    private int price;
 
     public LinkedList<Long> getAttractions() {
         return attractionIds;
@@ -23,7 +26,23 @@ public class CreateItineraryPayload extends AttractionCore {
         return endDate;
     }
 
-    public startDate getStartDate() {
+    public Date getStartDate() {
         return startDate;
+    }
+
+    public int getPrice() {
+        return price;
+    }
+
+    public void setEndDate(Date endDate) {
+        this.endDate = endDate;
+    }
+
+    public void setStartDate(Date startDate) {
+        this.startDate = startDate;
+    }
+
+    public void setPrice(int price) {
+        this.price = price;
     }
 }

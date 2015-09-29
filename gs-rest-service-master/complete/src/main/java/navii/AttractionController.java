@@ -31,8 +31,8 @@ public class AttractionController {
 
     @RequestMapping(value="/", method=RequestMethod.POST)
     public String createItinerary(@RequestBody CreateItineraryPayload itin) {
-        Itinerary = new Itinerary();
-        long newId =
+        Itinerary userItinerary;
+        long itineraryId = new Itinerary();
         return "{\"Result\": \"OK\", \"Itinerary\": \"" + newId + "\"}"; // success
     }
 
