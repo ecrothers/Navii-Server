@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.*;
 import transitobjects.ClientAttractionPayload;
 import transitobjects.CreateAttractionPayload;
+import transitobjects.CreateItineraryPayload;
 import transitobjects.JsonResponse;
 
 import java.util.concurrent.atomic.AtomicLong;
@@ -13,7 +14,6 @@ import java.util.concurrent.atomic.AtomicLong;
 @RequestMapping(value = "/navii")
 public class AttractionController {
     static final Logger logger = LoggerFactory.getLogger(AttractionController.class);
-
     private final AtomicLong naviiCounter = new AtomicLong();
 
     // TODO: More than just one sample navii
@@ -27,6 +27,13 @@ public class AttractionController {
         long newId = localTestAttraction.getId();
 
         return "{\"Result\": \"OK\", \"AttractionId\": \"" + newId + "\"}"; // success
+    }
+
+    @RequestMapping(value="/", method=RequestMethod.POST)
+    public String createItinerary(@RequestBody CreateItineraryPayload itin) {
+        Itinerary = new Itinerary();
+        long newId =
+        return "{\"Result\": \"OK\", \"Itinerary\": \"" + newId + "\"}"; // success
     }
 
     @RequestMapping(value="/", method=RequestMethod.GET)
