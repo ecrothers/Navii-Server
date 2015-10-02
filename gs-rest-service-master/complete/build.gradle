@@ -1,0 +1,28 @@
+apply plugin: 'java'
+apply plugin: 'maven'
+apply plugin: 'application'
+
+mainClassName = 'navii.Application'
+
+version = '0.1-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile 'org.springframework.boot:spring-boot-starter-web:+'
+    compile 'junit:junit:4.11'
+    compile 'ch.qos.logback:logback-classic:1.0.13'
+    compile 'org.springframework.security:spring-security-web:4.0.2.RELEASE'
+    compile 'org.springframework.security:spring-security-config:4.0.2.RELEASE'
+}
+
+jar {
+    baseName = 'gs-navii'
+    version =  '0.1.0'
+}
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '2.7'
+}

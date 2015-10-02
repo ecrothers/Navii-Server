@@ -3,9 +3,6 @@ package navii;
 import transitobjects.ClientAttractionPayload;
 import transitobjects.CreateAttractionPayload;
 
-import java.util.LinkedList;
-import java.util.List;
-
 public class Attraction extends AttractionCore {
 
     private long attractionId;

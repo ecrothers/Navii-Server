@@ -19,7 +19,7 @@ public class AttractionController {
     // TODO: More than just one sample navii
     Attraction localTestAttraction;
 
-    @RequestMapping(value="/", method=RequestMethod.POST)
+    @RequestMapping(value="/attraction/", method=RequestMethod.POST)
     public String createAttraction(@RequestBody CreateAttractionPayload navii) {
                             /*@RequestParam(value="name") String name,
                              @RequestParam(value="creatorId") long creatorId) {*/
@@ -29,20 +29,31 @@ public class AttractionController {
         return "{\"Result\": \"OK\", \"AttractionId\": \"" + newId + "\"}"; // success
     }
 
-    @RequestMapping(value="/", method=RequestMethod.POST)
+    @RequestMapping(value="/itinerary/", method=RequestMethod.POST)
     public String createItinerary(@RequestBody CreateItineraryPayload itin) {
         Itinerary userItinerary;
         userItinerary = new Itinerary(itin);
-        return "{\"Result\": \"OK\", \"Itinerary\": \"" + userItinerary.getId() + "\"}"; // success
+        return "{\"Result\": \"OK\", \"ItineraryId\": \"" + userItinerary.getId() + "\"}"; // success
     }
 
-    @RequestMapping(value="/", method=RequestMethod.GET)
+    @RequestMapping(value="/attraction/", method=RequestMethod.GET)
     public ClientAttractionPayload getAttraction(@RequestParam(value="id") long id) {
+        // TODO
+        if (localTestAttraction.getId() == id) {
+            return localTestAttraction.getClientPayload(); // success
+        } else {
+            return null;
+        }
+    }
+
+    /*@RequestMapping(value="/itinerary/", method=RequestMethod.GET) {
+    public ClientItineraryPayload getItinerary(@RequestParam(value="id") long id) {
         // TODO
         if (localTestAttraction.getId() == id) {
             return localTestAttraction.getClientPayload(); // success
         } else {
             return null; // failure TODO: better error handling
         }
-    }
+        return "not implemented";
+    }*/
 }
