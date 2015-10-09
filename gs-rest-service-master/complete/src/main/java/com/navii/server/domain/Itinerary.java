@@ -1,8 +1,4 @@
-package navii;
-
-import transitobjects.ClientAttractionPayload;
-import transitobjects.CreateAttractionPayload;
-import transitobjects.CreateItineraryPayload;
+package com.navii.server.domain;
 
 import java.util.Date;
 
@@ -13,13 +9,13 @@ public class Itinerary {
     private Date endDate;
     private int price;
 
-    public Itinerary(CreateItineraryPayload iti) {
+    /*public Itinerary(CreateItineraryPayload iti) {
         this.itineraryId = 0; // TODO: generate new ID
         this.description = iti.getDescription();
         this.startDate = iti.getStartDate();
         this.endDate = iti.getEndDate();
         this.price = iti.getPrice();
-    }
+    }*/
 
     public long getId() {
         return itineraryId;

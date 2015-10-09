@@ -1,12 +1,10 @@
-package navii;
+package com.navii.server.controller;
 
+import com.navii.server.domain.Attraction;
+import com.navii.server.domain.Itinerary;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.*;
-import transitobjects.ClientAttractionPayload;
-import transitobjects.CreateAttractionPayload;
-import transitobjects.CreateItineraryPayload;
-import transitobjects.JsonResponse;
 
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -16,31 +14,32 @@ public class AttractionController {
     static final Logger logger = LoggerFactory.getLogger(AttractionController.class);
     private final AtomicLong naviiCounter = new AtomicLong();
 
-    // TODO: More than just one sample navii
+    // TODO: More than just one sample attraction
     Attraction localTestAttraction;
 
     @RequestMapping(value="/attraction/", method=RequestMethod.POST)
-    public String createAttraction(@RequestBody CreateAttractionPayload navii) {
+    public String createAttraction(@RequestBody Attraction navii) {
                             /*@RequestParam(value="name") String name,
                              @RequestParam(value="creatorId") long creatorId) {*/
-        localTestAttraction = new Attraction(navii);
+        localTestAttraction = navii;
         long newId = localTestAttraction.getId();
 
         return "{\"Result\": \"OK\", \"AttractionId\": \"" + newId + "\"}"; // success
     }
 
-    @RequestMapping(value="/itinerary/", method=RequestMethod.POST)
-    public String createItinerary(@RequestBody CreateItineraryPayload itin) {
+    /*@RequestMapping(value="/itinerary/", method=RequestMethod.POST)
+    public String createItinerary(@RequestBody Itinerary itin) {
         Itinerary userItinerary;
-        userItinerary = new Itinerary(itin);
+        userItinerary = itin;
         return "{\"Result\": \"OK\", \"ItineraryId\": \"" + userItinerary.getId() + "\"}"; // success
-    }
+    }*/
 
     @RequestMapping(value="/attraction/", method=RequestMethod.GET)
-    public ClientAttractionPayload getAttraction(@RequestParam(value="id") long id) {
+    // TODO: Use a Response object
+    public Attraction getAttraction(@RequestParam(value="id") long id) {
         // TODO
         if (localTestAttraction.getId() == id) {
-            return localTestAttraction.getClientPayload(); // success
+            return localTestAttraction;
         } else {
             return null;
         }
