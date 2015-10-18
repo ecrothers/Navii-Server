@@ -14,12 +14,9 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping(value = "/itinerary")
 public class ItineraryController {
     private static final Logger logger = LoggerFactory.getLogger(ItineraryController.class);
-    private ItineraryService itineraryService;
 
     @Autowired
-    ItineraryController(ItineraryService itineraryService) {
-        this.itineraryService = itineraryService;
-    }
+    private ItineraryService itineraryService;
 
     @RequestMapping(value="/", method= RequestMethod.POST)
     public Itinerary createItinerary(@RequestBody Itinerary itinerary) {

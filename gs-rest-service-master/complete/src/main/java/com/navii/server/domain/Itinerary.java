@@ -3,7 +3,8 @@ package com.navii.server.domain;
 import java.sql.Date;
 
 public class Itinerary {
-    private long itineraryId;
+    // TODO: Should probably have a "name" too
+    private int itineraryId;
     private String description;
     private String tags;
     private Date startDate;
@@ -11,14 +12,52 @@ public class Itinerary {
     private int price;
     private int authorId;
 
-    private Itinerary(Builder builder) {}
+    public Itinerary() {}
+
+    private Itinerary(Builder builder) {
+        /*this.itineraryId = builder.itineraryId;
+        this.price = builder.price;
+        this.startDate = builder.startDate;
+        this.endDate = builder.endDate;
+        this.tags = builder.tags;
+        this.description = builder.description;
+        this.authorId = builder.authorId;*/
+    }
+
+    public int getItineraryId() {
+        return itineraryId;
+    }
+
+    public int getPrice() {
+        return price;
+    }
+
+    public Date getStartDate() {
+        return startDate;
+    }
+
+    public Date getEndDate() {
+        return endDate;
+    }
+
+    public String getTags() {
+        return tags;
+    }
+
+    public int getAuthorId() {
+        return authorId;
+    }
+
+    public String getDescription() {
+        return description;
+    }
 
     static Builder getBuilder() {
         return new Builder();
     }
 
     static class Builder {
-        private long itineraryId;
+        private int itineraryId;
         private String description;
         private String tags;
         private Date startDate;
@@ -27,11 +66,6 @@ public class Itinerary {
         private int authorId;
 
         private Builder() {}
-
-        Builder price(int price) {
-            this.price = price;
-            return this;
-        }
 
         Builder itineraryId(int itineraryId) {
             this.itineraryId = itineraryId;
@@ -63,37 +97,15 @@ public class Itinerary {
             return this;
         }
 
+        Builder price(int price) {
+            this.price = price;
+            return this;
+        }
+
+
         // TODO: potentially check for non-null values
         Itinerary build() {
             return new Itinerary(this);
         }
-    }
-
-    public long getItineraryId() {
-        return itineraryId;
-    }
-
-    public int getPrice() {
-        return price;
-    }
-
-    public Date getStartDate() {
-        return startDate;
-    }
-
-    public Date getEndDate() {
-        return endDate;
-    }
-
-    public String getTags() {
-        return tags;
-    }
-
-    public int getAuthorId() {
-        return authorId;
-    }
-
-    public String getDescription() {
-        return description;
     }
 }

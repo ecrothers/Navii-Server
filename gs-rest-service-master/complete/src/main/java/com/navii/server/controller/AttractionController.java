@@ -14,12 +14,9 @@ import java.util.concurrent.atomic.AtomicLong;
 @RequestMapping(value = "/attraction")
 public class AttractionController {
     private static final Logger logger = LoggerFactory.getLogger(AttractionController.class);
-    private AttractionService attractionService;
 
     @Autowired
-    AttractionController(AttractionService attractionService) {
-        this.attractionService = attractionService;
-    }
+    private AttractionService attractionService;
 
     @RequestMapping(value="/", method= RequestMethod.POST)
     public Attraction createAttraction(@RequestBody Attraction attraction) {

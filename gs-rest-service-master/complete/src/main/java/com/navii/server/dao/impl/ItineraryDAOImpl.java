@@ -59,7 +59,7 @@ public class ItineraryDAOImpl implements ItineraryDAO {
         boolean success = jdbc.execute(insertString, new PreparedStatementCallback<Boolean>() {
             @Override
             public Boolean doInPreparedStatement(PreparedStatement ps) throws SQLException, DataAccessException {
-                ps.setLong(1, saved.getItineraryId());
+                ps.setInt(1, saved.getItineraryId());
                 ps.setDouble(2, saved.getPrice());
                 ps.setDate(3, saved.getStartDate());
                 ps.setDate(4, saved.getEndDate());

@@ -65,7 +65,7 @@ public class AttractionDAOImpl implements AttractionDAO {
         boolean success = jdbc.execute(insertString, new PreparedStatementCallback<Boolean>() {
             @Override
             public Boolean doInPreparedStatement(PreparedStatement ps) throws SQLException, DataAccessException {
-                ps.setInt(1, saved.getAuthorId());
+                ps.setInt(1, saved.getAttractionId());
                 ps.setString(2, saved.getName());
                 ps.setString(3, saved.getLocation());
                 ps.setString(4, saved.getPhotoUri());
