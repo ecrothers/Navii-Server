@@ -7,9 +7,7 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
-@Configuration
 @SpringBootApplication
-@EnableAutoConfiguration
 public class Application {
     public static void main(String[] args) {
         SpringApplication.run(Application.class, args);

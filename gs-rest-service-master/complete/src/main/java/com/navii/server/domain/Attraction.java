@@ -6,10 +6,10 @@ package com.navii.server.domain;
 public class Attraction {
     private String name;
     private String description;
-    private double latitude;
-    private double longitude;
-    private long author;
-    private long attractionId;
+    private float latitude;
+    private float longitude;
+    private int authorId;
+    private int attractionId;
     private int price;
     private int duration;
     private String blurbUri;
@@ -22,24 +22,54 @@ public class Attraction {
         return new Builder();
     }
 
+    public int getDuration() {
+        return duration;
+    }
+
+    public String getBlurbUri() {
+        return blurbUri;
+    }
+
+    public String getPhotoUri() {
+        return photoUri;
+    }
+
+    public String getLocation() {
+        return location;
+    }
+
     static class Builder {
-        private int id;
-        private int authorid;
         private String name;
         private String description;
         private float latitude;
         private float longitude;
-        private double range;
+        private int authorId;
+        private int attractionId;
+        private int price;
+        private int duration;
+        private String blurbUri;
+        private String photoUri;
+        private String location;
 
         private Builder() {}
 
-        Builder id(int id) {
-            this.id = id;
+        Builder price(int price) {
+            this.price = price;
             return this;
         }
 
-        Builder authorid(int authorid) {
-            this.authorid = authorid;
+        Builder duration(int duration) {
+            this.duration = duration;
+            return this;
+        }
+
+        Builder attractionId(int attractionId) {
+            this.attractionId = attractionId;
+            return this;
+        }
+
+        Builder authorId(int authorId) {
+            this.authorId = authorId;
             return this;
         }
 
@@ -63,11 +93,6 @@ public class Attraction {
             return this;
         }
 
-        Builder range(double range) {
-            this.range = range;
-            return this;
-        }
-
         // TODO: potentially check for non-null values
         Attraction build() {
             return new Attraction(this);
@@ -82,27 +107,23 @@ public class Attraction {
         return description;
     }
 
-    public double getLatitude() {
+    public float getLatitude() {
         return latitude;
     }
 
-    public double getLongitude() {
+    public float getLongitude() {
         return longitude;
     }
 
-    public long getAuthor() {
-        return author;
+    public int getAuthorId() {
+        return authorId;
     }
 
-    public long getId() {
+    public long getAttractionId() {
         return attractionId;
     }
 
     public int getPrice() {
         return price;
-    }
-
-    public void getPrice(long id) {
-        this.attractionId = id;
     }
 }
