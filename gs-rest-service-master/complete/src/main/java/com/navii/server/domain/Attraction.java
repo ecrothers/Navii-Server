@@ -6,8 +6,12 @@ package com.navii.server.domain;
 public class Attraction {
     private String name;
     private String description;
+
+    // TODO: Need to rework schema
     private float latitude;
     private float longitude;
+    //
+
     private int authorId;
     private int attractionId;
     private int price;

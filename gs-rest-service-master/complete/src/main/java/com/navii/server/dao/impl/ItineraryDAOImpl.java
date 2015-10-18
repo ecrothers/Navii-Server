@@ -1,43 +1,37 @@
 package com.navii.server.dao.impl;
 
-import com.navii.server.dao.AttractionDAO;
-import com.navii.server.domain.Attraction;
-
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.util.List;
-
-import javax.sql.DataSource;
-import javax.xml.crypto.Data;
-
+import com.navii.server.dao.ItineraryDAO;
+import com.navii.server.domain.Itinerary;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCallback;
 import org.springframework.stereotype.Repository;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.util.List;
+
 /**
  * Created by ecrothers on 2015-10-08.
  */
 @Repository
-public class AttractionDAOImpl implements AttractionDAO {
+public class ItineraryDAOImpl implements ItineraryDAO {
     @Autowired
     protected JdbcTemplate jdbc;
 
-    private static final String TABLE_NAME = "Attractions";
-
     @Override
-    public void delete(Attraction deleted) {
+    public void delete(Itinerary deleted) {
     }
 
     @Override
-    public List<Attraction> findAll() {
+    public List<Itinerary> findAll() {
         return null;
     }
 
     @Override
-    public Attraction findOne(int id) {
+    public Itinerary findOne(int id) {
         Connection connection = null;
 
 //        try {
@@ -57,21 +51,21 @@ public class AttractionDAOImpl implements AttractionDAO {
     }
 
     @Override
-    public Attraction save(final Attraction saved) {
-        String insertString = "INSERT INTO " + TABLE_NAME +
-                "(AttractionID, Name, Location, PhotoURI, BlurbURI, Price, DURATION)" +
+    public Itinerary save(final Itinerary saved) {
+        String insertString = "INSERT INTO Itineraries " +
+                "(ItineraryID, TotalCost, StartDate, EndDate, Tags, Description, AuthorID)" +
                 "VALUES (?, ?, ?, ?, ?, ?, ?)";
 
         boolean success = jdbc.execute(insertString, new PreparedStatementCallback<Boolean>() {
             @Override
             public Boolean doInPreparedStatement(PreparedStatement ps) throws SQLException, DataAccessException {
-                ps.setInt(1, saved.getAuthorId());
-                ps.setString(2, saved.getName());
-                ps.setString(3, saved.getLocation());
-                ps.setString(4, saved.getPhotoUri());
-                ps.setString(5, saved.getBlurbUri());
-                ps.setDouble(6, saved.getPrice());
-                ps.setInt(7, saved.getDuration());
+                ps.setLong(1, saved.getItineraryId());
+                ps.setDouble(2, saved.getPrice());
+                ps.setDate(3, saved.getStartDate());
+                ps.setDate(4, saved.getEndDate());
+                ps.setString(5, saved.getTags());
+                ps.setString(6, saved.getDescription());
+                ps.setDouble(7, saved.getAuthorId());
 
                 return ps.execute();
             }
