@@ -9,13 +9,3 @@
   "duration": 5
 }
 
-//Itinerary Example
-{
-  "itineraryId": 1,
-  "price": 500,
-  "startDate": "2015-09-23 00:00:00",
-  "endDate": "2015-09-28 00:00:00",
-  "tags": "solitude",
-  "description": "just another boring itinerary",
-  "authorId": 1
-}
