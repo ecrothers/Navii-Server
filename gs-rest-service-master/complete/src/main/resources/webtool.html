@@ -12,7 +12,8 @@
             width: 75%;
         }
     </style>
-    <script>
+        <script src="https://code.jquery.com/jquery-1.10.2.js"></script>
+        <script>
         var counter = 0;
         var limit = 6;
         function addExistingInput(divName){
@@ -43,6 +44,10 @@
                 newdiv.innerHTML = "<b>Attraction " + counter + "</b>" +
                 "<table style='width:100%'> \
                 <tr> \
+                <td class='col1'>Attraction Id:</td> \
+                <td class='col2'><input type='text' name='attraction_id['" + counter + "]'></td> \
+                </tr> \
+                <tr> \
                 <td class='col1'>Attraction Name:</td> \
                 <td class='col2'><input type='text' name='attraction_name['" + counter + "]'></td> \
                 </tr> \
@@ -56,19 +61,15 @@
                 </tr> \
                 <tr> \
                 <td class='col1'>Blurb (link):</td> \
-                <td class ='col2'><input type='text' name='blurb[" + counter + "]'></td> \
+                <td class ='col2'><input type='text' name='blurb_uri[" + counter + "]'></td> \
                 </tr> \
                 <tr> \
                 <td class='col1'>Photo (link):</td> \
-                <td class ='col2'><input type='text' name='photo[" + counter + "]'></td> \
+                <td class ='col2'><input type='text' name='photo_uri[" + counter + "]'></td> \
                 </tr> \
                 <tr> \
                 <td class='col1'>Location:</td> \
                 <td class ='col2'><input type='text' name='location[" + counter + "]'></td> \
-                </tr> \
-                <tr> \
-                <td class='col1'>Tags:</td> \
-                <td class='col2'><input type='text' name='tags[" + counter + "]'></td> \
                 </tr> \
                 </table><br>"
                 document.getElementById(divName).appendChild(newdiv);
@@ -77,12 +78,35 @@
     </script>
 </head>
 <body onload="addInput('inDiv')">
-<form>
+<form enctype='application/json' action="http://localhost:8080/attraction/" method="post">
     <div id="inDiv">
     </div>
     <input type="button" value="Add new attraction" onClick="addInput('inDiv');">
     <input type="button" value="Add existing attraction" onClick="addExistingInput('inDiv');"><br><br><br>
-    <input type="submit" value="Submit Itinerary">
+    <input id="subButton" type="button" value="Submit attraction">
+
+    <script>
+        $("#subButton").click(function() {
+            var payload = {};
+            payload.attractionId = $("attraction_id").val();
+            payload.name = $("name").val();
+            payload.location = $("location").val();
+            payload.photoUri = $("photo_uri").val();
+            payload.blurbUri = $("blurb_uri").val();
+            payload.price = $("price").val();
+            payload.duration = $("duration").val();
+
+            $.ajax({
+                type: 'POST',
+                crossDomain: true,
+                url: 'http://localhost:8080/attraction/',
+                contentType: 'application/json',
+                dataType: 'json',
+                data: JSON.stringify(payload)
+            });
+            return false;
+        });
+    </script>
 </form>
 </body>
 </html>
