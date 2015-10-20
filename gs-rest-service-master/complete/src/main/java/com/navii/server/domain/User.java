@@ -6,25 +6,27 @@ package com.navii.server.domain;
 public class User {
 
     private int id;
-    private String email;
+    private String username;
     private String password;
     private String salt;
     private Boolean isFacebook;
 
+    public User() {}
+
     private User(Builder builder) {
-        this.id = builder.id;
-        this.email = builder.email;
-        this.password = builder.password;
-        this.salt = builder.salt;
-        this.isFacebook = builder.isFacebook;
+//        this.id = builder.id;
+//        this.email = builder.email;
+//        this.password = builder.password;
+//        this.salt = builder.salt;
+//        this.isFacebook = builder.isFacebook;
     }
 
     public int getId() {
         return id;
     }
 
-    public String getEmail() {
-        return email;
+    public String getUsername() {
+        return username;
     }
 
     public String getPassword() {
@@ -41,7 +43,7 @@ public class User {
 
     static class Builder {
         private int id;
-        private String email;
+        private String username;
         private String password;
         private String salt;
         private Boolean isFacebook;
@@ -53,8 +55,8 @@ public class User {
             return this;
         }
 
-        Builder email(String email) {
-            this.email = email;
+        Builder username(String username) {
+            this.username = username;
             return this;
         }
 
