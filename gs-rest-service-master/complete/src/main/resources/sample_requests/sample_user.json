@@ -2,5 +2,5 @@
   "Username": "user",
   "SaltedPassword": "password",
   "Salt": "salt",
-  "isFacebook": false
+  "isFacebook": "f"
 }

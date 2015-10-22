@@ -2,7 +2,7 @@ package com.navii.server.dao.impl;
 
 import com.navii.server.dao.UserDAO;
 import com.navii.server.domain.User;
-import com.sun.javafx.binding.StringFormatter;
+//import com.sun.javafx.binding.StringFormatter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,7 +39,7 @@ public class UserDAOImpl implements UserDAO {
     @Override
     public User save(final User savedUser) {
         String insertString =
-            "INSERT INTO Users (Username, SaltedPassword, Salt, isFacebook) VALUES (?, ?, ?, ?)";
+            "INSERT INTO users (username, saltedpassword, salt, isfacebook) VALUES (?, ?, ?, ?)";
 
         boolean success = jdbc.execute(insertString, new PreparedStatementCallback<Boolean>() {
             @Override
@@ -47,9 +47,7 @@ public class UserDAOImpl implements UserDAO {
                 ps.setString(1, savedUser.getUsername());
                 ps.setString(2, savedUser.getPassword());
                 ps.setString(3, savedUser.getSalt());
-
-                // TODO: this shouldn't be a boolean
-                ps.setBoolean(4, savedUser.isFacebook());
+                ps.setString(4, savedUser.isFacebook());
 
                 return ps.execute();
             }

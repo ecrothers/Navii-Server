@@ -11,6 +11,7 @@ public class Attraction {
     private String blurbUri;
     private int price; // TODO: Should change the schema to use cents as INT.  double-arithmetic = bad
     private int duration;
+    private String purchase;
 
     //private String description;
 
@@ -65,6 +66,10 @@ public class Attraction {
         return duration;
     }
 
+    public String getPurchase() {
+        return purchase;
+    }
+
     static class Builder {
         private int attractionId;
         private String name;
@@ -73,6 +78,7 @@ public class Attraction {
         private String blurbUri;
         private int price;
         private int duration;
+        private String purchase;
 
         private Builder() {}
 
@@ -103,6 +109,11 @@ public class Attraction {
 
         Builder price(int price) {
             this.price = price;
+            return this;
+        }
+
+        Builder purchase(String purchase) {
+            this.purchase = purchase;
             return this;
         }
 

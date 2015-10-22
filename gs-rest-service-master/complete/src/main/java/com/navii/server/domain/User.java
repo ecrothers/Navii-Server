@@ -9,7 +9,7 @@ public class User {
     private String username;
     private String password;
     private String salt;
-    private Boolean isFacebook;
+    private String isFacebook;
 
     public User() {}
 
@@ -37,7 +37,7 @@ public class User {
         return salt;
     }
 
-    public Boolean isFacebook() {
+    public String isFacebook() {
         return isFacebook;
     }
 
@@ -46,7 +46,7 @@ public class User {
         private String username;
         private String password;
         private String salt;
-        private Boolean isFacebook;
+        private String isFacebook;
 
         private Builder() {}
 
@@ -70,7 +70,7 @@ public class User {
             return this;
         }
 
-        Builder isFacebook(Boolean isFacebook) {
+        Builder isFacebook(String isFacebook) {
             this.isFacebook = isFacebook;
             return this;
         }
