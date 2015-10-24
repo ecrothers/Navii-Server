@@ -2,7 +2,6 @@ package com.navii.server.dao.impl;
 
 import com.navii.server.dao.UserDAO;
 import com.navii.server.domain.User;
-//import com.sun.javafx.binding.StringFormatter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,12 +12,14 @@ import org.springframework.stereotype.Repository;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.util.List;
+import java.util.ArrayList;
+
 
 /**
  * Created by JMtorii on 2015-10-15.
  */
 @Repository
+@SuppressWarnings("unused")
 public class UserDAOImpl implements UserDAO {
 
     private static final Logger logger = LoggerFactory.getLogger(UserDAOImpl.class);
@@ -27,17 +28,17 @@ public class UserDAOImpl implements UserDAO {
     protected JdbcTemplate jdbc;
 
     @Override
-    public List<User> findAll() {
+    public ArrayList<User> findAll() {
         return null;
     }
 
     @Override
-    public User findOne(int id) {
+    public User findOne(int userId) {
         return null;
     }
 
     @Override
-    public User save(final User savedUser) {
+    public User create(final User savedUser) {
         String insertString =
             "INSERT INTO users (username, saltedpassword, salt, isfacebook) VALUES (?, ?, ?, ?)";
 
@@ -57,7 +58,12 @@ public class UserDAOImpl implements UserDAO {
     }
 
     @Override
-    public void delete(User deletedUser) {
+    public User update(User updatedUser) {
+        return null;
+    }
 
+    @Override
+    public User delete(int deletedUser) {
+        return null;
     }
 }

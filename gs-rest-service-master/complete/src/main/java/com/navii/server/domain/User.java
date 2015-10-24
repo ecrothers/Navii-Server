@@ -3,6 +3,7 @@ package com.navii.server.domain;
 /**
  * Created by JMtorii on 2015-10-15.
  */
+@SuppressWarnings("unused")
 public class User {
 
     private int id;
@@ -14,11 +15,11 @@ public class User {
     public User() {}
 
     private User(Builder builder) {
-//        this.id = builder.id;
-//        this.email = builder.email;
-//        this.password = builder.password;
-//        this.salt = builder.salt;
-//        this.isFacebook = builder.isFacebook;
+        this.id = builder.id;
+        this.username = builder.username;
+        this.password = builder.password;
+        this.salt = builder.salt;
+        this.isFacebook = builder.isFacebook;
     }
 
     public int getId() {
@@ -41,7 +42,7 @@ public class User {
         return isFacebook;
     }
 
-    static class Builder {
+    public static class Builder {
         private int id;
         private String username;
         private String password;
@@ -50,32 +51,32 @@ public class User {
 
         private Builder() {}
 
-        Builder id(int id) {
+        public Builder id(int id) {
             this.id = id;
             return this;
         }
 
-        Builder username(String username) {
+        public Builder username(String username) {
             this.username = username;
             return this;
         }
 
-        Builder password(String password) {
+        public Builder password(String password) {
             this.password = password;
             return this;
         }
 
-        Builder salt(String salt) {
+        public Builder salt(String salt) {
             this.salt = salt;
             return this;
         }
 
-        Builder isFacebook(String isFacebook) {
+        public Builder isFacebook(String isFacebook) {
             this.isFacebook = isFacebook;
             return this;
         }
 
-        User build() {
+        public User build() {
             return new User(this);
         }
     }
