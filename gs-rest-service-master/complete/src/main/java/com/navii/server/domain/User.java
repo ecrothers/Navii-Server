@@ -43,6 +43,7 @@ public class User {
     }
 
     public static class Builder {
+        // TODO: currently, all fields are optional. Add to the builder constructor to make them required
         private int id;
         private String username;
         private String password;
