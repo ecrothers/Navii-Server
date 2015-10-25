@@ -19,25 +19,25 @@ public interface UserDAO {
      * @param userId    The id of the requested User entry.
      * @return          The found user.
      */
-    User findOne(int userId);
+    User findOne(final int userId);
 
     /**
      * Creates a new User entry to the database.
      * @param createdUser       The information of the new User entry.
      * @return                  The created user.
      */
-    User create(User createdUser);
+    User create(final User createdUser);
 
     /**
      * Updates an existing user in the database.
      * @param updatedUser   The information of the updated User entry.
      * @return              The updated user.
      */
-    User update(User updatedUser);
+    User update(final User updatedUser);
 
     /**
      * Deletes a User from the database.
      * @param deletedUser   The deleted User entry.
      */
-    User delete(int deletedUser);
+    User delete(final int deletedUser);
 }

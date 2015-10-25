@@ -33,7 +33,7 @@ public class UserDAOImpl implements UserDAO {
     }
 
     @Override
-    public User findOne(int userId) {
+    public User findOne(final int userId) {
         return null;
     }
 
@@ -58,12 +58,12 @@ public class UserDAOImpl implements UserDAO {
     }
 
     @Override
-    public User update(User updatedUser) {
+    public User update(final User updatedUser) {
         return null;
     }
 
     @Override
-    public User delete(int deletedUser) {
+    public User delete(final int deletedUser) {
         return null;
     }
 }
