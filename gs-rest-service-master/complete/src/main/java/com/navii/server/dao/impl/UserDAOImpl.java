@@ -38,23 +38,23 @@ public class UserDAOImpl implements UserDAO {
     }
 
     @Override
-    public User create(final User savedUser) {
+    public User create(final User createdUser) {
         String insertString =
             "INSERT INTO users (username, saltedpassword, salt, isfacebook) VALUES (?, ?, ?, ?)";
 
         boolean success = jdbc.execute(insertString, new PreparedStatementCallback<Boolean>() {
             @Override
             public Boolean doInPreparedStatement(PreparedStatement ps) throws SQLException, DataAccessException {
-                ps.setString(1, savedUser.getUsername());
-                ps.setString(2, savedUser.getPassword());
-                ps.setString(3, savedUser.getSalt());
-                ps.setString(4, savedUser.isFacebook());
+                ps.setString(1, createdUser.getUsername());
+                ps.setString(2, createdUser.getPassword());
+                ps.setString(3, createdUser.getSalt());
+                ps.setString(4, createdUser.isFacebook());
 
                 return ps.execute();
             }
         });
 
-        return savedUser;
+        return createdUser;
     }
 
     @Override
