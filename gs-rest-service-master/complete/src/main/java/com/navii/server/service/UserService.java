@@ -31,6 +31,7 @@ public interface UserService {
 
     /**
      * Updates an existing user in the database.
+     * @param userId        The userId of the requested Goose entry.
      * @param updatedUser   The information of the updated User entry.
      * @return              The updated user.
      */
