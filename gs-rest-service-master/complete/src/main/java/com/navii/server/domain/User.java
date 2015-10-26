@@ -3,17 +3,20 @@ package com.navii.server.domain;
 /**
  * Created by JMtorii on 2015-10-15.
  */
+@SuppressWarnings("unused")
 public class User {
 
     private int id;
-    private String email;
+    private String username;
     private String password;
     private String salt;
-    private Boolean isFacebook;
+    private String isFacebook;
+
+    public User() {}
 
     private User(Builder builder) {
         this.id = builder.id;
-        this.email = builder.email;
+        this.username = builder.username;
         this.password = builder.password;
         this.salt = builder.salt;
         this.isFacebook = builder.isFacebook;
@@ -23,8 +26,8 @@ public class User {
         return id;
     }
 
-    public String getEmail() {
-        return email;
+    public String getUsername() {
+        return username;
     }
 
     public String getPassword() {
@@ -35,45 +38,46 @@ public class User {
         return salt;
     }
 
-    public Boolean isFacebook() {
+    public String isFacebook() {
         return isFacebook;
     }
 
-    static class Builder {
+    public static class Builder {
+        // TODO: currently, all fields are optional. Add to the builder constructor to make them required
         private int id;
-        private String email;
+        private String username;
         private String password;
         private String salt;
-        private Boolean isFacebook;
+        private String isFacebook;
 
         private Builder() {}
 
-        Builder id(int id) {
+        public Builder id(int id) {
             this.id = id;
             return this;
         }
 
-        Builder email(String email) {
-            this.email = email;
+        public Builder username(String username) {
+            this.username = username;
             return this;
         }
 
-        Builder password(String password) {
+        public Builder password(String password) {
             this.password = password;
             return this;
         }
 
-        Builder salt(String salt) {
+        public Builder salt(String salt) {
             this.salt = salt;
             return this;
         }
 
-        Builder isFacebook(Boolean isFacebook) {
+        public Builder isFacebook(String isFacebook) {
             this.isFacebook = isFacebook;
             return this;
         }
 
-        User build() {
+        public User build() {
             return new User(this);
         }
     }

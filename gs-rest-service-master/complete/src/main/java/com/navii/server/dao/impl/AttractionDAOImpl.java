@@ -59,7 +59,7 @@ public class AttractionDAOImpl implements AttractionDAO {
     @Override
     public Attraction save(final Attraction saved) {
         String insertString = "INSERT INTO " + TABLE_NAME +
-                "(AttractionID, Name, Location, PhotoURI, BlurbURI, Price, DURATION)" +
+                "(attractionid, name, location, photoURI, blurbURI, price, purchase, duration)" +
                 "VALUES (?, ?, ?, ?, ?, ?, ?)";
 
         boolean success = jdbc.execute(insertString, new PreparedStatementCallback<Boolean>() {
@@ -71,7 +71,8 @@ public class AttractionDAOImpl implements AttractionDAO {
                 ps.setString(4, saved.getPhotoUri());
                 ps.setString(5, saved.getBlurbUri());
                 ps.setDouble(6, saved.getPrice());
-                ps.setInt(7, saved.getDuration());
+                ps.setString(7, saved.getPurchase());
+                ps.setInt(8, saved.getDuration());
 
                 return ps.execute();
             }

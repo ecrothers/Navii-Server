@@ -2,6 +2,8 @@ package com.navii.server.dao.impl;
 
 import com.navii.server.dao.UserDAO;
 import com.navii.server.domain.User;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -10,49 +12,58 @@ import org.springframework.stereotype.Repository;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.util.List;
+import java.util.ArrayList;
+
 
 /**
  * Created by JMtorii on 2015-10-15.
  */
 @Repository
+@SuppressWarnings("unused")
 public class UserDAOImpl implements UserDAO {
+
+    private static final Logger logger = LoggerFactory.getLogger(UserDAOImpl.class);
 
     @Autowired
     protected JdbcTemplate jdbc;
 
     @Override
-    public List<User> findAll() {
+    public ArrayList<User> findAll() {
         return null;
     }
 
     @Override
-    public User findOne(int id) {
+    public User findOne(final int userId) {
         return null;
     }
 
     @Override
-    public User save(final User savedUser) {
+    public User create(final User createdUser) {
         String insertString =
-            "INSERT INTO Users (email, password, salt, isFacebook) VALUES (?, ?, ?, ?);";
+            "INSERT INTO users (username, saltedpassword, salt, isfacebook) VALUES (?, ?, ?, ?)";
 
         boolean success = jdbc.execute(insertString, new PreparedStatementCallback<Boolean>() {
             @Override
             public Boolean doInPreparedStatement(PreparedStatement ps) throws SQLException, DataAccessException {
-                ps.setString(1, savedUser.getEmail());
-                ps.setString(2, savedUser.getPassword());
-                ps.setString(3, savedUser.getSalt());
-                ps.setBoolean(4, savedUser.isFacebook());
+                ps.setString(1, createdUser.getUsername());
+                ps.setString(2, createdUser.getPassword());
+                ps.setString(3, createdUser.getSalt());
+                ps.setString(4, createdUser.isFacebook());
 
                 return ps.execute();
             }
         });
 
-        return savedUser;
+        return createdUser;
     }
 
     @Override
-    public void delete(User deletedUser) {
+    public User update(final User updatedUser) {
+        return null;
+    }
 
+    @Override
+    public User delete(final int deletedUser) {
+        return null;
     }
 }

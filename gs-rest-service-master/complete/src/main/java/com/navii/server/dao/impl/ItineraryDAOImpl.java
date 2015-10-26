@@ -52,8 +52,8 @@ public class ItineraryDAOImpl implements ItineraryDAO {
 
     @Override
     public Itinerary save(final Itinerary saved) {
-        String insertString = "INSERT INTO Itineraries " +
-                "(ItineraryID, TotalCost, StartDate, EndDate, Tags, Description, AuthorID)" +
+        String insertString = "INSERT INTO itineraries " +
+                "(itineraryid, totalcost, startdate, enddate, tags, description, authorid)" +
                 "VALUES (?, ?, ?, ?, ?, ?, ?)";
 
         boolean success = jdbc.execute(insertString, new PreparedStatementCallback<Boolean>() {

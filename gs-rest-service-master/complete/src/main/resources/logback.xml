@@ -16,13 +16,13 @@
         </encoder>
     </appender>-->
 
-    <logger name="org.springframework" level="ERROR" />
-    <logger name="org.springframework.transaction" level="ERROR" />
-    <logger name="org.springframework.security" level="ERROR" /> <!-- to debug security related issues (DEBUG) -->
-    <logger name="org.springframework.web.servlet.mvc" level="ERROR" /> <!-- some serialization issues are at trace level here: org.springframework.web.servlet.mvc.method.annotation.ServletInvocableHandlerMethod -->
+    <logger name="org.springframework" level="INFO" />
+    <logger name="org.springframework.transaction" level="INFO" />
+    <logger name="org.springframework.security" level="DEBUG" /> <!-- to debug security related issues (DEBUG) -->
+    <logger name="org.springframework.web.servlet.mvc" level="TRACE" /> <!-- some serialization issues are at trace level here: org.springframework.web.servlet.mvc.method.annotation.ServletInvocableHandlerMethod -->
 
     <!-- our service -->
-    <logger name="navii" level="ERROR" />
+    <logger name="navii" level="INFO" />
     <!-- <logger name="com.app" level="INFO" /> --><!-- to follow if setup is being executed -->
 
     <root level="INFO">

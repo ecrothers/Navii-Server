@@ -2,7 +2,7 @@ package com.navii.server.dao;
 
 import com.navii.server.domain.User;
 
-import java.util.List;
+import java.util.ArrayList;
 
 /**
  * Created by JMtorii on 2015-10-15.
@@ -10,27 +10,34 @@ import java.util.List;
 public interface UserDAO {
     /**
      * Finds all User entries from the database.
-     * @return  The information of all Flock entries that are found from the database.
+     * @return  All existing Users.
      */
-    List<User> findAll();
+    ArrayList<User> findAll();
 
     /**
-     * Finds the information of a single User entry.
-     * @param id    The id of the requested User entry.
-     * @return      The information of the found User entry.
+     * Finds the a single User.
+     * @param userId    The id of the requested User entry.
+     * @return          The found user.
      */
-    User findOne(int id);
+    User findOne(final int userId);
 
     /**
-     * Saves a new User entry to the database.
-     * @param savedUser     The information of the saved User entry.
-     * @return              The number of affected rows
+     * Creates a new User entry to the database.
+     * @param createdUser       The information of the new User entry.
+     * @return                  The created user.
      */
-    User save(User savedUser);
+    User create(final User createdUser);
 
     /**
-     * Deletes a User entry from the database.
+     * Updates an existing user in the database.
+     * @param updatedUser   The information of the updated User entry.
+     * @return              The updated user.
+     */
+    User update(final User updatedUser);
+
+    /**
+     * Deletes a User from the database.
      * @param deletedUser   The deleted User entry.
      */
-    void delete(User deletedUser);
+    User delete(final int deletedUser);
 }

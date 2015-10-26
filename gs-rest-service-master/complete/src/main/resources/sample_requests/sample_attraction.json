@@ -6,5 +6,6 @@
   "photoUri": "photoUri.com",
   "blurbUri": "blurbUri.com",
   "price": 500,
+  "purchase": "n",
   "duration": 5
 }
