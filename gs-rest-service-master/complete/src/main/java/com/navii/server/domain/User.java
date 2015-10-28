@@ -11,6 +11,8 @@ public class User {
     private String password;
     private String salt;
     private String isFacebook;
+    private String preferences;
+    private String tags;
 
     public User() {}
 
@@ -42,13 +44,22 @@ public class User {
         return isFacebook;
     }
 
-    public static class Builder {
-        // TODO: currently, all fields are optional. Add to the builder constructor to make them required
+    public String getPreferences() {
+        return tags;
+    }
+
+    public String getTags() {
+        return preferences;
+    }
+
+    static class Builder {
         private int id;
         private String username;
         private String password;
         private String salt;
         private String isFacebook;
+        private String tags;
+        private String preferences;
 
         private Builder() {}
 
@@ -77,7 +88,17 @@ public class User {
             return this;
         }
 
-        public User build() {
+        Builder preferences(String preferences) {
+            this.preferences = preferences;
+            return this;
+        }
+
+        Builder tags(String tags) {
+            this.tags = tags;
+            return this;
+        }
+
+        User build() {
             return new User(this);
         }
     }

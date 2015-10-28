@@ -33,7 +33,32 @@ public class UserDAOImpl implements UserDAO {
     }
 
     @Override
-    public User findOne(final int userId) {
+    public User findOne(final String username) {
+        String selectString =
+                "SELECT * FROM USER WHERE username = ?";
+        boolean success = jdbc.execute(selectString, new PreparedStatementCallback<Boolean>() {
+            @Override
+            public Boolean doInPreparedStatement(PreparedStatement ps) throws SQLException, DataAccessException {
+                ps.setString(1, username);
+
+                return ps.execute();
+            }
+        });
+        return null;
+    }
+
+    @Override
+    public User findOne(final int id) {
+        String selectString =
+                "SELECT * FROM USER WHERE username = ?";
+        boolean success = jdbc.execute(selectString, new PreparedStatementCallback<Boolean>() {
+            @Override
+            public Boolean doInPreparedStatement(PreparedStatement ps) throws SQLException, DataAccessException {
+                ps.setInt(1, id);
+
+                return ps.execute();
+            }
+        });
         return null;
     }
 

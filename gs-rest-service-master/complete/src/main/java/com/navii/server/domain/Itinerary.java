@@ -9,6 +9,7 @@ public class Itinerary {
     private String tags;
     private Date startDate;
     private Date endDate;
+    private String preferences;
     private int price;
     private int authorId;
 
@@ -44,6 +45,10 @@ public class Itinerary {
         return tags;
     }
 
+    public String getPreferences() {
+        return preferences;
+    }
+
     public int getAuthorId() {
         return authorId;
     }
@@ -60,6 +65,7 @@ public class Itinerary {
         private int itineraryId;
         private String description;
         private String tags;
+        private String preferences;
         private Date startDate;
         private Date endDate;
         private int price;
@@ -94,6 +100,11 @@ public class Itinerary {
 
         Builder tags(String tags) {
             this.tags = tags;
+            return this;
+        }
+
+        Builder preferences(String preferences) {
+            this.preferences = preferences;
             return this;
         }
 

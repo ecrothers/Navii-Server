@@ -56,6 +56,10 @@
                 <td class ='col2'><input type='text' name='price[" + counter + "]'></td> \
                 </tr> \
                 <tr> \
+                <tr> \
+                <td class='col1'>Purchase:</td> \
+                <td class ='col2'><input type='text' name='purchase[" + counter + "]'></td> \
+                </tr> \
                 <td class='col1'>Duration:</td> \
                 <td class ='col2'><input type='text' name='duration[" + counter + "]'></td> \
                 </tr> \
@@ -94,6 +98,7 @@
             payload.photoUri = $("photo_uri").val();
             payload.blurbUri = $("blurb_uri").val();
             payload.price = $("price").val();
+            payload.purchase = $("purchase").val();
             payload.duration = $("duration").val();
 
             $.ajax({

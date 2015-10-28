@@ -15,9 +15,16 @@ public interface UserDAO {
     ArrayList<User> findAll();
 
     /**
-     * Finds the a single User.
+     * Finds the information of a single User entry.
+     * @param username   The username of the requested User entry.
+     * @return           The information of the found User entry.
+     */
+    User findOne(String username);
+
+    /**
+     * Finds the information of a single User entry.
      * @param userId    The id of the requested User entry.
-     * @return          The found user.
+     * @return          The information of the found User entry.
      */
     User findOne(final int userId);
 
