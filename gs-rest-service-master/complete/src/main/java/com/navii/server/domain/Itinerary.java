@@ -6,10 +6,8 @@ public class Itinerary {
     // TODO: Should probably have a "name" too
     private int itineraryId;
     private String description;
-    private String tags;
     private Date startDate;
     private Date endDate;
-    private String preferences;
     private int price;
     private int authorId;
 
@@ -20,7 +18,6 @@ public class Itinerary {
         this.price = builder.price;
         this.startDate = builder.startDate;
         this.endDate = builder.endDate;
-        this.tags = builder.tags;
         this.description = builder.description;
         this.authorId = builder.authorId;*/
     }
@@ -41,14 +38,6 @@ public class Itinerary {
         return endDate;
     }
 
-    public String getTags() {
-        return tags;
-    }
-
-    public String getPreferences() {
-        return preferences;
-    }
-
     public int getAuthorId() {
         return authorId;
     }
@@ -64,8 +53,6 @@ public class Itinerary {
     static class Builder {
         private int itineraryId;
         private String description;
-        private String tags;
-        private String preferences;
         private Date startDate;
         private Date endDate;
         private int price;
@@ -95,16 +82,6 @@ public class Itinerary {
 
         Builder authorId(int authorId) {
             this.authorId = authorId;
-            return this;
-        }
-
-        Builder tags(String tags) {
-            this.tags = tags;
-            return this;
-        }
-
-        Builder preferences(String preferences) {
-            this.preferences = preferences;
             return this;
         }
 

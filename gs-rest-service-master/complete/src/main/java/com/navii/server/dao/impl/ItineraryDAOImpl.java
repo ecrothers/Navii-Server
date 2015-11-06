@@ -63,7 +63,6 @@ public class ItineraryDAOImpl implements ItineraryDAO {
                 ps.setDouble(2, saved.getPrice());
                 ps.setDate(3, saved.getStartDate());
                 ps.setDate(4, saved.getEndDate());
-                ps.setString(5, saved.getTags());
                 ps.setString(6, saved.getDescription());
                 ps.setDouble(7, saved.getAuthorId());
 
