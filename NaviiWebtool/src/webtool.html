@@ -44,10 +44,6 @@
                 newdiv.innerHTML = "<b>Attraction " + counter + "</b>" +
                 "<table style='width:100%'> \
                 <tr> \
-                <td class='col1'>Attraction Id:</td> \
-                <td class='col2'><input type='text' name='attraction_id['" + counter + "]'></td> \
-                </tr> \
-                <tr> \
                 <td class='col1'>Attraction Name:</td> \
                 <td class='col2'><input type='text' name='attraction_name['" + counter + "]'></td> \
                 </tr> \
@@ -88,11 +84,11 @@
     <input type="button" value="Add new attraction" onClick="addInput('inDiv');">
     <input type="button" value="Add existing attraction" onClick="addExistingInput('inDiv');"><br><br><br>
     <input id="subButton" type="button" value="Submit attraction">
+    <input id="itiButton" type="button" value="Submit itinerary">
 
     <script>
         $("#subButton").click(function() {
             var payload = {};
-            payload.attractionId = $("attraction_id").val();
             payload.name = $("name").val();
             payload.location = $("location").val();
             payload.photoUri = $("photo_uri").val();
@@ -104,7 +100,7 @@
             $.ajax({
                 type: 'POST',
                 crossDomain: true,
-                url: 'http://localhost:8080/attraction/',
+                url: 'http://localhost:8443/attraction/',
                 contentType: 'application/json',
                 dataType: 'json',
                 data: JSON.stringify(payload)
