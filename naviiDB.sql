@@ -5,8 +5,6 @@ CREATE TABLE IF NOT EXISTS users (
 	username VARCHAR(16) NOT NULL,
 	saltedPassword CHAR(64) NOT NULL,
 	salt CHAR(64) NOT NULL,
-    preferences VARCHAR(256),
-    tags VARCHAR(256),
     isfacebook CHAR(1) ,
 	PRIMARY KEY (userid),
 	UNIQUE(username)
@@ -29,8 +27,6 @@ CREATE TABLE IF NOT EXISTS itineraries (
 	totalcost DECIMAL(10,2),
 	startdate DATETIME,
 	enddate	 DATETIME,
-    tags VARCHAR(256),
-    preferences VARCHAR(256),
     description VARCHAR(256),
 	authorid INT,
 	PRIMARY KEY (itineraryid),
@@ -93,11 +89,37 @@ CREATE TABLE IF NOT EXISTS pointofinterests (
 );
 
 CREATE TABLE IF NOT EXISTS preferences (
-	preference VARCHAR(10),
-    counter INT
+	preference VARCHAR(10) NOT NULL,
+    counter INT,
+    photoURL VARCHAR(32),
+    PRIMARY KEY (preference)
 );
 
 CREATE TABLE IF NOT EXISTS tags (
-	tag VARCHAR(10),
-    counter INT
+	tag VARCHAR(10) NOT NULL,
+    counter INT,
+    PRIMARY KEY (tag)
 );
+
+CREATE TABLE IF NOT EXISTS userspreferences (
+	userid INT NOT NULL,
+    preference VARCHAR(10),
+    FOREIGN KEY (userid) REFERENCES users(userid) ON DELETE CASCADE,
+    FOREIGN KEY (preference) REFERENCES preferences(preference) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS itinerariespreferences (
+	itineraryid INT,
+    preference VARCHAR(10),
+    FOREIGN KEY (itineraryid) REFERENCES itineraries(itineraryid) ON DELETE CASCADE,
+    FOREIGN KEY (preference) REFERENCES preferences(preference) ON DELETE CASCADE
+);
+
+
+CREATE TABLE IF NOT EXISTS itinerariestags (
+	itineraryid INT,
+    tag VARCHAR(10),
+    FOREIGN KEY (itineraryid) REFERENCES itineraries(itineraryid) ON DELETE CASCADE,
+    FOREIGN KEY (tag) REFERENCES tags(tag) ON DELETE CASCADE
+);
+

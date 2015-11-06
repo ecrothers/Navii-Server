@@ -11,8 +11,6 @@ public class User {
     private String password;
     private String salt;
     private String isFacebook;
-    private String preferences;
-    private String tags;
 
     public User() {}
 
@@ -44,22 +42,12 @@ public class User {
         return isFacebook;
     }
 
-    public String getPreferences() {
-        return tags;
-    }
-
-    public String getTags() {
-        return preferences;
-    }
-
     static class Builder {
         private int id;
         private String username;
         private String password;
         private String salt;
         private String isFacebook;
-        private String tags;
-        private String preferences;
 
         private Builder() {}
 
@@ -85,16 +73,6 @@ public class User {
 
         public Builder isFacebook(String isFacebook) {
             this.isFacebook = isFacebook;
-            return this;
-        }
-
-        Builder preferences(String preferences) {
-            this.preferences = preferences;
-            return this;
-        }
-
-        Builder tags(String tags) {
-            this.tags = tags;
             return this;
         }
 
