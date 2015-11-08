@@ -70,26 +70,23 @@
                 <td class='col1'>Location:</td> \
                 <td class ='col2'><input type='text' name='location[" + counter + "]'></td> \
                 </tr> \
-                </table><br>"
+                </table><br>";
                 document.getElementById(divName).appendChild(newdiv);
             }
         }
     </script>
 </head>
 <body onload="addInput('inDiv')">
-<form enctype='application/json' action="http://localhost:8080/attraction/" method="post">
+<!--<form enctype='application/json' action="http://localhost:8080/attraction/" method="post">-->
     <div id="inDiv">
     </div>
-    <input type="button" value="Add new attraction" onClick="addInput('inDiv');">
-    <input type="button" value="Add existing attraction" onClick="addExistingInput('inDiv');"><br><br><br>
-    <input id="subButton" type="button" value="Submit itinerary">
+    <!--<input type="button" value="Add new attraction" onClick="addInput('inDiv');">-->
+    <input id="subButton" type="button" value="Submit Attraction">
 
     <script>
         $("#subButton").click(function() {
-            alert("test");
-
             for (var i = 0; i <= counter; ++i) {
-                var payload = {}
+                var payload = {};
                 payload.name = $("attraction_name[" + i + "]").val();
                 payload.location = $("location[" + i + "]").val();
                 payload.photoUri = $("photo_uri[" + i + "]").val();
@@ -103,7 +100,7 @@
                     crossDomain: true,
                     url: 'https://localhost:8443/attraction/',
                     contentType: 'application/json',
-                    dataType: 'json',
+                    dataType: 'jsonp',
                     data: JSON.stringify(payload)
                 });
             }
@@ -111,6 +108,6 @@
             return false;
         });
     </script>
-</form>
+<!--</form>-->
 </body>
 </html>

@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>Itinerary Entry Webtool</title>
+    <style>
+        .col1 {
+            width: 25%;
+        }
+        .col2 {
+            width: 75%;
+        }
+    </style>
+        <script src="https://code.jquery.com/jquery-1.10.2.js"></script>
+        <script>
+        var counter = 0;
+        var limit = 16;
+        function addInput(divName){
+            if (counter == limit)  {
+                alert("Limit of adding " + counter + " attractions");
+            }
+            else {
+                counter++;
+                var newdiv = document.createElement('div');
+                newdiv.innerHTML = "<b>Itinerary</b>" +
+                "<table style='width:100%'> \
+                <tr> \
+                <td class='col1'>Itinierary ID:</td> \
+                <td class='col2'><input type='text' name='itinerary_id['" + counter + "]'></td> \
+                </tr> \
+                <tr> \
+                <td class='col1'>Description:</td> \
+                <td class ='col2'><input type='text' name='description[" + counter + "]'></td> \
+                </tr> \
+                <tr> \
+                <tr> \
+                <td class='col1'>Start date:</td> \
+                <td class ='col2'><input type='text' name='start_date[" + counter + "]'></td> \
+                </tr> \
+                <td class='col1'>End date:</td> \
+                <td class ='col2'><input type='text' name='end_date[" + counter + "]'></td> \
+                </tr> \
+                <tr> \
+                <td class='col1'>Price:</td> \
+                <td class ='col2'><input type='text' name='price[" + counter + "]'></td> \
+                </tr> \
+                <tr> \
+                <td class='col1'>Author ID:</td> \
+                <td class ='col2'><input type='text' name='author_id[" + counter + "]'></td> \
+                </tr> \
+                </table><br>";
+                document.getElementById(divName).appendChild(newdiv);
+            }
+        }
+    </script>
+</head>
+<body onload="addInput('inDiv')">
+<!--<form enctype='application/json' action="http://localhost:8080/attraction/" method="post">-->
+    <div id="inDiv">
+    </div>
+    <input id="subButton" type="button" value="Submit Itinerary">
+
+    <script>
+        $("#subButton").click(function() {
+            var i = 0;
+            var payload = {};
+            payload.itineraryId = $("itinerary_id[" + i + "]").val();
+            payload.description = $("description_id[" + i + "]").val();
+            payload.startDate = $("start_date[" + i + "]").val();
+            payload.endDate = $("end_date[" + i + "]").val();
+            payload.price = $("price[" + i + "]").val();
+            payload.authorId = $("author_id[" + i + "]").val();
+
+            $.ajax({
+                type: 'POST',
+                crossDomain: true,
+                url: 'https://localhost:8443/itinerary/',
+                contentType: 'application/json',
+                dataType: 'json',
+                data: JSON.stringify(payload)
+            });
+
+            return false;
+        });
+    </script>
+<!--</form>-->
+</body>
+</html>
