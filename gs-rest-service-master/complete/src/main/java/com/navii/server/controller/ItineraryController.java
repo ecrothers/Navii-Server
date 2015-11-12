@@ -18,7 +18,7 @@ public class ItineraryController {
     @Autowired
     private ItineraryService itineraryService;
 
-    @RequestMapping(value="/", method= RequestMethod.POST)
+    @RequestMapping(method= RequestMethod.POST)
     public Itinerary createItinerary(@RequestBody Itinerary itinerary) {
         Itinerary created = itineraryService.save(itinerary);
         return created;

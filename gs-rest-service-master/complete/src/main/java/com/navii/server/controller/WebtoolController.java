@@ -1,26 +1,39 @@
 package com.navii.server.controller;
 
+import com.navii.server.domain.Attraction;
 import com.navii.server.domain.Itinerary;
-import com.navii.server.service.ItineraryService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.*;
 
-@RestController
-@RequestMapping(value = "/itinerary")
+@Controller
+@RequestMapping(value = "/webtool")
 public class WebtoolController {
     private static final Logger logger = LoggerFactory.getLogger(WebtoolController.class);
 
-    @Autowired
-    private ItineraryService itineraryService;
+    @RequestMapping(value="/attraction", method=RequestMethod.GET)
+    public String attractionForm(Model model) {
+        model.addAttribute("attraction", new Attraction());
+        return "attraction/entry";
+    }
 
-    @RequestMapping(value="/", method= RequestMethod.POST)
-    public Itinerary createItinerary(@RequestBody Itinerary itinerary) {
-        Itinerary created = itineraryService.save(itinerary);
-        return created;
+    @RequestMapping(value="/attraction", method=RequestMethod.POST)
+    public String attractionSubmit(@ModelAttribute Attraction attraction, Model model) {
+        model.addAttribute("attraction", attraction);
+        return "attraction/result";
+    }
+
+    @RequestMapping(value="/itinerary", method=RequestMethod.GET)
+    public String itineraryForm(Model model) {
+        model.addAttribute("itinerary", new Itinerary());
+        return "itinerary/entry";
+    }
+
+    @RequestMapping(value="/itinerary", method=RequestMethod.POST)
+    public String itinerarySubmit(@ModelAttribute Itinerary itinerary, Model model) {
+        model.addAttribute("itinerary", itinerary);
+        return "itinerary/result";
     }
 }

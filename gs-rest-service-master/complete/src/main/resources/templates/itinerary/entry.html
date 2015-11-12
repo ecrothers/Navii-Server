@@ -1,0 +1,43 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Itinerary Entry Webtool</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <style>
+        .col1 {
+            width: 25%;
+        }
+        .col2 {
+            width: 75%;
+        }
+    </style>
+</head>
+<body>
+<form action="#" th:action="@{/webtool/itinerary}" th:object="${itinerary}" method="post">
+    <table style='width:100%'>
+    <tr>
+        <td class='col1'>Itinerary Name:</td>
+        <td class='col2'><input type='text' th:field="*{description}"/></td>
+    </tr>
+    <tr>
+        <td class='col1'>Price:</td>
+        <td class ='col2'><input type='text' th:field="*{price}"/></td>
+    </tr>
+    <tr>
+        <!-- TODO: Should this just be number of days duration? -->
+    <td class='col1'>Start Date:</td>
+    <td class ='col2'><input type='text' th:field="*{startDate}"/></td>
+    </tr>
+    <tr>
+        <td class='col1'>End Date:</td>
+        <td class ='col2'><input type='text' th:field="*{endDate}"/></td>
+    </tr>
+    <tr>
+        <td class='col1'>Author ID:</td>
+        <td class ='col2'><input type='text' th:field="*{authorId}"/></td>
+    </tr>
+</table>
+<p><input type="submit" value="Submit" /> <input type="reset" value="Reset" /></p>
+</form>
+</body>
+</html>
