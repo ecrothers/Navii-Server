@@ -25,7 +25,8 @@ public class AWSConfiguration {
     private String awsProfileName;
 
     /**
-     * Indicates which method to use for providing AWS credentials. aws_profile means we will look up credentials in ~/.aws/credentials, and 
+     * Indicates which method to use for providing AWS credentials.
+     * aws_profile means we will look up credentials in ~/.aws/credentials.
      * instance_profile means we will retrieve temporary credentials from the instance profile of the EC2 instance we are running in. instance_profile 
      * can only be used when the app is running in EC2, as is the case with int and prod envs. 
      * 

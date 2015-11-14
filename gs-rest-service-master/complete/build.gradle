@@ -35,7 +35,9 @@ dependencies {
     compile("com.fasterxml.jackson.module:jackson-module-afterburner:2.6.3")
     compile("org.springframework.retry:spring-retry:1.1.2.RELEASE")
 
-    testCompile 'junit:junit'
+    testCompile("org.springframework.boot:spring-boot-starter-test")
+    testCompile("org.springframework:spring-test:4.2.2.RELEASE")
+    testCompile("junit:junit")
 }
 
 jar {
