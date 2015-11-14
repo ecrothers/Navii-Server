@@ -1,7 +1,7 @@
-package com.navii.server.controller;
+package com.navii.server.persistence.controller;
 
-import com.navii.server.domain.Itinerary;
-import com.navii.server.service.ItineraryService;
+import com.navii.server.persistence.domain.Itinerary;
+import com.navii.server.persistence.service.ItineraryService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,8 +1,8 @@
-package com.navii.server.service.impl;
+package com.navii.server.persistence.service.impl;
 
-import com.navii.server.dao.ItineraryDAO;
-import com.navii.server.domain.Itinerary;
-import com.navii.server.service.ItineraryService;
+import com.navii.server.persistence.dao.ItineraryDAO;
+import com.navii.server.persistence.domain.Itinerary;
+import com.navii.server.persistence.service.ItineraryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

@@ -1,15 +1,15 @@
-package com.navii.server.service;
+package com.navii.server.persistence.dao;
 
-import com.navii.server.domain.Itinerary;
+import com.navii.server.persistence.domain.Itinerary;
 
 import java.util.List;
 
 /**
  * Created by ecrothers on 2015-10-08.
  */
-public interface ItineraryService {
+public interface ItineraryDAO {
     /**
-     * Deletes a Itinerary entry from the database.
+     * Deletes an Itinerary entry from the database.
      * @param deleted   The deleted Itinerary entry.
      */
     void delete(Itinerary deleted);
@@ -33,11 +33,4 @@ public interface ItineraryService {
      * @return          The information fo the saved Itinerary entry.
      */
     Itinerary save(Itinerary saved);
-
-    /**
-     * Updates the information of an existing Itinerary entry.
-     * @param flock     The information of the updated Itinerary entry.
-     * @return          The information of the updated Itinerary entry.
-     */
-    Itinerary update(Itinerary flock);
 }

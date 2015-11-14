@@ -1,15 +1,12 @@
-package com.navii.server.dao.impl;
+package com.navii.server.persistence.dao.impl;
 
-import com.navii.server.dao.AttractionDAO;
-import com.navii.server.domain.Attraction;
+import com.navii.server.persistence.dao.AttractionDAO;
+import com.navii.server.persistence.domain.Attraction;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.List;
-
-import javax.sql.DataSource;
-import javax.xml.crypto.Data;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;

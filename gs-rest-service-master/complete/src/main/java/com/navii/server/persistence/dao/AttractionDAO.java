@@ -1,15 +1,15 @@
-package com.navii.server.service;
+package com.navii.server.persistence.dao;
 
-import com.navii.server.domain.Attraction;
+import com.navii.server.persistence.domain.Attraction;
 
 import java.util.List;
 
 /**
  * Created by ecrothers on 2015-10-08.
  */
-public interface AttractionService {
+public interface AttractionDAO {
     /**
-     * Deletes a Attraction entry from the database.
+     * Deletes an Attraction entry from the database.
      * @param deleted   The deleted Attraction entry.
      */
     void delete(Attraction deleted);
@@ -33,11 +33,4 @@ public interface AttractionService {
      * @return          The information fo the saved Attraction entry.
      */
     Attraction save(Attraction saved);
-
-    /**
-     * Updates the information of an existing Attraction entry.
-     * @param flock     The information of the updated Attraction entry.
-     * @return          The information of the updated Attraction entry.
-     */
-    Attraction update(Attraction flock);
 }

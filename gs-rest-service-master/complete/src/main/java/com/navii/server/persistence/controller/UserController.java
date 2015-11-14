@@ -1,7 +1,7 @@
-package com.navii.server.controller;
+package com.navii.server.persistence.controller;
 
-import com.navii.server.domain.User;
-import com.navii.server.service.UserService;
+import com.navii.server.persistence.domain.User;
+import com.navii.server.persistence.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

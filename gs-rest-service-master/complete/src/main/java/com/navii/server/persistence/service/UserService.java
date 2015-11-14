@@ -1,6 +1,6 @@
-package com.navii.server.service;
+package com.navii.server.persistence.service;
 
-import com.navii.server.domain.User;
+import com.navii.server.persistence.domain.User;
 
 import java.util.ArrayList;
 

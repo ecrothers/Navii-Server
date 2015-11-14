@@ -1,4 +1,4 @@
-package com.navii.server.domain;
+package com.navii.server.persistence.domain;
 
 /**
  * Created by JMtorii on 2015-10-15.

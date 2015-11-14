@@ -1,16 +1,11 @@
-package com.navii.server.controller;
+package com.navii.server.persistence.controller;
 
-import com.navii.server.domain.Attraction;
-import com.navii.server.domain.Itinerary;
-import com.navii.server.service.AttractionService;
+import com.navii.server.persistence.domain.Attraction;
+import com.navii.server.persistence.service.AttractionService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.concurrent.atomic.AtomicLong;
 
 @RestController
 @RequestMapping(value = "/attraction")
