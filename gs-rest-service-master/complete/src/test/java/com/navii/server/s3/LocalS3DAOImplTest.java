@@ -2,39 +2,43 @@ package com.navii.server.s3;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.navii.server.util.ObjectMapperFactory;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
-@RunWith(SpringJUnit4ClassRunner.class)
 public class LocalS3DAOImplTest {
 
-    @Autowired
     private ObjectMapper objectMapper;
 
     private LocalS3DAOImpl localS3Dao;
 
+    private SomeTestObject testObject;
+
     @Before
     public void setup() {
-        localS3Dao = new LocalS3DAOImpl(objectMapper);
+        objectMapper = ObjectMapperFactory.createMapper();
+        localS3Dao = new LocalS3DAOImpl(objectMapper, "ci");
         localS3Dao.setup();
+
+        testObject = new SomeTestObject("foo", "bar");
     }
 
     @Test
-    public void localTest() {
+    public void saveAndLoadTest() {
         String objId = "123";
-        SomeTestObject testObject = new SomeTestObject("foo", "bar");
         localS3Dao.save(objId, testObject);
 
         SomeTestObject fetchedObject = localS3Dao.load(SomeTestObject.class, objId);
         assertEquals(testObject.key, fetchedObject.key);
         assertEquals(testObject.value, fetchedObject.value);
+    }
 
+    @Test
+    public void deleteTest() {
+        String objId = "123";
         localS3Dao.delete(testObject.getClass(), objId);
 
         SomeTestObject shouldBeDeleted = localS3Dao.load(testObject.getClass(), objId);

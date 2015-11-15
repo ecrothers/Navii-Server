@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.io.Files;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 
 import javax.annotation.PostConstruct;
 import java.io.*;
@@ -19,15 +18,15 @@ public class LocalS3DAOImpl implements S3DAO {
 
     private static final String DEFAULT_TEMP_FILE_SUFFIX = ".txt";
 
-    @Value("${env:}")
     private String envPrefix;
 
     private ObjectMapper objectMapper;
 
     private File dataDir;
 
-    public LocalS3DAOImpl(ObjectMapper objectMapper) {
+    public LocalS3DAOImpl(ObjectMapper objectMapper, String envPrefix) {
         this.objectMapper = objectMapper;
+        this.envPrefix = envPrefix;
     }
 
     @PostConstruct

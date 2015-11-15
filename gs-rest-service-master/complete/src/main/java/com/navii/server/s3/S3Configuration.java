@@ -40,6 +40,12 @@ public class S3Configuration {
     @Value("${amazon.create.bucket:false}")
     private boolean doCreateBucket;
 
+    /**
+     * The environment of the hosted application.
+     */
+    @Value("${env:ci}")
+    private String envPrefix;
+
     @Bean
     public ObjectMapper objectMapper() {
         return ObjectMapperFactory.createMapper();
@@ -55,6 +61,6 @@ public class S3Configuration {
         log.info("S3 Enabled: " + s3Enabled);
         return (s3Enabled) ?
                 new S3DAOImpl(objectMapper, s3Client, bucketName, doCreateBucket) :
-                new LocalS3DAOImpl(objectMapper);
+                new LocalS3DAOImpl(objectMapper, envPrefix);
     }
 }
