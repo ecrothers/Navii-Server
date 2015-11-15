@@ -90,27 +90,28 @@ CREATE TABLE IF NOT EXISTS pointofinterests (
 
 CREATE TABLE IF NOT EXISTS preferences (
 	preference VARCHAR(10) NOT NULL,
-    counter INT,
+    counter INT DEFAULT 0,
     photoURL VARCHAR(32),
     PRIMARY KEY (preference)
 );
 
 CREATE TABLE IF NOT EXISTS tags (
 	tag VARCHAR(10) NOT NULL,
-    counter INT,
+    counter INT DEFAULT 0,
     PRIMARY KEY (tag)
 );
 
 CREATE TABLE IF NOT EXISTS userspreferences (
-	userid INT NOT NULL,
-    preference VARCHAR(10),
-    FOREIGN KEY (userid) REFERENCES users(userid) ON DELETE CASCADE,
+	username VARCHAR(16) NOT NULL,
+    preference VARCHAR(10) NOT NULL,
+    FOREIGN KEY (username) REFERENCES users(username) ON DELETE CASCADE,
     FOREIGN KEY (preference) REFERENCES preferences(preference) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS itinerariespreferences (
 	itineraryid INT,
     preference VARCHAR(10),
+    UNIQUE KEY (itineraryid,preference),
     FOREIGN KEY (itineraryid) REFERENCES itineraries(itineraryid) ON DELETE CASCADE,
     FOREIGN KEY (preference) REFERENCES preferences(preference) ON DELETE CASCADE
 );
@@ -119,6 +120,7 @@ CREATE TABLE IF NOT EXISTS itinerariespreferences (
 CREATE TABLE IF NOT EXISTS itinerariestags (
 	itineraryid INT,
     tag VARCHAR(10),
+    UNIQUE KEY (itineraryid,tag),
     FOREIGN KEY (itineraryid) REFERENCES itineraries(itineraryid) ON DELETE CASCADE,
     FOREIGN KEY (tag) REFERENCES tags(tag) ON DELETE CASCADE
 );
