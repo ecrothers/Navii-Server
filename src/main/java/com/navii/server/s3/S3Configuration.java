@@ -60,7 +60,7 @@ public class S3Configuration {
     public S3DAO createS3DAO(ObjectMapper objectMapper, AmazonS3Client s3Client) {
         log.info("S3 Enabled: " + s3Enabled);
         return (s3Enabled) ?
-                new S3DAOImpl(objectMapper, s3Client, bucketName, doCreateBucket) :
+                new S3DAOImpl(objectMapper, s3Client, bucketName, doCreateBucket, envPrefix) :
                 new LocalS3DAOImpl(objectMapper, envPrefix);
     }
 }

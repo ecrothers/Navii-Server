@@ -7,7 +7,6 @@ import com.amazonaws.util.IOUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 
 import javax.annotation.PostConstruct;
 import java.io.ByteArrayInputStream;
@@ -27,26 +26,18 @@ public class S3DAOImpl implements S3DAO {
      */
     private static final String NO_SUCH_KEY = "NoSuchKey";
 
-    @Value("${env:}")
-    private String envPrefix;
+    private final ObjectMapper objectMapper;
+    private final AmazonS3Client s3Client;
+    private final String bucketName;
+    private final String envPrefix;
+    private final boolean createBucket;
 
-    private boolean createBucket;
-
-    private ObjectMapper objectMapper;
-
-    private AmazonS3Client s3Client;
-
-    private String bucketName;
-
-    public S3DAOImpl(ObjectMapper objectMapper, AmazonS3Client s3Client, String bucketName) {
-        this(objectMapper, s3Client, bucketName, false);
-    }
-
-    public S3DAOImpl(ObjectMapper objectMapper, AmazonS3Client s3Client, String bucketName, boolean createBucket) {
+    public S3DAOImpl(ObjectMapper objectMapper, AmazonS3Client s3Client, String bucketName, boolean createBucket, String envPrefix) {
         this.objectMapper = objectMapper;
         this.s3Client = s3Client;
         this.bucketName = bucketName;
         this.createBucket = createBucket;
+        this.envPrefix = envPrefix;
     }
 
     @PostConstruct

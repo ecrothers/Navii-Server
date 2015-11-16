@@ -1,5 +1,6 @@
 package com.navii.server.s3;
 
+import com.amazonaws.services.s3.AmazonS3Client;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.navii.server.util.ObjectMapperFactory;
@@ -7,21 +8,21 @@ import org.junit.Before;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
 
-public class LocalS3DAOImplTest {
-
+/**
+ * Created by JMtorii on 2015-11-15.
+ */
+public class S3DAOImplTest {
     private ObjectMapper objectMapper;
-
-    private LocalS3DAOImpl localS3Dao;
-
+    private S3DAOImpl s3DAO;
     private SomeTestObject someTestObject;
 
     @Before
     public void setup() {
         objectMapper = ObjectMapperFactory.createMapper();
-        localS3Dao = new LocalS3DAOImpl(objectMapper, "ci");
-        localS3Dao.setup();
+        AmazonS3Client s3Client = new AmazonS3Client();
+        s3DAO = new S3DAOImpl(objectMapper, s3Client, "navi.ci.test", false, "ci");
+        s3DAO.setup();
 
         someTestObject = new SomeTestObject("foo", "bar");
     }
@@ -29,20 +30,11 @@ public class LocalS3DAOImplTest {
     @Test
     public void saveAndLoadTest() {
         String objId = "123";
-        localS3Dao.save(objId, someTestObject);
+        s3DAO.save(objId, someTestObject);
 
-        SomeTestObject fetchedObject = localS3Dao.load(SomeTestObject.class, objId);
+        SomeTestObject fetchedObject = s3DAO.load(SomeTestObject.class, objId);
         assertEquals(someTestObject.key, fetchedObject.key);
         assertEquals(someTestObject.value, fetchedObject.value);
-    }
-
-    @Test
-    public void deleteTest() {
-        String objId = "123";
-        localS3Dao.delete(someTestObject.getClass(), objId);
-
-        SomeTestObject shouldBeDeleted = localS3Dao.load(someTestObject.getClass(), objId);
-        assertNull(shouldBeDeleted);
     }
 
     @S3DocumentType("SomeTestObject")
