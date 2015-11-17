@@ -30,29 +30,29 @@ public class Tag {
 
     }
 
-    static Builder getBuilder() {
+    public static Builder getBuilder() {
         return new Builder();
     }
 
-    static class Builder {
+    public static class Builder {
 
         private String tag;
         private int counter;
 
-        private Builder() {}
+        public Builder() {}
 
-        Builder tag(String tag) {
+        public Builder tag(String tag) {
             this.tag = tag;
             return this;
         }
 
-        Builder counter(int counter) {
+        public Builder counter(int counter) {
             this.counter = counter;
             return this;
         }
 
         // TODO: potentially check for non-null values
-        Tag build() {
+        public Tag build() {
             return new Tag(this);
         }
     }
