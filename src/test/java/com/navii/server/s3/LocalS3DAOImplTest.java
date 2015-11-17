@@ -5,6 +5,9 @@ import com.navii.server.util.ObjectMapperFactory;
 import org.junit.Before;
 import org.junit.Test;
 
+/**
+ * Created by JMtorii on 2015-11-16.
+ */
 public class LocalS3DAOImplTest {
     private ObjectMapper objectMapper;
     private LocalS3DAOImpl localS3Dao;
