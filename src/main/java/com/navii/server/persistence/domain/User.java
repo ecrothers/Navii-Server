@@ -42,14 +42,14 @@ public class User {
         return isFacebook;
     }
 
-    static class Builder {
+    public static class Builder {
         private int id;
         private String username;
         private String password;
         private String salt;
         private String isFacebook;
 
-        private Builder() {}
+        public Builder() {}
 
         public Builder id(int id) {
             this.id = id;
@@ -76,7 +76,7 @@ public class User {
             return this;
         }
 
-        User build() {
+        public User build() {
             return new User(this);
         }
     }

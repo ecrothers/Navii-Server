@@ -2,7 +2,7 @@ package com.navii.server.persistence.dao;
 
 import com.navii.server.persistence.domain.User;
 
-import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by JMtorii on 2015-10-15.
@@ -12,39 +12,33 @@ public interface UserDAO {
      * Finds all User entries from the database.
      * @return  All existing Users.
      */
-    ArrayList<User> findAll();
-
-    /**
-     * Finds the information of a single User entry.
-     * @param username   The username of the requested User entry.
-     * @return           The information of the found User entry.
-     */
-    User findOne(String username);
+    List<User> findAll();
 
     /**
      * Finds the information of a single User entry.
      * @param userId    The id of the requested User entry.
      * @return          The information of the found User entry.
      */
-    User findOne(final int userId);
+    User findOne(int userId);
 
     /**
      * Creates a new User entry to the database.
      * @param createdUser       The information of the new User entry.
-     * @return                  The created user.
+     * @return                  The number of created users.
      */
-    User create(final User createdUser);
+    int create(User createdUser);
 
     /**
      * Updates an existing user in the database.
      * @param updatedUser   The information of the updated User entry.
-     * @return              The updated user.
+     * @return              The number of updated users.
      */
-    User update(final User updatedUser);
+    int update(User updatedUser);
 
     /**
      * Deletes a User from the database.
      * @param deletedUser   The deleted User entry.
+     * @return              The number of updated users.
      */
-    User delete(final int deletedUser);
+    int delete(int deletedUser);
 }

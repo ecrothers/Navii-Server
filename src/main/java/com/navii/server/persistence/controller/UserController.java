@@ -7,7 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by JMtorii on 2015-10-15.
@@ -29,9 +29,9 @@ public class UserController {
         User foundUser = userService.findOne(userId);
 
         if (foundUser != null) {
-            return new ResponseEntity<User>(foundUser, HttpStatus.FOUND);
+            return new ResponseEntity<>(foundUser, HttpStatus.OK);
         } else {
-            return new ResponseEntity<User>(HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
 
@@ -40,13 +40,13 @@ public class UserController {
      * @return      If users exist, return list of users and HTTP status 302; otherwise, 404
      */
     @RequestMapping(value = "", method = RequestMethod.GET)
-    public ResponseEntity<ArrayList<User>> getAllUsers() {
-        ArrayList<User> users = userService.findAll();
+    public ResponseEntity<List<User>> getAllUsers() {
+        List<User> users = userService.findAll();
 
         if (users != null) {
-            return new ResponseEntity<ArrayList<User>>(users, HttpStatus.FOUND);
+            return new ResponseEntity<>(users, HttpStatus.OK);
         } else {
-            return new ResponseEntity<ArrayList<User>>(HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
 
@@ -57,13 +57,13 @@ public class UserController {
      */
     @RequestMapping(value = "", method = RequestMethod.POST)
     public ResponseEntity<User> createUser(@RequestBody User user) {
-        User createdUser = userService.create(user);
+        int createdUser = userService.create(user);
 
-        if (createdUser != null) {
-            return new ResponseEntity<User>(HttpStatus.CREATED);
+        if (createdUser > 0) {
+            return new ResponseEntity<>(HttpStatus.CREATED);
         } else {
             // TODO: choose better HTTP status
-            return new ResponseEntity<User>(HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -75,12 +75,12 @@ public class UserController {
      */
     @RequestMapping(value = "/{userId}", method = RequestMethod.PUT)
     public ResponseEntity<User> updateUser(@PathVariable String userId, @RequestBody User user) {
-        User updatedUser = userService.update(userId, user);
+        int updatedUser = userService.update(userId, user);
 
-        if (updatedUser != null) {
-            return new ResponseEntity<User>(HttpStatus.ACCEPTED);
+        if (updatedUser > 0) {
+            return new ResponseEntity<>(HttpStatus.ACCEPTED);
         } else {
-            return new ResponseEntity<User>(HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
 
@@ -91,12 +91,12 @@ public class UserController {
      */
     @RequestMapping(value = "/{userId}", method = RequestMethod.DELETE)
     public ResponseEntity<User> deleteUser(@PathVariable String userId) {
-        User deletedUser = userService.delete(userId);
+        int deletedUser = userService.delete(userId);
 
-        if (deletedUser != null) {
-            return new ResponseEntity<User>(HttpStatus.ACCEPTED);
+        if (deletedUser > 0) {
+            return new ResponseEntity<>(HttpStatus.ACCEPTED);
         } else {
-            return new ResponseEntity<User>(HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
 }

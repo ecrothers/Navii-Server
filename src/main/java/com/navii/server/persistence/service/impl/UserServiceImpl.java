@@ -6,7 +6,7 @@ import com.navii.server.persistence.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by JMtorii on 2015-10-15.
@@ -19,7 +19,7 @@ public class UserServiceImpl implements UserService {
     UserDAO userDAO;
 
     @Override
-    public ArrayList<User> findAll() {
+    public List<User> findAll() {
         return userDAO.findAll();
     }
 
@@ -29,18 +29,18 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User create(User createdUser) {
+    public int create(User createdUser) {
         return userDAO.create(createdUser);
     }
 
     @Override
-    public User update(String userId, User updatedUser) {
+    public int update(String userId, User updatedUser) {
         // TODO: check whether userId matches updatedUser.userId
         return userDAO.update(updatedUser);
     }
 
     @Override
-    public User delete(String userId) {
+    public int delete(String userId) {
         return userDAO.delete(Integer.valueOf(userId));
     }
 }

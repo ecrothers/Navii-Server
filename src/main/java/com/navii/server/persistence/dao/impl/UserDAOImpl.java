@@ -5,14 +5,16 @@ import com.navii.server.persistence.domain.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataAccessException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.PreparedStatementCallback;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
-import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -28,67 +30,100 @@ public class UserDAOImpl implements UserDAO {
     protected JdbcTemplate jdbc;
 
     @Override
-    public ArrayList<User> findAll() {
-        return null;
-    }
+    public List<User> findAll() {
+        String sqlString =
+                "SELECT * FROM User;";
 
-    @Override
-    public User findOne(final String username) {
-        String selectString =
-                "SELECT * FROM USER WHERE username = ?";
-        boolean success = jdbc.execute(selectString, new PreparedStatementCallback<Boolean>() {
-            @Override
-            public Boolean doInPreparedStatement(PreparedStatement ps) throws SQLException, DataAccessException {
-                ps.setString(1, username);
+        List<User> users = new ArrayList<>();
 
-                return ps.execute();
+        try {
+            List<Map<String, Object>> rows = jdbc.queryForList(sqlString);
+
+            for (Map row : rows) {
+                User user = new User.Builder()
+                        .id((int) row.get("id"))
+                        .username((String) row.get("username"))
+                        .password((String) row.get("password"))
+                        .salt((String) row.get("salt"))
+                        .isFacebook((String) row.get("isFacebook"))
+                        .build();
+
+                users.add(user);
             }
-        });
-        return null;
+
+            return users;
+        } catch (EmptyResultDataAccessException e) {
+            logger.warn("User: findAll returns no rows");
+            return null;
+        }
     }
 
     @Override
-    public User findOne(final int id) {
-        String selectString =
-                "SELECT * FROM USER WHERE username = ?";
-        boolean success = jdbc.execute(selectString, new PreparedStatementCallback<Boolean>() {
-            @Override
-            public Boolean doInPreparedStatement(PreparedStatement ps) throws SQLException, DataAccessException {
-                ps.setInt(1, id);
+    public User findOne(int id) {
+        String sqlString =
+                "SELECT * FROM User " +
+                        "WHERE id = ?;";
 
-                return ps.execute();
-            }
-        });
-        return null;
+        try {
+            return jdbc.queryForObject(sqlString, new Object[]{id}, new RowMapper<User>() {
+                @Override
+                public User mapRow(ResultSet rs, int rowNum) throws SQLException {
+
+                    if (rs.getRow() < 1) {
+                        return null;
+                    } else {
+                        return new User.Builder(                        )
+                            .id(rs.getInt("id"))
+                            .username(rs.getString("username"))
+                            .password(rs.getString("password"))
+                            .salt(rs.getString("salt"))
+                            .isFacebook(rs.getString("isFacebook"))
+                            .build();
+                    }
+                }
+            });
+        } catch (EmptyResultDataAccessException e) {
+            logger.warn("User: findOne returns no rows");
+            return null;
+        }
     }
 
     @Override
-    public User create(final User createdUser) {
-        String insertString =
-            "INSERT INTO users (username, saltedpassword, salt, isfacebook) VALUES (?, ?, ?, ?)";
+    public int create(User createdUser) {
+        String sqlString =
+                "INSERT INTO User (username, password, isFacebook)" +
+                        "VALUES (?, ?, ?);";
 
-        boolean success = jdbc.execute(insertString, new PreparedStatementCallback<Boolean>() {
-            @Override
-            public Boolean doInPreparedStatement(PreparedStatement ps) throws SQLException, DataAccessException {
-                ps.setString(1, createdUser.getUsername());
-                ps.setString(2, createdUser.getPassword());
-                ps.setString(3, createdUser.getSalt());
-                ps.setString(4, createdUser.isFacebook());
-
-                return ps.execute();
-            }
-        });
-
-        return createdUser;
+        return jdbc.update(
+                sqlString,
+                createdUser.getUsername(),
+                createdUser.getPassword(),
+                createdUser.isFacebook()
+        );
     }
 
     @Override
-    public User update(final User updatedUser) {
-        return null;
+    public int update(User updatedUser) {
+        String sqlString =
+                "UPDATE User " +
+                        "SET username = ?, password = ?, isFacebook = ?" +
+                        "WHERE id = ?";
+
+        return jdbc.update(
+                sqlString,
+                updatedUser.getUsername(),
+                updatedUser.getPassword(),
+                updatedUser.isFacebook(),
+                updatedUser.getId()
+        );
     }
 
     @Override
-    public User delete(final int deletedUser) {
-        return null;
+    public int delete(int deletedUser) {
+        String sqlString =
+                "DELETE FROM User " +
+                        "WHERE id = ?";
+
+        return jdbc.update(sqlString, deletedUser);
     }
 }
