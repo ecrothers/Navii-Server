@@ -32,9 +32,11 @@ public class UserPreferenceDAOImpl implements UserPreferenceDAO {
         boolean success = jdbc.execute(insertString, new PreparedStatementCallback<Boolean>() {
             @Override
             public Boolean doInPreparedStatement(PreparedStatement ps) throws SQLException, DataAccessException {
-                ps.setString(1, saved.getUsername());
-                ps.setString(2, saved.getPreference());
-
+                for (String preference : saved.getPreferences()) {
+                    ps.setString(1, saved.getUsername());
+                    ps.setString(2, preference);
+                    ps.addBatch();
+                }
                 return ps.execute();
             }
         });

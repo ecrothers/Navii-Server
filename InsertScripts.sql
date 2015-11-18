@@ -4,8 +4,13 @@ INSERT INTO preferences(preference, photoURL) VALUES ('Boring', 'boringpic.png')
 INSERT INTO preferences(preference, photoURL) VALUES ('Adult', 'adultpic.png');
 INSERT INTO preferences(preference, photoURL) VALUES ('Kids', 'kidspic.png');
 INSERT INTO preferences(preference, photoURL) VALUES ('Pious', 'piouspic.png');
-
-
+INSERT INTO preferences(preference, photoURL) VALUES ('Clean', 'cleanpic.png');
+INSERT INTO preferences(preference, photoURL) VALUES ('Dirty', 'dirtypic.png');
+INSERT INTO preferences(preference, photoURL) VALUES ('Hardcore', 'hardcorepic.png');
+INSERT INTO preferences(preference, photoURL) VALUES ('Chinese', 'chinesepic.png');
+INSERT INTO preferences(preference, photoURL) VALUES ('French', 'frenchpic.png');
+INSERT INTO preferences(preference, photoURL) VALUES ('Black', 'blackpic.png');
+INSERT INTO preferences(preference, photoURL) VALUES ('White', 'whitepic.png');
 
 INSERT INTO tags(tag) VALUES ('Lifechanging');
 INSERT INTO tags(tag) VALUES ('Cheat');

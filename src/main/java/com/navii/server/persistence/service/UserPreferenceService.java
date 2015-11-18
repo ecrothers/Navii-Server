@@ -1,6 +1,9 @@
 package com.navii.server.persistence.service;
 
+import com.navii.server.persistence.domain.Preference;
 import com.navii.server.persistence.domain.UserPreference;
+
+import java.util.ArrayList;
 
 /**
  * Created by sjung on 10/11/15.
@@ -14,6 +17,6 @@ public interface UserPreferenceService {
      */
     UserPreference save(UserPreference saved);
 
-    UserPreference obtain(String username);
+    ArrayList<Preference> obtain(String username);
 
 }
