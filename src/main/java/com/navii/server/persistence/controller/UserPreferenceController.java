@@ -1,14 +1,12 @@
 package com.navii.server.persistence.controller;
 
-import com.navii.server.persistence.domain.Preference;
+import com.navii.server.persistence.domain.User;
 import com.navii.server.persistence.domain.UserPreference;
 import com.navii.server.persistence.service.UserPreferenceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.ArrayList;
 
 /**
  * Created by sjung on 10/11/15.
@@ -19,22 +17,6 @@ public class UserPreferenceController {
 
     @Autowired
     private UserPreferenceService userPreferenceService;
-    /**
-     * Gets all preferences given a username
-     * @param username  Username
-     * @return      If users exist, return list of preferences and HTTP status 302; otherwise, 404
-     */
-
-    @RequestMapping(value = "/{username}", method = RequestMethod.GET)
-    public ResponseEntity<ArrayList<Preference>> getAllUserPreferences(@PathVariable String username) {
-        ArrayList<Preference> usersPreferences = userPreferenceService.obtain(username);
-
-        if (usersPreferences != null) {
-            return new ResponseEntity<>(usersPreferences, HttpStatus.FOUND);
-        } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-    }
 
     /**
      * Creates a new userspreference mapping
@@ -43,13 +25,29 @@ public class UserPreferenceController {
      */
     @RequestMapping(value = "", method = RequestMethod.POST)
     public ResponseEntity<UserPreference> createUserPreference(@RequestBody UserPreference userPreference) {
-        UserPreference createdUserPreference = userPreferenceService.save(userPreference);
+        boolean createdUserPreference = userPreferenceService.create(userPreference);
 
-        if (createdUserPreference != null) {
-            return new ResponseEntity<UserPreference>(HttpStatus.CREATED);
+        if (createdUserPreference) {
+            return new ResponseEntity<>(HttpStatus.CREATED);
         } else {
             // TODO: choose better HTTP status
-            return new ResponseEntity<UserPreference>(HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    /**
+     * Deletes an existing user
+     * @param userId    Identifier for the user
+     * @return          Deletes all UserPreference return HTTP status 202; otherwise 404.
+     */
+    @RequestMapping(value = "/{userId}", method = RequestMethod.DELETE)
+    public ResponseEntity<User> deleteAllUserPreference(@PathVariable String userId) {
+        int deletedUsersPreferences = userPreferenceService.deleteAllPreference(userId);
+
+        if (deletedUsersPreferences > 0) {
+            return new ResponseEntity<>(HttpStatus.ACCEPTED);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
 

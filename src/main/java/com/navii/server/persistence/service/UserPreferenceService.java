@@ -15,8 +15,9 @@ public interface UserPreferenceService {
      * @param saved     The information of the saved UserPreference entry.
      * @return          The information fo the saved UserPreference entry.
      */
-    UserPreference save(UserPreference saved);
+    boolean create(UserPreference saved);
 
     ArrayList<Preference> obtain(String username);
 
+    int deleteAllPreference(String userId);
 }

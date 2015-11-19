@@ -25,23 +25,25 @@ public class UserPreferenceDAOImpl implements UserPreferenceDAO {
     protected JdbcTemplate jdbc;
 
     @Override
-    public UserPreference save(final UserPreference saved) {
+    public boolean create(final UserPreference saved) {
         String insertString =
                 "INSERT INTO userspreferences (username, preference) VALUES (?, ?)";
 
         boolean success = jdbc.execute(insertString, new PreparedStatementCallback<Boolean>() {
             @Override
             public Boolean doInPreparedStatement(PreparedStatement ps) throws SQLException, DataAccessException {
-                for (String preference : saved.getPreferences()) {
+                for (String preference : saved.getPreferences())
+                {
                     ps.setString(1, saved.getUsername());
                     ps.setString(2, preference);
                     ps.addBatch();
                 }
+
                 return ps.execute();
             }
         });
 
-        return saved;
+        return success;
     }
 
     @Override
@@ -63,5 +65,14 @@ public class UserPreferenceDAOImpl implements UserPreferenceDAO {
                     }
                 });
         return retrieved;
+    }
+
+    @Override
+    public int deleteAllPreference(String userId) {
+        String sqlString =
+                "DELETE FROM UsersPreferences " +
+                        "WHERE username = ?";
+
+        return jdbc.update(sqlString, userId);
     }
 }

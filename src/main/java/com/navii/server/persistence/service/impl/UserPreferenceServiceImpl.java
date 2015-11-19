@@ -21,12 +21,17 @@ public class UserPreferenceServiceImpl implements UserPreferenceService {
     UserPreferenceDAO userPreferenceDAO;
 
     @Override
-    public UserPreference save(UserPreference saved) {
-        return userPreferenceDAO.save(saved);
+    public boolean create(UserPreference saved) {
+        return userPreferenceDAO.create(saved);
     }
 
     @Override
     public ArrayList<Preference> obtain(String username) {
         return userPreferenceDAO.obtain(username);
+    }
+
+    @Override
+    public int deleteAllPreference(String userId) {
+        return userPreferenceDAO.deleteAllPreference(userId);
     }
 }

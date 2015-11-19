@@ -1,19 +1,19 @@
 package com.navii.server.persistence.domain;
 
-import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by sjung on 10/11/15.
  */
 public class UserPreference {
-    private ArrayList<String> preferences;
+    private List<String> preferences;
     private String username;
 
-    public ArrayList<String> getPreferences() {
+    public List<String> getPreferences() {
         return preferences;
     }
 
-    public void setPreferences(ArrayList<String> preferences) {
+    public void setPreferences(List<String> preferences) {
         this.preferences = preferences;
     }
 
@@ -31,24 +31,24 @@ public class UserPreference {
 
     }
 
-    static Builder getBuilder() {
+    public static Builder getBuilder() {
         return new Builder();
     }
 
-    static class Builder {
+    public static class Builder {
 
-        private ArrayList<String> preferences;
+        private List<String> preferences;
         private String username;
 
 
-        private Builder() {}
+        public Builder() {}
 
-        Builder preferences(ArrayList<String> preferences) {
+        public Builder preferences(List<String> preferences) {
             this.preferences = preferences;
             return this;
         }
 
-        Builder username(String username) {
+        public Builder username(String username) {
             this.username = username;
             return this;
         }

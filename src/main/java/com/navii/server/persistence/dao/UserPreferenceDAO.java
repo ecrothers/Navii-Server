@@ -10,9 +10,9 @@ import java.util.ArrayList;
  */
 public interface UserPreferenceDAO {
 
-    UserPreference save(UserPreference saved);
+    boolean create(UserPreference saved);
 
     ArrayList<Preference> obtain(String username);
 
-
+    int deleteAllPreference(String userId);
 }
