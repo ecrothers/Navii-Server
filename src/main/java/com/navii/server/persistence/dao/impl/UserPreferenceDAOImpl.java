@@ -28,7 +28,7 @@ public class UserPreferenceDAOImpl implements UserPreferenceDAO {
     @Override
     public boolean create(final UserPreference saved) {
         String insertString =
-                "INSERT INTO userspreferences (username, preference) VALUES (?, ?)";
+                "INSERT INTO userspreferences (userId, preference) VALUES (?, ?)";
 
         boolean success = jdbc.execute(insertString, new PreparedStatementCallback<Boolean>() {
             @Override
@@ -50,7 +50,7 @@ public class UserPreferenceDAOImpl implements UserPreferenceDAO {
     @Override
     public List<Preference> obtain(final String username) {
         String selectString =
-                "SELECT preference FROM userspreferences WHERE username = ?";
+                "SELECT preference FROM userspreferences WHERE userId = ?";
         ArrayList<Preference> retrieved = jdbc.queryForObject(selectString,
                 new String[]{username},
                 new RowMapper<ArrayList<Preference>>() {
@@ -71,9 +71,9 @@ public class UserPreferenceDAOImpl implements UserPreferenceDAO {
     @Override
     public int deleteAllPreference(String userId) {
         String sqlString =
-                "DELETE FROM UsersPreferences " +
-                        "WHERE username = ?";
-
+                "DELETE FROM userspreferences " +
+                        "WHERE userId = ?";
+        System.out.println(userId);
         return jdbc.update(sqlString, userId);
     }
 }
