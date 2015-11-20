@@ -2,6 +2,7 @@ package com.navii.server.persistence.dao.impl;
 
 import com.navii.server.persistence.dao.ItineraryDAO;
 import com.navii.server.persistence.domain.Itinerary;
+import com.navii.server.persistence.domain.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -71,5 +72,15 @@ public class ItineraryDAOImpl implements ItineraryDAO {
         });
 
         return saved;
+    }
+
+    @Override
+    public List<Itinerary> getItineraries(List<Tag> tagList) {
+
+        String selectString = "Select itineraryid, itineraries.cost, itineraries.startdate, itineraries.endate FROM itinerariestags WHERE" +
+                "tag in (Select tag   ";
+
+        return null;
+
     }
 }

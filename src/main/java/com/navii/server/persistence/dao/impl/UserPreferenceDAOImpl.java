@@ -14,6 +14,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by sjung on 10/11/15.
@@ -47,7 +48,7 @@ public class UserPreferenceDAOImpl implements UserPreferenceDAO {
     }
 
     @Override
-    public ArrayList<Preference> obtain(final String username) {
+    public List<Preference> obtain(final String username) {
         String selectString =
                 "SELECT preference FROM userspreferences WHERE username = ?";
         ArrayList<Preference> retrieved = jdbc.queryForObject(selectString,

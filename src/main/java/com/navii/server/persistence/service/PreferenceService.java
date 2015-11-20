@@ -6,6 +6,7 @@ import com.navii.server.persistence.domain.Preference;
  * Created by sjung on 10/11/15.
  */
 public interface PreferenceService {
+
     Preference findOne(String tag);
 
     /**

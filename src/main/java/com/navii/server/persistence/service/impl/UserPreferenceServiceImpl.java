@@ -7,7 +7,7 @@ import com.navii.server.persistence.service.UserPreferenceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by sjung on 10/11/15.
@@ -26,7 +26,7 @@ public class UserPreferenceServiceImpl implements UserPreferenceService {
     }
 
     @Override
-    public ArrayList<Preference> obtain(String username) {
+    public List<Preference> obtain(String username) {
         return userPreferenceDAO.obtain(username);
     }
 

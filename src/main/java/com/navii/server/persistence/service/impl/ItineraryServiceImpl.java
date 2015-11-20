@@ -2,6 +2,7 @@ package com.navii.server.persistence.service.impl;
 
 import com.navii.server.persistence.dao.ItineraryDAO;
 import com.navii.server.persistence.domain.Itinerary;
+import com.navii.server.persistence.domain.Tag;
 import com.navii.server.persistence.service.ItineraryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -12,6 +13,7 @@ import java.util.List;
  * Created by ecrothers on 2015-10-08.
  */
 @Service
+@SuppressWarnings("unused")
 public class ItineraryServiceImpl implements ItineraryService {
     @Autowired
     ItineraryDAO itineraryDAO;
@@ -39,5 +41,10 @@ public class ItineraryServiceImpl implements ItineraryService {
     @Override
     public Itinerary update(Itinerary flock) {
         return null;
+    }
+
+    @Override
+    public List<Itinerary> getItineraries(List<Tag> tagList) {
+        return itineraryDAO.getItineraries(tagList);
     }
 }

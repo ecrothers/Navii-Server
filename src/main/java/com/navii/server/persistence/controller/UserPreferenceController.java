@@ -19,8 +19,8 @@ public class UserPreferenceController {
     private UserPreferenceService userPreferenceService;
 
     /**
-     * Creates a new userspreference mapping
-     * @param userPreference  User to persist in server
+     * Creates a new userspreferences mapping
+     * @param userPreference  UserPreferences to persist in server
      * @return      If user is successfully created, return HTTP status 201; otherwise, 400
      */
     @RequestMapping(value = "", method = RequestMethod.POST)
