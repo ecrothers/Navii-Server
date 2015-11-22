@@ -3,3 +3,4 @@
 gradlew
 gradle.bat
 /build
+.gradle
