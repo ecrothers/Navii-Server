@@ -37,12 +37,12 @@ public class UserPreferenceController {
 
     /**
      * Deletes an existing user
-     * @param userId    Identifier for the user
+     * @param username    Identifier for the user
      * @return          Deletes all UserPreference return HTTP status 202; otherwise 404.
      */
-    @RequestMapping(value = "/{userId}", method = RequestMethod.DELETE)
-    public ResponseEntity<User> deleteAllUserPreference(@PathVariable String userId) {
-        int deletedUsersPreferences = userPreferenceService.deleteAllPreference(userId);
+    @RequestMapping(value = "/{username}", method = RequestMethod.DELETE)
+    public ResponseEntity<User> deleteAllUserPreference(@PathVariable String username) {
+        int deletedUsersPreferences = userPreferenceService.deleteAllPreference(username);
 
         if (deletedUsersPreferences > 0) {
             return new ResponseEntity<>(HttpStatus.ACCEPTED);

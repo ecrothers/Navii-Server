@@ -1,7 +1,6 @@
 package com.navii.server.persistence.dao;
 
 import com.navii.server.persistence.domain.Itinerary;
-import com.navii.server.persistence.domain.Tag;
 
 import java.util.List;
 
@@ -35,5 +34,5 @@ public interface ItineraryDAO {
      */
     Itinerary save(Itinerary saved);
 
-    List<Itinerary> getItineraries(List<Tag> tagList);
+    List<Itinerary> getItineraries(List<String> tagList);
 }

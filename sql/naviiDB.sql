@@ -105,7 +105,8 @@ CREATE TABLE IF NOT EXISTS userspreferences (
 	username VARCHAR(16) NOT NULL,
     preference VARCHAR(10) NOT NULL,
     FOREIGN KEY (username) REFERENCES users(username) ON DELETE CASCADE,
-    FOREIGN KEY (preference) REFERENCES preferences(preference) ON DELETE CASCADE
+    FOREIGN KEY (preference) REFERENCES preferences(preference) ON DELETE CASCADE,
+    CONSTRAINT pk_userpreference PRIMARY KEY (username,preference)
 );
 
 CREATE TABLE IF NOT EXISTS itinerariespreferences (
@@ -113,7 +114,8 @@ CREATE TABLE IF NOT EXISTS itinerariespreferences (
     preference VARCHAR(10),
     UNIQUE KEY (itineraryid,preference),
     FOREIGN KEY (itineraryid) REFERENCES itineraries(itineraryid) ON DELETE CASCADE,
-    FOREIGN KEY (preference) REFERENCES preferences(preference) ON DELETE CASCADE
+    FOREIGN KEY (preference) REFERENCES preferences(preference) ON DELETE CASCADE,
+    CONSTRAINT pk_itinerarypreference PRIMARY KEY (itineraryid,preference)
 );
 
 
@@ -122,6 +124,7 @@ CREATE TABLE IF NOT EXISTS itinerariestags (
     tag VARCHAR(10),
     UNIQUE KEY (itineraryid,tag),
     FOREIGN KEY (itineraryid) REFERENCES itineraries(itineraryid) ON DELETE CASCADE,
-    FOREIGN KEY (tag) REFERENCES tags(tag) ON DELETE CASCADE
+    FOREIGN KEY (tag) REFERENCES tags(tag) ON DELETE CASCADE,
+    CONSTRAINT pk_itinerarytag PRIMARY KEY (tag,itineraryid)
 );
 

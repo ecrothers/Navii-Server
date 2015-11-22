@@ -1,7 +1,6 @@
 package com.navii.server.persistence.controller;
 
 import com.navii.server.persistence.domain.Itinerary;
-import com.navii.server.persistence.domain.Tag;
 import com.navii.server.persistence.service.ItineraryService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,7 +27,7 @@ public class ItineraryController {
     }
 
     @RequestMapping(value="/tags" , method= RequestMethod.GET)
-    public List<Itinerary> getItinerariesFromTags(@RequestBody List<Tag> tagList) {
+    public List<Itinerary> getItinerariesFromTags(@RequestBody List<String> tagList) {
         List<Itinerary> itineraries = itineraryService.getItineraries(tagList);
         return itineraries;
     }

@@ -1,9 +1,5 @@
 package com.navii.server.persistence.service;
 
-import com.navii.server.persistence.dao.TagDAO;
-import com.navii.server.persistence.domain.Tag;
-import org.springframework.beans.factory.annotation.Autowired;
-
 import java.util.List;
 
 /**
@@ -12,6 +8,6 @@ import java.util.List;
 public interface TagService {
 
 
-    List<Tag> findTags();
+    List<String> findTags();
 
 }

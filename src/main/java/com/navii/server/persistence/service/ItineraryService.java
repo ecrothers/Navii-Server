@@ -1,7 +1,6 @@
 package com.navii.server.persistence.service;
 
 import com.navii.server.persistence.domain.Itinerary;
-import com.navii.server.persistence.domain.Tag;
 
 import java.util.List;
 
@@ -42,5 +41,5 @@ public interface ItineraryService {
      */
     Itinerary update(Itinerary flock);
 
-    List<Itinerary> getItineraries(List<Tag> tagList);
+    List<Itinerary> getItineraries(List<String> tagList);
 }

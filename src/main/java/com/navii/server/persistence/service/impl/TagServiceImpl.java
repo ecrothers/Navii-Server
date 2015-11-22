@@ -1,7 +1,6 @@
 package com.navii.server.persistence.service.impl;
 
 import com.navii.server.persistence.dao.TagDAO;
-import com.navii.server.persistence.domain.Tag;
 import com.navii.server.persistence.service.TagService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -19,7 +18,7 @@ public class TagServiceImpl implements TagService {
     TagDAO tagDAO;
 
     @Override
-    public List<Tag> findTags() {
+    public List<String> findTags() {
         return tagDAO.findTags();
     }
 }

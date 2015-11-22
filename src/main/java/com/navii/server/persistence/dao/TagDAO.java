@@ -1,7 +1,5 @@
 package com.navii.server.persistence.dao;
 
-import com.navii.server.persistence.domain.Tag;
-
 import java.util.List;
 
 /**
@@ -9,5 +7,5 @@ import java.util.List;
  */
 public interface TagDAO {
 
-    List<Tag> findTags();
+    List<String> findTags();
 }

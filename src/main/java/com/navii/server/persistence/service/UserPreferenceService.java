@@ -19,5 +19,5 @@ public interface UserPreferenceService {
 
     List<Preference> obtain(String username);
 
-    int deleteAllPreference(String userId);
+    int deleteAllPreference(String username);
 }

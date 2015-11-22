@@ -5,6 +5,7 @@ import java.util.List;
 /**
  * Created by sjung on 10/11/15.
  */
+@SuppressWarnings("unused")
 public class UserPreference {
     private List<String> preferences;
     private String username;
@@ -27,8 +28,9 @@ public class UserPreference {
 
     public UserPreference() {}
 
-    public UserPreference(Builder builder) {
-
+    private UserPreference(Builder builder) {
+        this.username = builder.username;
+        this.preferences = builder.preferences;
     }
 
     public static Builder getBuilder() {
@@ -53,9 +55,8 @@ public class UserPreference {
             return this;
         }
 
-
         // TODO: potentially check for non-null values
-        UserPreference build() {
+        public UserPreference build() {
             return new UserPreference(this);
         }
     }
