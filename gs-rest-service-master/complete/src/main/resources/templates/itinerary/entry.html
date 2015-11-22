@@ -13,10 +13,11 @@
     </style>
 </head>
 <body>
-<form action="#" th:action="@{/webtool/itinerary}" th:object="${itinerary}" method="post">
+<h1>Create New Itinerary</h1>
+<form action="#" th:action="@{/itinerary}" th:object="${itinerary}" method="post">
     <table style='width:100%'>
     <tr>
-        <td class='col1'>Itinerary Name:</td>
+        <td class='col1'>Description:</td>
         <td class='col2'><input type='text' th:field="*{description}"/></td>
     </tr>
     <tr>
@@ -24,13 +25,8 @@
         <td class ='col2'><input type='text' th:field="*{price}"/></td>
     </tr>
     <tr>
-        <!-- TODO: Should this just be number of days duration? -->
-    <td class='col1'>Start Date:</td>
-    <td class ='col2'><input type='text' th:field="*{startDate}"/></td>
-    </tr>
-    <tr>
-        <td class='col1'>End Date:</td>
-        <td class ='col2'><input type='text' th:field="*{endDate}"/></td>
+    <td class='col1'>Duration:</td>
+    <td class ='col2'><input type='text' th:field="*{duration}"/></td>
     </tr>
     <tr>
         <td class='col1'>Author ID:</td>

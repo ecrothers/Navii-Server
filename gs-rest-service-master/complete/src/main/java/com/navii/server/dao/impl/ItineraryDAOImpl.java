@@ -53,18 +53,17 @@ public class ItineraryDAOImpl implements ItineraryDAO {
     @Override
     public Itinerary save(final Itinerary saved) {
         String insertString = "INSERT INTO itineraries " +
-                "(itineraryid, totalcost, startdate, enddate, tags, description, authorid)" +
+                "(totalcost, description, authorid, duration)" +
                 "VALUES (?, ?, ?, ?, ?, ?, ?)";
 
         boolean success = jdbc.execute(insertString, new PreparedStatementCallback<Boolean>() {
             @Override
             public Boolean doInPreparedStatement(PreparedStatement ps) throws SQLException, DataAccessException {
-                ps.setInt(1, saved.getItineraryId());
-                ps.setDouble(2, saved.getPrice());
-                ps.setDate(3, saved.getStartDate());
-                ps.setDate(4, saved.getEndDate());
-                ps.setString(6, saved.getDescription());
-                ps.setDouble(7, saved.getAuthorId());
+                ps.setDouble(1, saved.getPrice());
+                ps.setString(2, saved.getDescription());
+                ps.setInt(3, saved.getAuthorId());
+                ps.setInt(4, saved.getDuration());
+                //ps.setString(2, saved.getTags()); // TODO: Add to schema?
 
                 return ps.execute();
             }
