@@ -1,37 +1,38 @@
 package com.navii.server.persistence.domain;
 
 /**
+ * TODO: I'm so sorry for this fucking bullshit. I'll refactor the database soon :(
+ *
  * Created by JMtorii on 2015-10-15.
  */
-@SuppressWarnings("unused")
 public class User {
 
-    private int id;
+    private int userid;
     private String username;
-    private String password;
+    private String saltedPassword;
     private String salt;
-    private String isFacebook;
+    private String isfacebook;
 
     public User() {}
 
     private User(Builder builder) {
-        this.id = builder.id;
+        this.userid = builder.userid;
         this.username = builder.username;
-        this.password = builder.password;
+        this.saltedPassword = builder.saltedPassword;
         this.salt = builder.salt;
-        this.isFacebook = builder.isFacebook;
+        this.isfacebook = builder.isfacebook;
     }
 
     public int getId() {
-        return id;
+        return userid;
     }
 
     public String getUsername() {
         return username;
     }
 
-    public String getPassword() {
-        return password;
+    public String getSaltedPassword() {
+        return saltedPassword;
     }
 
     public String getSalt() {
@@ -39,20 +40,20 @@ public class User {
     }
 
     public String isFacebook() {
-        return isFacebook;
+        return isfacebook;
     }
 
     public static class Builder {
-        private int id;
+        private int userid;
         private String username;
-        private String password;
+        private String saltedPassword;
         private String salt;
-        private String isFacebook;
+        private String isfacebook;
 
         public Builder() {}
 
         public Builder id(int id) {
-            this.id = id;
+            this.userid = id;
             return this;
         }
 
@@ -62,7 +63,7 @@ public class User {
         }
 
         public Builder password(String password) {
-            this.password = password;
+            this.saltedPassword = password;
             return this;
         }
 
@@ -72,7 +73,7 @@ public class User {
         }
 
         public Builder isFacebook(String isFacebook) {
-            this.isFacebook = isFacebook;
+            this.isfacebook = isFacebook;
             return this;
         }
 

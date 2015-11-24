@@ -69,6 +69,8 @@ public class UserController {
 
     /**
      * Updates an existing user
+     *
+     * NOTE: Currently, there is a foreign key constraint that needs to be modified/removed.
      * @param userId    Identifier for user
      * @param user      User to persist in server
      * @return          If the user exists and is changed, return HTTP status 202; otherwise 404.

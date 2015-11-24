@@ -32,7 +32,7 @@ public class UserDAOImpl implements UserDAO {
     @Override
     public List<User> findAll() {
         String sqlString =
-                "SELECT * FROM User;";
+                "SELECT * FROM users;";
 
         List<User> users = new ArrayList<>();
 
@@ -41,11 +41,11 @@ public class UserDAOImpl implements UserDAO {
 
             for (Map row : rows) {
                 User user = new User.Builder()
-                        .id((int) row.get("id"))
+                        .id((int) row.get("userid"))
                         .username((String) row.get("username"))
-                        .password((String) row.get("password"))
+                        .password((String) row.get("saltedPassword"))
                         .salt((String) row.get("salt"))
-                        .isFacebook((String) row.get("isFacebook"))
+                        .isFacebook((String) row.get("isfacebook"))
                         .build();
 
                 users.add(user);
@@ -61,8 +61,8 @@ public class UserDAOImpl implements UserDAO {
     @Override
     public User findOne(int id) {
         String sqlString =
-                "SELECT * FROM User " +
-                        "WHERE id = ?;";
+                "SELECT * FROM users " +
+                        "WHERE userid = ?;";
 
         try {
             return jdbc.queryForObject(sqlString, new Object[]{id}, new RowMapper<User>() {
@@ -73,11 +73,11 @@ public class UserDAOImpl implements UserDAO {
                         return null;
                     } else {
                         return new User.Builder(                        )
-                            .id(rs.getInt("id"))
+                            .id(rs.getInt("userid"))
                             .username(rs.getString("username"))
-                            .password(rs.getString("password"))
+                            .password(rs.getString("saltedPassword"))
                             .salt(rs.getString("salt"))
-                            .isFacebook(rs.getString("isFacebook"))
+                            .isFacebook(rs.getString("isfacebook"))
                             .build();
                     }
                 }
@@ -91,13 +91,14 @@ public class UserDAOImpl implements UserDAO {
     @Override
     public int create(User createdUser) {
         String sqlString =
-                "INSERT INTO User (username, password, isFacebook)" +
-                        "VALUES (?, ?, ?);";
+                "INSERT INTO users (username, saltedPassword, salt, isfacebook) " +
+                        "VALUES (?, ?, ?, ?);";
 
         return jdbc.update(
                 sqlString,
                 createdUser.getUsername(),
-                createdUser.getPassword(),
+                createdUser.getSaltedPassword(),
+                createdUser.getSalt(),
                 createdUser.isFacebook()
         );
     }
@@ -105,14 +106,14 @@ public class UserDAOImpl implements UserDAO {
     @Override
     public int update(User updatedUser) {
         String sqlString =
-                "UPDATE User " +
-                        "SET username = ?, password = ?, isFacebook = ?" +
-                        "WHERE id = ?";
+                "UPDATE users " +
+                        "SET username = ?, saltedPassword = ?, isfacebook = ?" +
+                        "WHERE userid = ?";
 
         return jdbc.update(
                 sqlString,
                 updatedUser.getUsername(),
-                updatedUser.getPassword(),
+                updatedUser.getSaltedPassword(),
                 updatedUser.isFacebook(),
                 updatedUser.getId()
         );
@@ -121,8 +122,8 @@ public class UserDAOImpl implements UserDAO {
     @Override
     public int delete(int deletedUser) {
         String sqlString =
-                "DELETE FROM User " +
-                        "WHERE id = ?";
+                "DELETE FROM users " +
+                        "WHERE userid = ?";
 
         return jdbc.update(sqlString, deletedUser);
     }
