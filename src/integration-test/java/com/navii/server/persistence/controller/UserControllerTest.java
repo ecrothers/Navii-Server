@@ -41,20 +41,25 @@ public class UserControllerTest {
     @Before
     public void setUp() {
         mvc = MockMvcBuilders.webAppContextSetup(wac).build();
-        random = new Random();
         objectMapper = ObjectMapperFactory.createMapper();
+        random = new Random();
+    }
+
+    @Test
+    public void createUserFailsDueToInsufficientData() throws Exception {
+
     }
 
     @Test
     public void createAndGetUserSucceeds() throws Exception {
-        // TODO: put range for value to be positive
-        int randomId = random.nextInt();
+        int randomId = random.nextInt(1000);
 
         // TODO: add isfacebook
         User user = new User.Builder()
-                .username("user-test_1")
-                .password("password-test_1")
+                .username("user-test_" + randomId)
+                .password("password-test_" + randomId)
                 .salt("salt-test_" + randomId)
+                .isFacebook("asdfsafasdfa")
                 .build();
 
         sendCreateFlockRequest(user)

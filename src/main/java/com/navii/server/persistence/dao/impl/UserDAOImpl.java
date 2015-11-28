@@ -5,6 +5,7 @@ import com.navii.server.persistence.domain.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -102,7 +103,7 @@ public class UserDAOImpl implements UserDAO {
                     createdUser.getSalt(),
                     createdUser.isFacebook()
             );
-        } catch (Exception e) {
+        } catch (DataAccessException e) {
             logger.warn("User: create returns no rows or contains an error");
             return 0;
         }
