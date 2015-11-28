@@ -90,17 +90,23 @@ public class UserDAOImpl implements UserDAO {
 
     @Override
     public int create(User createdUser) {
-        String sqlString =
-                "INSERT INTO users (username, saltedPassword, salt, isfacebook) " +
-                        "VALUES (?, ?, ?, ?);";
+        try {
+            String sqlString =
+                    "INSERT INTO users (username, saltedPassword, salt, isfacebook) " +
+                            "VALUES (?, ?, ?, ?);";
 
-        return jdbc.update(
-                sqlString,
-                createdUser.getUsername(),
-                createdUser.getSaltedPassword(),
-                createdUser.getSalt(),
-                createdUser.isFacebook()
-        );
+            return jdbc.update(
+                    sqlString,
+                    createdUser.getUsername(),
+                    createdUser.getSaltedPassword(),
+                    createdUser.getSalt(),
+                    createdUser.isFacebook()
+            );
+        } catch (Exception e) {
+            logger.warn("User: create returns no rows or contains an error");
+            return 0;
+        }
+
     }
 
     @Override

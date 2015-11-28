@@ -22,8 +22,26 @@ repositories {
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
+sourceSets {
+    integrationTest {
+        java {
+            compileClasspath += main.output + test.output
+            runtimeClasspath += main.output + test.output
+            srcDir file('src/integration-test/java')
+        }
+        resources {
+            srcDir file('src/integration-test/resources')
+        }
+    }
+}
+
+configurations {
+    integrationTestCompile.extendsFrom testCompile
+    integrationTestRuntime.extendsFrom testRuntime
+}
+
 dependencies {
-    def springBootVersion = '1.2.6.RELEASE'
+    def springBootVersion = '1.3.0.RELEASE'
 
     compile("org.springframework.boot:spring-boot-starter-thymeleaf:$springBootVersion")
     compile("org.springframework.boot:spring-boot-starter-web:$springBootVersion")
@@ -35,9 +53,9 @@ dependencies {
     compile("com.fasterxml.jackson.module:jackson-module-afterburner:2.6.3")
     compile("org.springframework.retry:spring-retry:1.1.2.RELEASE")
 
-    testCompile("org.springframework.boot:spring-boot-starter-test")
+    testCompile("org.springframework.boot:spring-boot-starter-test:$springBootVersion")
     testCompile("org.springframework:spring-test:4.2.2.RELEASE")
-    testCompile("junit:junit")
+    testCompile("junit:junit:4.12")
 }
 
 jar {
@@ -49,3 +67,12 @@ task wrapper(type: Wrapper) {
     gradleVersion = '2.7'
 }
 
+task integrationTest(type: Test) {
+    testClassesDir = sourceSets.integrationTest.output.classesDir
+    classpath = sourceSets.integrationTest.runtimeClasspath
+    outputs.upToDateWhen { false }
+}
+
+check {
+    dependsOn integrationTest
+}
