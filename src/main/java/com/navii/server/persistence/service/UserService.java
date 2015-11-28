@@ -20,7 +20,7 @@ public interface UserService {
      * @param userId    The userId of the requested User entry.
      * @return          The found user.
      */
-    User findOne(String userId);
+    User findOne(int userId);
 
     /**
      * Creates a new User entry to the database.
@@ -31,16 +31,15 @@ public interface UserService {
 
     /**
      * Updates an existing user in the database.
-     * @param userId        The userId of the requested Goose entry.
      * @param updatedUser   The information of the updated User entry.
      * @return              The number of updated users.
      */
-    int update(String userId, User updatedUser);
+    int update(User updatedUser);
 
     /**
      * Deletes a User from the database.
      * @param userId   ID to delete from database.
      * @return              The number of deleted users.
      */
-    int delete(String userId);
+    int delete(int userId);
 }

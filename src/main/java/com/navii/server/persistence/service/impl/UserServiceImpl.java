@@ -24,8 +24,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User findOne(String userId) {
-        return userDAO.findOne(Integer.valueOf(userId));
+    public User findOne(int userId) {
+        return userDAO.findOne(userId);
     }
 
     @Override
@@ -34,13 +34,12 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public int update(String userId, User updatedUser) {
-        // TODO: check whether userId matches updatedUser.userId
+    public int update(User updatedUser) {
         return userDAO.update(updatedUser);
     }
 
     @Override
-    public int delete(String userId) {
-        return userDAO.delete(Integer.valueOf(userId));
+    public int delete(int userId) {
+        return userDAO.delete(userId);
     }
 }

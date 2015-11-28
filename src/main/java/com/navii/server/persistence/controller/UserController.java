@@ -25,13 +25,13 @@ public class UserController {
      * @return          If user is found, return the user object and HTTP status 302; otherwise, 404
      */
     @RequestMapping(value = "/{userId}", method = RequestMethod.GET)
-    public ResponseEntity<User> getUser(@PathVariable String userId) {
+    public ResponseEntity<User> getUser(@PathVariable int userId) {
         User foundUser = userService.findOne(userId);
 
         if (foundUser != null) {
             return new ResponseEntity<>(foundUser, HttpStatus.OK);
         } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -46,7 +46,7 @@ public class UserController {
         if (users != null) {
             return new ResponseEntity<>(users, HttpStatus.OK);
         } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -62,7 +62,6 @@ public class UserController {
         if (createdUser > 0) {
             return new ResponseEntity<>(HttpStatus.CREATED);
         } else {
-            // TODO: choose better HTTP status
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
@@ -71,18 +70,17 @@ public class UserController {
      * Updates an existing user
      *
      * NOTE: Currently, there is a foreign key constraint that needs to be modified/removed.
-     * @param userId    Identifier for user
      * @param user      User to persist in server
      * @return          If the user exists and is changed, return HTTP status 202; otherwise 404.
      */
     @RequestMapping(value = "/{userId}", method = RequestMethod.PUT)
-    public ResponseEntity<User> updateUser(@PathVariable String userId, @RequestBody User user) {
-        int updatedUser = userService.update(userId, user);
+    public ResponseEntity<User> updateUser(@RequestBody User user) {
+        int updatedUser = userService.update(user);
 
         if (updatedUser > 0) {
             return new ResponseEntity<>(HttpStatus.ACCEPTED);
         } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -92,13 +90,13 @@ public class UserController {
      * @return          If the user exists and is deleted, return HTTP status 202; otherwise 404.
      */
     @RequestMapping(value = "/{userId}", method = RequestMethod.DELETE)
-    public ResponseEntity<User> deleteUser(@PathVariable String userId) {
+    public ResponseEntity<User> deleteUser(@PathVariable int userId) {
         int deletedUser = userService.delete(userId);
 
         if (deletedUser > 0) {
             return new ResponseEntity<>(HttpStatus.ACCEPTED);
         } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
 }

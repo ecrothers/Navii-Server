@@ -47,7 +47,18 @@ public class UserControllerTest {
 
     @Test
     public void createUserFailsDueToInsufficientData() throws Exception {
+        User user = new User.Builder()
+                .username("userDoesNotExist")
+                .build();
 
+        sendCreateUserRequest(user)
+                .andExpect(MockMvcResultMatchers.status().isBadRequest());
+    }
+
+    @Test
+    public void getUserFailsDueToMissingUser() throws Exception {
+        getUserRequest(1234567890)
+                .andExpect(MockMvcResultMatchers.status().isBadRequest());
     }
 
     @Test
@@ -61,11 +72,15 @@ public class UserControllerTest {
                 .isFacebook(false)
                 .build();
 
-        sendCreateFlockRequest(user)
+        sendCreateUserRequest(user)
                 .andExpect(MockMvcResultMatchers.status().isCreated());
     }
 
-    private ResultActions sendCreateFlockRequest(User user) throws Exception {
+    private ResultActions getUserRequest(int userId) throws Exception {
+        return mvc.perform(MockMvcRequestBuilders.get(String.format("/user/%s", userId)));
+    }
+
+    private ResultActions sendCreateUserRequest(User user) throws Exception {
         return mvc.perform(MockMvcRequestBuilders.post("/user")
             .contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(user)));
