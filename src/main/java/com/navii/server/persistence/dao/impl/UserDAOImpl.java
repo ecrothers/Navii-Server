@@ -139,7 +139,7 @@ public class UserDAOImpl implements UserDAO {
     public int deleteAll() {
         String sqlString =
                 "DELETE FROM users " +
-                        "WHERE user_id >= 0";
+                        "WHERE user_id > 0";
 
         return jdbc.update(sqlString);
     }

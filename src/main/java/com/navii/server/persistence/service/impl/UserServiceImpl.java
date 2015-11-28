@@ -45,7 +45,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public int deleteAll() {
-        return deleteAll();
+        return userDAO.deleteAll();
     }
 
     @Override
