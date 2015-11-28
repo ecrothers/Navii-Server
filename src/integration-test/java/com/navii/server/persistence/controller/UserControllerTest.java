@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.navii.server.Application;
 import com.navii.server.persistence.domain.User;
 import com.navii.server.util.ObjectMapperFactory;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -15,6 +16,7 @@ import org.springframework.boot.test.WebIntegrationTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
@@ -31,6 +33,7 @@ import java.util.Random;
 @WebIntegrationTest(randomPort = true)
 public class UserControllerTest {
     private static final Logger logger = LoggerFactory.getLogger(UserControllerTest.class);
+
     private MockMvc mvc;
     private ObjectMapper objectMapper;
     private Random random;
@@ -62,7 +65,7 @@ public class UserControllerTest {
     }
 
     @Test
-    public void createAndGetUserSucceeds() throws Exception {
+    public void createUserSucceeds() throws Exception {
         int randomId = random.nextInt(1000);
 
         User user = new User.Builder()
@@ -72,8 +75,12 @@ public class UserControllerTest {
                 .isFacebook(false)
                 .build();
 
-        sendCreateUserRequest(user)
-                .andExpect(MockMvcResultMatchers.status().isCreated());
+        MvcResult result = sendCreateUserRequest(user)
+                .andExpect(MockMvcResultMatchers.status().isCreated())
+                .andReturn();
+
+        Integer numUpdated = objectMapper.readValue(result.getResponse().getContentAsString(), Integer.class);
+        Assert.assertEquals(1, numUpdated.intValue());
     }
 
     private ResultActions getUserRequest(int userId) throws Exception {
@@ -84,5 +91,9 @@ public class UserControllerTest {
         return mvc.perform(MockMvcRequestBuilders.post("/user")
             .contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(user)));
+    }
+
+    private ResultActions sendDeleteAllUserRequest() throws Exception {
+        return mvc.perform(MockMvcRequestBuilders.delete("/user/all"));
     }
 }

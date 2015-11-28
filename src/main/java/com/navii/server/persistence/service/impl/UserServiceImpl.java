@@ -42,4 +42,15 @@ public class UserServiceImpl implements UserService {
     public int delete(int userId) {
         return userDAO.delete(userId);
     }
+
+    @Override
+    public int deleteAll() {
+        return deleteAll();
+    }
+
+    @Override
+    public void signUp(String username, String password) {
+        // TODO: implement me
+        return;
+    }
 }
