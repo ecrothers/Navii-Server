@@ -54,18 +54,15 @@ public class UserControllerTest {
     public void createAndGetUserSucceeds() throws Exception {
         int randomId = random.nextInt(1000);
 
-        // TODO: add isfacebook
         User user = new User.Builder()
                 .username("user-test_" + randomId)
                 .password("password-test_" + randomId)
                 .salt("salt-test_" + randomId)
-                .isFacebook("asdfsafasdfa")
+                .isFacebook(false)
                 .build();
 
         sendCreateFlockRequest(user)
-                .andExpect(MockMvcResultMatchers.status().isOk());
-
-
+                .andExpect(MockMvcResultMatchers.status().isCreated());
     }
 
     private ResultActions sendCreateFlockRequest(User user) throws Exception {

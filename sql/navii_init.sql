@@ -1,12 +1,12 @@
 Use naviDB;
 
 CREATE TABLE IF NOT EXISTS users (
-	userid INT NOT NULL AUTO_INCREMENT,
+	user_id INT NOT NULL AUTO_INCREMENT,
 	username VARCHAR(16) NOT NULL,
 	password CHAR(64) NOT NULL,
 	salt CHAR(64) NOT NULL,
-  isfacebook CHAR(1) ,
-	PRIMARY KEY (userid),
+  	is_facebook TINYINT(1),
+	PRIMARY KEY (user_id),
 	UNIQUE(username)
 );
 

@@ -42,11 +42,11 @@ public class UserDAOImpl implements UserDAO {
 
             for (Map row : rows) {
                 User user = new User.Builder()
-                        .id((int) row.get("userid"))
+                        .userId((int) row.get("user_id"))
                         .username((String) row.get("username"))
-                        .password((String) row.get("saltedPassword"))
+                        .password((String) row.get("password"))
                         .salt((String) row.get("salt"))
-                        .isFacebook((String) row.get("isfacebook"))
+                        .isFacebook((boolean) row.get("is_facebook"))
                         .build();
 
                 users.add(user);
@@ -63,7 +63,7 @@ public class UserDAOImpl implements UserDAO {
     public User findOne(int id) {
         String sqlString =
                 "SELECT * FROM users " +
-                        "WHERE userid = ?;";
+                        "WHERE user_id = ?;";
 
         try {
             return jdbc.queryForObject(sqlString, new Object[]{id}, new RowMapper<User>() {
@@ -74,11 +74,11 @@ public class UserDAOImpl implements UserDAO {
                         return null;
                     } else {
                         return new User.Builder(                        )
-                            .id(rs.getInt("userid"))
+                            .userId(rs.getInt("user_id"))
                             .username(rs.getString("username"))
-                            .password(rs.getString("saltedPassword"))
+                            .password(rs.getString("password"))
                             .salt(rs.getString("salt"))
-                            .isFacebook(rs.getString("isfacebook"))
+                            .isFacebook(rs.getBoolean("is_facebook"))
                             .build();
                     }
                 }
@@ -93,13 +93,13 @@ public class UserDAOImpl implements UserDAO {
     public int create(User createdUser) {
         try {
             String sqlString =
-                    "INSERT INTO users (username, saltedPassword, salt, isfacebook) " +
+                    "INSERT INTO users (username, password, salt, is_facebook) " +
                             "VALUES (?, ?, ?, ?);";
 
             return jdbc.update(
                     sqlString,
                     createdUser.getUsername(),
-                    createdUser.getSaltedPassword(),
+                    createdUser.getPassword(),
                     createdUser.getSalt(),
                     createdUser.isFacebook()
             );
@@ -114,15 +114,15 @@ public class UserDAOImpl implements UserDAO {
     public int update(User updatedUser) {
         String sqlString =
                 "UPDATE users " +
-                        "SET username = ?, saltedPassword = ?, isfacebook = ?" +
-                        "WHERE userid = ?";
+                        "SET username = ?, password = ?, is_facebook = ?" +
+                        "WHERE user_id = ?";
 
         return jdbc.update(
                 sqlString,
                 updatedUser.getUsername(),
-                updatedUser.getSaltedPassword(),
+                updatedUser.getPassword(),
                 updatedUser.isFacebook(),
-                updatedUser.getId()
+                updatedUser.getUserId()
         );
     }
 
@@ -130,7 +130,7 @@ public class UserDAOImpl implements UserDAO {
     public int delete(int deletedUser) {
         String sqlString =
                 "DELETE FROM users " +
-                        "WHERE userid = ?";
+                        "WHERE user_id = ?";
 
         return jdbc.update(sqlString, deletedUser);
     }

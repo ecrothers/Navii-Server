@@ -1,59 +1,68 @@
 package com.navii.server.persistence.domain;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 /**
- * TODO: I'm so sorry for this fucking bullshit. I'll refactor the database soon :(
- *
  * Created by JMtorii on 2015-10-15.
  */
 public class User {
 
-    private int userid;
+    @JsonProperty(value = "user_id")
+    private int userId;
+
+    @JsonProperty(value = "username")
     private String username;
-    private String saltedPassword;
+
+    @JsonProperty(value = "password")
+    private String password;
+
+    @JsonProperty(value = "salt")
     private String salt;
-    private String isfacebook;
+
+    @JsonProperty(value = "is_facebook")
+    private boolean isFacebook;
 
     public User() {}
 
     private User(Builder builder) {
-        this.userid = builder.userid;
+        this.userId = builder.userId;
         this.username = builder.username;
-        this.saltedPassword = builder.saltedPassword;
+        this.password = builder.password;
         this.salt = builder.salt;
-        this.isfacebook = builder.isfacebook;
+        this.isFacebook = builder.isFacebook;
     }
 
-    public int getId() {
-        return userid;
+    public int getUserId() {
+        return userId;
     }
 
     public String getUsername() {
         return username;
     }
 
-    public String getSaltedPassword() {
-        return saltedPassword;
+    public String getPassword() {
+        return password;
     }
 
     public String getSalt() {
         return salt;
     }
 
-    public String isFacebook() {
-        return isfacebook;
+    public boolean isFacebook() {
+        return isFacebook;
     }
 
     public static class Builder {
-        private int userid;
+        private int userId;
         private String username;
-        private String saltedPassword;
+        private String password;
         private String salt;
-        private String isfacebook;
+        private boolean isFacebook;
 
         public Builder() {}
 
-        public Builder id(int id) {
-            this.userid = id;
+        public Builder userId(int userId) {
+            this.userId = userId;
             return this;
         }
 
@@ -63,7 +72,7 @@ public class User {
         }
 
         public Builder password(String password) {
-            this.saltedPassword = password;
+            this.password = password;
             return this;
         }
 
@@ -72,8 +81,8 @@ public class User {
             return this;
         }
 
-        public Builder isFacebook(String isFacebook) {
-            this.isfacebook = isFacebook;
+        public Builder isFacebook(boolean isFacebook) {
+            this.isFacebook = isFacebook;
             return this;
         }
 
