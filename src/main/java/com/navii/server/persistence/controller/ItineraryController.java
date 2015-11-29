@@ -28,8 +28,9 @@ public class ItineraryController {
 
     @RequestMapping(value="/tags" , method= RequestMethod.GET)
     public List<Itinerary> getItinerariesFromTags(@RequestBody List<String> tagList) {
-        List<Itinerary> itineraries = itineraryService.getItineraries(tagList);
-        return itineraries;
+        /*List<Itinerary> itineraries = itineraryService.getItineraries(tagList);
+        return itineraries;*/
+        return null;
     }
 
 }

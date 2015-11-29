@@ -1,6 +1,5 @@
-package com.navii.server.service;
-
-import com.navii.server.domain.Itinerary;
+package com.navii.server.persistence.service;
+import com.navii.server.persistence.domain.Itinerary;
 
 import java.util.List;
 

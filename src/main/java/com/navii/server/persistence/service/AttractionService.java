@@ -1,6 +1,6 @@
-package com.navii.server.service;
+package com.navii.server.persistence.service;
 
-import com.navii.server.domain.Attraction;
+import com.navii.server.persistence.domain.Attraction;
 
 import java.util.List;
 

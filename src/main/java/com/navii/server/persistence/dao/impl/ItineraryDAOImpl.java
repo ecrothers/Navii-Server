@@ -1,7 +1,7 @@
-package com.navii.server.dao.impl;
+package com.navii.server.persistence.dao.impl;
 
-import com.navii.server.dao.ItineraryDAO;
-import com.navii.server.domain.Itinerary;
+import com.navii.server.persistence.dao.ItineraryDAO;
+import com.navii.server.persistence.domain.Itinerary;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;

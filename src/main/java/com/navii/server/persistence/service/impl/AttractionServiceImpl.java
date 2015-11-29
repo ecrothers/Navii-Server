@@ -1,8 +1,8 @@
-package com.navii.server.service.impl;
+package com.navii.server.persistence.service.impl;
 
-import com.navii.server.dao.AttractionDAO;
-import com.navii.server.domain.Attraction;
-import com.navii.server.service.AttractionService;
+import com.navii.server.persistence.dao.AttractionDAO;
+import com.navii.server.persistence.domain.Attraction;
+import com.navii.server.persistence.service.AttractionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

@@ -12,16 +12,22 @@
         }
     </style>
 </head>
+<script src="https://code.jquery.com/jquery-1.10.2.js"></script>
 <body>
-<form action="#" th:action="@{/webtool/attraction}" th:object="${attraction}" method="post">
+<h1>Create New Attraction</h1>
+<form id="entry" enctype="application/json" action="#" th:action="@{/attraction}" th:object="${attraction}" method="post">
     <table style='width:100%'>
     <tr>
-        <td class='col1'>Attraction Name:</td>
+        <td class='col1'>Name:</td>
         <td class='col2'><input type='text' th:field="*{name}"/></td>
     </tr>
     <tr>
         <td class='col1'>Price:</td>
         <td class ='col2'><input type='text' th:field="*{price}"/></td>
+    </tr>
+    <tr>
+        <td class='col1'>Purchase:</td>
+        <td class ='col2'><input type='text' th:field="*{purchase}"/></td>
     </tr>
     <tr>
     <td class='col1'>Duration:</td>
@@ -40,7 +46,24 @@
         <td class ='col2'><input type='text' th:field="*{location}"/></td>
     </tr>
 </table>
-<p><input type="submit" value="Submit" /> <input type="reset" value="Reset" /></p>
+<input id="subButton" type="button" value="Submit"/><!--<input type="submit" value="Submit" />--><input type="reset" value="Reset"/>
 </form>
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    $("#subButton").click(function() {
+        var attraction = $('#entry').serialize();
+
+        $.ajax({
+            type: 'POST',
+            crossDomain: true,
+            url: 'https://localhost:8443/attraction',
+            contentType: 'application/json',
+            dataType: 'json',
+            data: JSON.stringify(attraction)
+        });
+        return true;
+    });
+    /*]]>*/
+</script>
 </body>
 </html>

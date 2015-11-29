@@ -1,6 +1,6 @@
-package com.navii.server.dao;
+package com.navii.server.persistence.dao;
 
-import com.navii.server.domain.Itinerary;
+import com.navii.server.persistence.domain.Itinerary;
 
 import java.util.List;
 

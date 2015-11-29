@@ -1,4 +1,4 @@
-package com.navii.server.domain;
+package com.navii.server.persistence.domain;
 
 import java.sql.Date;
 

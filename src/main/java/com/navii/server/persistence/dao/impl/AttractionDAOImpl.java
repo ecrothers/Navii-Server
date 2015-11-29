@@ -1,7 +1,4 @@
-package com.navii.server.dao.impl;
-
-import com.navii.server.dao.AttractionDAO;
-import com.navii.server.domain.Attraction;
+package com.navii.server.persistence.dao.impl;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -9,6 +6,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import com.navii.server.persistence.dao.AttractionDAO;
+import com.navii.server.persistence.domain.Attraction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
