@@ -10,9 +10,10 @@ import java.util.List;
 public interface AttractionService {
     /**
      * Deletes a Attraction entry from the database.
-     * @param deleted   The deleted Attraction entry.
+     * @param attractionId   The id of the Attraction to delete from the database
+     * @return  The number of deleted Attractions
      */
-    void delete(Attraction deleted);
+    int delete(String attractionId);
 
     /**
      * Finds all Attraction entries from the database.
@@ -22,22 +23,23 @@ public interface AttractionService {
 
     /**
      * Finds the information of a single Attraction entry.
-     * @param id    The id of the requested Attraction entry.
+     * @param attractionId    The id of the requested Attraction entry.
      * @return      The information of the found Attraction entry.
      */
-    Attraction findOne(int id);
+    Attraction findOne(String attractionId);
 
     /**
      * Saves a new Attraction entry to the database.
      * @param saved     The information of the saved Attraction entry.
-     * @return          The information fo the saved Attraction entry.
+     * @return          Number of created entries
      */
-    Attraction save(Attraction saved);
+    int create(Attraction saved);
 
     /**
-     * Updates the information of an existing Attraction entry.
-     * @param flock     The information of the updated Attraction entry.
-     * @return          The information of the updated Attraction entry.
+     * Updates an existing Attraction entry in the database.
+     * @param attractionId       The attractionId of the requested Attraction entry.
+     * @param updatedAttraction  The information of the updated Attraction entry.
+     * @return              The number of updated Attraction objects.
      */
-    Attraction update(Attraction flock);
+    int update(String attractionId, Attraction updatedAttraction);
 }
