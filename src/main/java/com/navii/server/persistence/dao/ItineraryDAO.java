@@ -9,10 +9,10 @@ import java.util.List;
  */
 public interface ItineraryDAO {
     /**
-     * Deletes an Itinerary entry from the database.
-     * @param deleted   The deleted Itinerary entry.
+     * Deletes a Itinerary entry from the database.
+     * @param itineraryId   The id of the itinerary entry to delete
      */
-    void delete(Itinerary deleted);
+    int delete(final int itineraryId);
 
     /**
      * Finds all Itinerary entries from the database.
@@ -22,15 +22,22 @@ public interface ItineraryDAO {
 
     /**
      * Finds the information of a single Itinerary entry.
-     * @param id    The id of the requested Itinerary entry.
+     * @param itineraryId    The id of the requested Itinerary entry.
      * @return      The information of the found Itinerary entry.
      */
-    Itinerary findOne(int id);
+    Itinerary findOne(final int itineraryId);
 
     /**
      * Saves a new Itinerary entry to the database.
-     * @param saved     The information of the saved Itinerary entry.
-     * @return          The information fo the saved Itinerary entry.
+     * @param created   The information of the created Itinerary entry.
+     * @return          The number of created Itineraries
      */
-    Itinerary save(Itinerary saved);
+    int create(final Itinerary created);
+
+    /**
+     * Update an existing Itinerary entry in the database.
+     * @param updated   The information of the saved Itinerary entry.
+     * @return          The number of updated entries
+     */
+    int update(final Itinerary updated);
 }

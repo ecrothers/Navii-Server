@@ -16,8 +16,8 @@ CREATE TABLE IF NOT EXISTS attractions (
 	location VARCHAR(256),
 	photoURI VARCHAR(256),
 	blurbURI VARCHAR(256),
-	price DECIMAL(10,2),
-    purchase CHAR(1),
+	price INT,
+  purchase CHAR(1),
 	duration INT,
 	PRIMARY KEY (attractionid)
 );
@@ -25,8 +25,7 @@ CREATE TABLE IF NOT EXISTS attractions (
 CREATE TABLE IF NOT EXISTS itineraries (
 	itineraryid INT NOT NULL AUTO_INCREMENT,
 	totalcost DECIMAL(10,2),
-	startdate DATETIME,
-	enddate	 DATETIME,
+	duration INT,
     description VARCHAR(256),
 	authorid INT,
 	PRIMARY KEY (itineraryid),

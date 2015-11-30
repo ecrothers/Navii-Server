@@ -1,7 +1,5 @@
 package com.navii.server.persistence.domain;
 
-import java.sql.Date;
-
 public class Itinerary {
     private int itineraryId;
     private String description;
@@ -39,45 +37,41 @@ public class Itinerary {
         return description;
     }
 
-    static Builder getBuilder() {
-        return new Builder();
-    }
-
-    static class Builder {
+    public static class Builder {
         private int itineraryId;
         private String description;
         private int duration;
         private int price;
         private int authorId;
 
-        private Builder() {}
+        public Builder() {}
 
-        Builder itineraryId(int itineraryId) {
+        public Builder itineraryId(int itineraryId) {
             this.itineraryId = itineraryId;
             return this;
         }
 
-        Builder duration(int duration) {
+        public Builder duration(int duration) {
             this.duration = duration;
             return this;
         }
 
-        Builder description(String description) {
+        public Builder description(String description) {
             this.description = description;
             return this;
         }
 
-        Builder authorId(int authorId) {
+        public Builder authorId(int authorId) {
             this.authorId = authorId;
             return this;
         }
 
-        Builder price(int price) {
+        public Builder price(int price) {
             this.price = price;
             return this;
         }
 
-        Itinerary build() {
+        public Itinerary build() {
             return new Itinerary(this);
         }
     }
