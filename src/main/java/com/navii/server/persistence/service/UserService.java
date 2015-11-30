@@ -1,6 +1,7 @@
 package com.navii.server.persistence.service;
 
 import com.navii.server.persistence.domain.User;
+import com.navii.server.persistence.exception.UserException;
 
 import java.util.List;
 
@@ -54,5 +55,5 @@ public interface UserService {
      * @param username      Username of the user.
      * @param password      Password of the user.
      */
-    void signUp(String username, String password);
+    void signUp(String username, String password) throws UserException;
 }

@@ -51,7 +51,7 @@ public interface UserDAO {
     /**
      * Checks if username exists
      * @param username      Username of the user.
-     * @return              The number of created users.
+     * @return              Whether a user exists
      */
-    int validateUserExists(String username);
+    boolean userExistsFromUsername(String username);
 }

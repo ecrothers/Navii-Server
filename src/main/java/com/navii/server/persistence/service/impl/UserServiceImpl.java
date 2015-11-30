@@ -2,6 +2,7 @@ package com.navii.server.persistence.service.impl;
 
 import com.navii.server.persistence.dao.UserDAO;
 import com.navii.server.persistence.domain.User;
+import com.navii.server.persistence.exception.UserException;
 import com.navii.server.persistence.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -49,8 +50,19 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void signUp(String username, String password) {
-        // TODO: implement me
-        return;
+    public void signUp(String username, String password) throws UserException {
+        if (userDAO.userExistsFromUsername(username)) {
+            throw new UserException("User already exists.");
+        }
+
+        User user = new User.Builder()
+                .username(username)
+                .password(password)
+                .salt("!@#$%^&*()_+")
+                .isFacebook(false)
+                .build();
+
+        // TODO: use exception to check
+        userDAO.create(user);
     }
 }
