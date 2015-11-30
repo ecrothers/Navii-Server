@@ -54,4 +54,12 @@ public interface UserDAO {
      * @return              Whether a user exists
      */
     boolean userExistsFromUsername(String username);
+
+    /**
+     * Checks if username and password math
+     * @param username      Username of the user.
+     * @param password      Password of the user.
+     * @return              Whether username and password match
+     */
+    boolean usernameAndPasswordMatch(String username, String password);
 }

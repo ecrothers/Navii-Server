@@ -170,4 +170,14 @@ public class UserDAOImpl implements UserDAO {
         Integer numUsers = jdbc.queryForObject(sqlString, new Object[]{username}, Integer.class);
         return numUsers != 0;
     }
+
+    @Override
+    public boolean usernameAndPasswordMatch(String username, String password) {
+        String sqlString =
+                "SELECT COUNT(*) FROM users " +
+                        "WHERE username = ? AND password = ?;";
+
+        Integer numUsers = jdbc.queryForObject(sqlString, new Object[]{username, password}, Integer.class);
+        return numUsers != 0;
+    }
 }

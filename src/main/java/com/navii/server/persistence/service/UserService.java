@@ -57,4 +57,11 @@ public interface UserService {
      * @return                  The user id of the created user.
      */
     int signUp(String username, String password) throws UserException;
+
+    /**
+     * Attempts to login a user
+     * @param username      Username of the user.
+     * @param password      Password of the user.
+     */
+    void login(String username, String password) throws UserException;
 }

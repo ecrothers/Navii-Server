@@ -65,4 +65,11 @@ public class UserServiceImpl implements UserService {
         // TODO: use exception to check
         return userDAO.create(user);
     }
+
+    @Override
+    public void login(String username, String password) throws UserException {
+        if (!userDAO.usernameAndPasswordMatch(username, password)) {
+            throw new UserException("Username and password don't match");
+        }
+    }
 }

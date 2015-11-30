@@ -143,6 +143,28 @@ public class UserController {
         }
 
         return new ResponseEntity<>(createdUserId, HttpStatus.OK);
+    }
 
+    /**
+     * This is a crappy implementation of the login endpoints. This will most likely be modified or removed
+     * in later implementations.
+     *
+     * @param username Username to add to the user
+     * @param password Password attached to the user
+     * @return If the username already exists, return a 401. Otherwise, return a 200 to indicate success.
+     */
+    @RequestMapping(value = "/login", method = RequestMethod.GET)
+    public ResponseEntity<?> login(@RequestParam(required = true) String username, @RequestParam(required = true) String password) {
+        if (username.isEmpty() || password.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+
+        try {
+            userService.login(username, password);
+        } catch (UserException e) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }
