@@ -31,7 +31,6 @@ public class AttractionServiceImpl implements AttractionService {
         return attractionDAO.findOne(Integer.valueOf(attractionId));
     }
 
-
     @Override
     public int create(Attraction saved) {
         return attractionDAO.create(saved);

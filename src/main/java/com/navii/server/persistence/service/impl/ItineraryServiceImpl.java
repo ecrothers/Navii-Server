@@ -11,33 +11,34 @@ import java.util.List;
 /**
  * Created by ecrothers on 2015-10-08.
  */
+
 @Service
 public class ItineraryServiceImpl implements ItineraryService {
     @Autowired
-    ItineraryDAO itineraryDAO;
+    private ItineraryDAO itineraryDAO;
+
+    @Override
+    public int delete(String itineraryId) {
+        return itineraryDAO.delete(Integer.valueOf(itineraryId));
+    }
 
     @Override
     public List<Itinerary> findAll() {
-        return null;
+        return itineraryDAO.findAll();
     }
 
     @Override
-    public Itinerary findOne(int id) {
-        return null;
+    public Itinerary findOne(String itineraryId) {
+        return itineraryDAO.findOne(Integer.valueOf(itineraryId));
     }
 
     @Override
-    public Itinerary save(Itinerary savedItinerary) {
-        return itineraryDAO.save(savedItinerary);
+    public int create(Itinerary saved) {
+        return itineraryDAO.create(saved);
     }
 
     @Override
-    public void delete(Itinerary deletedItinerary) {
-
-    }
-
-    @Override
-    public Itinerary update(Itinerary flock) {
-        return null;
+    public int update(String itineraryId, Itinerary updatedItinerary) {
+        return itineraryDAO.update(updatedItinerary);
     }
 }

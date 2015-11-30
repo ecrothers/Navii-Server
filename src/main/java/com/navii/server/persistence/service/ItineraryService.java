@@ -1,4 +1,5 @@
 package com.navii.server.persistence.service;
+
 import com.navii.server.persistence.domain.Itinerary;
 
 import java.util.List;
@@ -9,9 +10,10 @@ import java.util.List;
 public interface ItineraryService {
     /**
      * Deletes a Itinerary entry from the database.
-     * @param deleted   The deleted Itinerary entry.
+     * @param itineraryId   The id of the Itinerary to delete from the database
+     * @return  The number of deleted Itineraries
      */
-    void delete(Itinerary deleted);
+    int delete(String itineraryId);
 
     /**
      * Finds all Itinerary entries from the database.
@@ -21,22 +23,24 @@ public interface ItineraryService {
 
     /**
      * Finds the information of a single Itinerary entry.
-     * @param id    The id of the requested Itinerary entry.
+     * @param itineraryId    The id of the requested Itinerary entry.
      * @return      The information of the found Itinerary entry.
      */
-    Itinerary findOne(int id);
+    Itinerary findOne(String itineraryId);
 
     /**
      * Saves a new Itinerary entry to the database.
      * @param saved     The information of the saved Itinerary entry.
-     * @return          The information fo the saved Itinerary entry.
+     * @return          Number of created entries
      */
-    Itinerary save(Itinerary saved);
+    int create(Itinerary saved);
 
     /**
-     * Updates the information of an existing Itinerary entry.
-     * @param flock     The information of the updated Itinerary entry.
-     * @return          The information of the updated Itinerary entry.
+     * Updates an existing Itinerary entry in the database.
+     * @param itineraryId       The itineraryId of the requested Itinerary entry.
+     * @param updatedItinerary  The information of the updated Itinerary entry.
+     * @return              The number of updated Itinerary objects.
      */
-    Itinerary update(Itinerary flock);
+    int update(String itineraryId, Itinerary updatedItinerary);
 }
+
