@@ -83,6 +83,40 @@ public class UserControllerTest {
         Assert.assertEquals(1, numUpdated.intValue());
     }
 
+    @Test
+    public void signUpFailsDueToBlankUsername() throws Exception {
+        String username = "";
+        String password = "anyPassword";
+
+        sendSignUpRequest(username, password)
+                .andExpect(MockMvcResultMatchers.status().isBadRequest());
+    }
+
+    @Test
+    public void signUpFailsDueToMissingUsername() throws Exception {
+        String password = "anyPassword";
+
+        mvc.perform(MockMvcRequestBuilders.post("/user/signUp")
+                .param("password", password));
+    }
+
+    @Test
+    public void signUpFailsDueToBlankPassword() throws Exception {
+        String username = "anyUsername";
+        String password = "";
+
+        sendSignUpRequest(username, password)
+                .andExpect(MockMvcResultMatchers.status().isBadRequest());
+    }
+
+    @Test
+    public void signUpFailsDueToMissingPassword() throws Exception {
+        String username = "anyUsername";
+
+        mvc.perform(MockMvcRequestBuilders.post("/user/signUp")
+                .param("username", username));
+    }
+
     private ResultActions getUserRequest(int userId) throws Exception {
         return mvc.perform(MockMvcRequestBuilders.get(String.format("/user/%s", userId)));
     }
@@ -93,7 +127,15 @@ public class UserControllerTest {
             .content(objectMapper.writeValueAsString(user)));
     }
 
+    // TODO: implement delete all test
     private ResultActions sendDeleteAllUserRequest() throws Exception {
         return mvc.perform(MockMvcRequestBuilders.delete("/user/all"));
+    }
+
+    private ResultActions sendSignUpRequest(String username, String password) throws Exception {
+        return mvc
+                .perform(MockMvcRequestBuilders.post("/user/signUp", username, password)
+                .param("username", username)
+                .param("password", password));
     }
 }

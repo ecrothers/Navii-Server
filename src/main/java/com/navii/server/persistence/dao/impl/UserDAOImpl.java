@@ -145,35 +145,12 @@ public class UserDAOImpl implements UserDAO {
     }
 
     @Override
-    public int validateUserExists(String username) {
-        // TODO: implement me
-//        String sqlString =
-//                "SELECT * FROM users " +
-//                        "WHERE username = ?;";
-//
-//        try {
-//            return jdbc.queryForObject(sqlString, new Object[]{username}, new RowMapper<User>() {
-//                @Override
-//                public User mapRow(ResultSet rs, int rowNum) throws SQLException {
-//
-//                    if (rs.getRow() < 1) {
-//                        return null;
-//                    } else {
-//                        return new User.Builder(                        )
-//                                .userId(rs.getInt("user_id"))
-//                                .username(rs.getString("username"))
-//                                .password(rs.getString("password"))
-//                                .salt(rs.getString("salt"))
-//                                .isFacebook(rs.getBoolean("is_facebook"))
-//                                .build();
-//                    }
-//                }
-//            });
-//        } catch (EmptyResultDataAccessException e) {
-//            logger.warn("User: findOne returns no rows");
-//            return 0;
-//        }
+    public boolean userExistsFromUsername(String username) {
+        String sqlString =
+                "SELECT COUNT(*) FROM users " +
+                        "WHERE username = ?;";
 
-        return 0;
+        Integer numUsers = jdbc.queryForObject(sqlString, new Object[]{username}, Integer.class);
+        return numUsers != 0;
     }
 }

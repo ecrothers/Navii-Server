@@ -1,6 +1,7 @@
 package com.navii.server.persistence.controller;
 
 import com.navii.server.persistence.domain.User;
+import com.navii.server.persistence.exception.UserException;
 import com.navii.server.persistence.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -58,6 +59,8 @@ public class UserController {
      * @param user  User to persist in server
      * @return      If user is successfully created, return HTTP status 201; otherwise, 400
      */
+
+    // TODO: change to use exception
     @RequestMapping(value = "", method = RequestMethod.POST)
     public ResponseEntity<?> createUser(@RequestBody User user) {
         int createdUser = userService.create(user);
@@ -74,14 +77,16 @@ public class UserController {
      *
      * NOTE: Currently, there is a foreign key constraint that needs to be modified/removed.
      * @param user      User to persist in server
-     * @return          If the user exists and is changed, return HTTP status 202; otherwise 400.
+     * @return          If the user exists and is changed, return HTTP status 200; otherwise 400.
      */
+
+    // TODO: change to use exception
     @RequestMapping(value = "/{userId}", method = RequestMethod.PUT)
     public ResponseEntity<?> updateUser(@RequestBody User user) {
         int updatedUser = userService.update(user);
 
         if (updatedUser > 0) {
-            return new ResponseEntity<>(HttpStatus.ACCEPTED);
+            return new ResponseEntity<>(HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
@@ -90,14 +95,16 @@ public class UserController {
     /**
      * Deletes an existing user
      * @param userId    Identifier for the user
-     * @return          If the user exists and is deleted, return HTTP status 202; otherwise 400.
+     * @return          If the user exists and is deleted, return HTTP status 200; otherwise 400.
      */
+
+    // TODO: change to use exceptions
     @RequestMapping(value = "/{userId}", method = RequestMethod.DELETE)
     public ResponseEntity<?> deleteUser(@PathVariable int userId) {
         int deletedUser = userService.delete(userId);
 
         if (deletedUser > 0) {
-            return new ResponseEntity<>(HttpStatus.ACCEPTED);
+            return new ResponseEntity<>(HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
@@ -105,11 +112,11 @@ public class UserController {
 
     /**
      * Deletes all users
-     * @return          The number of deleted rows with a HTTP status 202; otherwise 400.
+     * @return          The number of deleted rows with a HTTP status 200; otherwise 400.
      */
     @RequestMapping(value = "/all", method = RequestMethod.DELETE)
     public ResponseEntity<?> deleteAll() {
-        return new ResponseEntity<>(userService.deleteAll(), HttpStatus.ACCEPTED);
+        return new ResponseEntity<>(userService.deleteAll(), HttpStatus.OK);
     }
 
     /**
@@ -118,18 +125,21 @@ public class UserController {
      *
      * @param username Username to add to the user
      * @param password Password attached to the user
-     * @return If the username already exists, return a 400. Otherwise, return a 200 to indicate that a user has been
+     * @return If the username already exists, return a 409. Otherwise, return a 200 to indicate that a user has been
      * created.
      */
-    @RequestMapping(value = "/username/{username}/password/{password}/signUp", method = RequestMethod.POST)
-    public ResponseEntity<?> signUp(@PathVariable String username, @PathVariable String password) {
-        // TODO: validate username and password
-        // TODO: implement me
-//        try {
-//            signUp(username, password);
-//        } catch (UserException e) {
-//
-//        }
+    @RequestMapping(value = "/signUp", method = RequestMethod.POST)
+    public ResponseEntity<?> signUp(@RequestParam(required = true) String username, @RequestParam(required = true) String password) {
+        if (username.isEmpty() || password.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+
+        try {
+            userService.signUp(username, password);
+        } catch (UserException e) {
+            return new ResponseEntity<>(HttpStatus.CONFLICT);
+        }
+
         return new ResponseEntity<>(HttpStatus.OK);
 
     }
