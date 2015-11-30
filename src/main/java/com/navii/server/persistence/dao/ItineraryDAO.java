@@ -33,6 +33,4 @@ public interface ItineraryDAO {
      * @return          The information fo the saved Itinerary entry.
      */
     Itinerary save(Itinerary saved);
-
-    List<Itinerary> getItineraries(List<String> tagList);
 }

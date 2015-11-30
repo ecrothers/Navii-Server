@@ -9,33 +9,20 @@ public class Attraction {
     private String location;
     private String photoUri;
     private String blurbUri;
-    private int price; // TODO: Should change the schema to use cents as INT.  double-arithmetic = bad
+    private int price;
     private int duration;
     private String purchase;
 
-    //private String description;
-
-    // TODO: Need to rework schema.  lat/lon is better than a location string
-    /*private float latitude;
-    private float longitude;*/
-
-    //private int authorId;
-
     public Attraction() {}
 
-    // TODO: Autogenerate attractionId on the DB side
     private Attraction(Builder builder) {
-        /*this.attractionId = builder.attractionId;
+        this.attractionId = builder.attractionId;
         this.name = builder.name;
         this.location = builder.location;
         this.photoUri = builder.photoUri;
         this.blurbUri = builder.blurbUri;
         this.price = builder.price;
-        this.duration = builder.duration;*/
-    }
-
-    static Builder getBuilder() {
-        return new Builder();
+        this.duration = builder.duration;
     }
 
     public int getAttractionId() {
@@ -70,7 +57,7 @@ public class Attraction {
         return purchase;
     }
 
-    static class Builder {
+    public static class Builder {
         private int attractionId;
         private String name;
         private String location;
@@ -80,85 +67,50 @@ public class Attraction {
         private int duration;
         private String purchase;
 
-        private Builder() {}
+        public Builder() {}
 
-        Builder attractionId(int attractionId) {
+        public Builder attractionId(int attractionId) {
             this.attractionId = attractionId;
             return this;
         }
 
-        Builder name(String name) {
+        public Builder name(String name) {
             this.name = name;
             return this;
         }
 
-        Builder location(String location) {
+        public Builder location(String location) {
             this.location = location;
             return this;
         }
 
-        Builder photoUri(String photoUri) {
+        public Builder photoUri(String photoUri) {
             this.photoUri = photoUri;
             return this;
         }
 
-        Builder blurbUri(String blurbUri) {
+        public Builder blurbUri(String blurbUri) {
             this.blurbUri = blurbUri;
             return this;
         }
 
-        Builder price(int price) {
+        public Builder price(int price) {
             this.price = price;
             return this;
         }
 
-        Builder purchase(String purchase) {
+        public Builder purchase(String purchase) {
             this.purchase = purchase;
             return this;
         }
 
-        Builder duration(int duration) {
+        public Builder duration(int duration) {
             this.duration = duration;
             return this;
         }
 
-        /*Builder authorId(int authorId) {
-            this.authorId = authorId;
-            return this;
-        }*/
-        /*Builder description(String description) {
-            this.description = description;
-            return this;
-        }
-
-        Builder latitude(float latitude) {
-            this.latitude = latitude;
-            return this;
-        }
-
-        Builder longitude(float longitude) {
-            this.longitude = longitude;
-            return this;
-        }*/
-
-        // TODO: potentially check for non-null values
-        Attraction build() {
+        public Attraction build() {
             return new Attraction(this);
         }
     }
-    /*public String getDescription() {
-        return description;
-    }
-
-    public float getLatitude() {
-        return latitude;
-    }
-
-    public float getLongitude() {
-        return longitude;
-    }
-
-    public int getAuthorId() {
-        return authorId;
-    }*/
 }

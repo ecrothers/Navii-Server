@@ -1,5 +1,4 @@
 package com.navii.server.persistence.service;
-
 import com.navii.server.persistence.domain.Itinerary;
 
 import java.util.List;
@@ -40,6 +39,4 @@ public interface ItineraryService {
      * @return          The information of the updated Itinerary entry.
      */
     Itinerary update(Itinerary flock);
-
-    List<Itinerary> getItineraries(List<String> tagList);
 }

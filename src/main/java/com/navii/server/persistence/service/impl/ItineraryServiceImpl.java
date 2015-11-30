@@ -12,7 +12,6 @@ import java.util.List;
  * Created by ecrothers on 2015-10-08.
  */
 @Service
-@SuppressWarnings("unused")
 public class ItineraryServiceImpl implements ItineraryService {
     @Autowired
     ItineraryDAO itineraryDAO;
@@ -40,10 +39,5 @@ public class ItineraryServiceImpl implements ItineraryService {
     @Override
     public Itinerary update(Itinerary flock) {
         return null;
-    }
-
-    @Override
-    public List<Itinerary> getItineraries(List<String> tagList) {
-        return itineraryDAO.getItineraries(tagList);
     }
 }

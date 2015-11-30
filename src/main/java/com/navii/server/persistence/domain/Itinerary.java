@@ -3,23 +3,20 @@ package com.navii.server.persistence.domain;
 import java.sql.Date;
 
 public class Itinerary {
-    // TODO: Should probably have a "name" too
     private int itineraryId;
     private String description;
-    private Date startDate;
-    private Date endDate;
+    private int duration;
     private int price;
     private int authorId;
 
     public Itinerary() {}
 
     private Itinerary(Builder builder) {
-        /*this.itineraryId = builder.itineraryId;
+        this.itineraryId = builder.itineraryId;
         this.price = builder.price;
-        this.startDate = builder.startDate;
-        this.endDate = builder.endDate;
+        this.duration = builder.duration;
         this.description = builder.description;
-        this.authorId = builder.authorId;*/
+        this.authorId = builder.authorId;
     }
 
     public int getItineraryId() {
@@ -30,12 +27,8 @@ public class Itinerary {
         return price;
     }
 
-    public Date getStartDate() {
-        return startDate;
-    }
-
-    public Date getEndDate() {
-        return endDate;
+    public int getDuration() {
+        return duration;
     }
 
     public int getAuthorId() {
@@ -53,8 +46,7 @@ public class Itinerary {
     static class Builder {
         private int itineraryId;
         private String description;
-        private Date startDate;
-        private Date endDate;
+        private int duration;
         private int price;
         private int authorId;
 
@@ -65,13 +57,8 @@ public class Itinerary {
             return this;
         }
 
-        Builder startDate(Date startDate) {
-            this.startDate = startDate;
-            return this;
-        }
-
-        Builder endDate(Date endDate) {
-            this.endDate = endDate;
+        Builder duration(int duration) {
+            this.duration = duration;
             return this;
         }
 
@@ -90,8 +77,6 @@ public class Itinerary {
             return this;
         }
 
-
-        // TODO: potentially check for non-null values
         Itinerary build() {
             return new Itinerary(this);
         }

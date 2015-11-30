@@ -1,5 +1,6 @@
 package com.navii.server.persistence.dao;
 
+
 import com.navii.server.persistence.domain.Attraction;
 
 import java.util.List;
@@ -9,10 +10,10 @@ import java.util.List;
  */
 public interface AttractionDAO {
     /**
-     * Deletes an Attraction entry from the database.
-     * @param deleted   The deleted Attraction entry.
+     * Deletes a Attraction entry from the database.
+     * @param attractionId   The id of the attraction entry to delete
      */
-    void delete(Attraction deleted);
+    int delete(final int attractionId);
 
     /**
      * Finds all Attraction entries from the database.
@@ -22,15 +23,22 @@ public interface AttractionDAO {
 
     /**
      * Finds the information of a single Attraction entry.
-     * @param id    The id of the requested Attraction entry.
+     * @param attractionId    The id of the requested Attraction entry.
      * @return      The information of the found Attraction entry.
      */
-    Attraction findOne(int id);
+    Attraction findOne(final int attractionId);
 
     /**
      * Saves a new Attraction entry to the database.
-     * @param saved     The information of the saved Attraction entry.
-     * @return          The information fo the saved Attraction entry.
+     * @param created   The information of the created Attraction entry.
+     * @return          The number of created Attractions
      */
-    Attraction save(Attraction saved);
+    int create(final Attraction created);
+
+    /**
+     * Update an existing Attraction entry in the database.
+     * @param updated   The information of the saved Attraction entry.
+     * @return          The number of updated entries
+     */
+    int update(final Attraction updated);
 }

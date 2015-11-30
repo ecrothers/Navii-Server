@@ -15,7 +15,7 @@
 <script src="https://code.jquery.com/jquery-1.10.2.js"></script>
 <body>
 <h1>Create New Attraction</h1>
-<form id="entry" enctype="application/json" action="#" th:action="@{/attraction}" th:object="${attraction}" method="post">
+<form enctype="application/json" action="#" th:action="@{/attraction}" th:object="${attraction}" method="post">
     <table style='width:100%'>
     <tr>
         <td class='col1'>Name:</td>
@@ -51,15 +51,24 @@
 <script th:inline="javascript">
     /*<![CDATA[*/
     $("#subButton").click(function() {
-        var attraction = $('#entry').serialize();
+        var payload = {};
+        var attraction = /*[[${attraction.name}]]*/ 'attraction';
+        console.log(attraction);
 
+        payload.name = attraction.name;
+        payload.location = attraction.location;
+        payload.photoUri = attraction.photoUri;
+        payload.blurbUri = attraction.blurbUri;
+        payload.price = attraction.price;
+        payload.purchase = attraction.purchase;
+        payload.duration = attraction.duration;
         $.ajax({
             type: 'POST',
             crossDomain: true,
             url: 'https://localhost:8443/attraction',
             contentType: 'application/json',
             dataType: 'json',
-            data: JSON.stringify(attraction)
+            data: JSON.stringify(payload)
         });
         return true;
     });

@@ -14,30 +14,31 @@ import java.util.List;
 @Service
 public class AttractionServiceImpl implements AttractionService {
     @Autowired
-    AttractionDAO attractionDAO;
+    private AttractionDAO attractionDAO;
+
+    @Override
+    public int delete(String attractionId) {
+        return attractionDAO.delete(Integer.valueOf(attractionId));
+    }
 
     @Override
     public List<Attraction> findAll() {
-        return null;
+        return attractionDAO.findAll();
     }
 
     @Override
-    public Attraction findOne(int id) {
-        return null;
+    public Attraction findOne(String attractionId) {
+        return attractionDAO.findOne(Integer.valueOf(attractionId));
+    }
+
+
+    @Override
+    public int create(Attraction saved) {
+        return attractionDAO.create(saved);
     }
 
     @Override
-    public Attraction save(Attraction savedAttraction) {
-        return attractionDAO.save(savedAttraction);
-    }
-
-    @Override
-    public void delete(Attraction deletedAttraction) {
-
-    }
-
-    @Override
-    public Attraction update(Attraction flock) {
-        return null;
+    public int update(String attractionId, Attraction updatedAttraction) {
+        return attractionDAO.update(updatedAttraction);
     }
 }
