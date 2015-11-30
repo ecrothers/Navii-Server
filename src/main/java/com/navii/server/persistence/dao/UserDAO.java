@@ -24,7 +24,7 @@ public interface UserDAO {
     /**
      * Creates a new user entry to the database.
      * @param createdUser       The information of the new user entry.
-     * @return                  The number of created users.
+     * @return                  The user id of the created user.
      */
     int create(User createdUser);
 

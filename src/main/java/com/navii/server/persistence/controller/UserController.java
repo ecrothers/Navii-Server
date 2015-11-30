@@ -63,12 +63,12 @@ public class UserController {
     // TODO: change to use exception
     @RequestMapping(value = "", method = RequestMethod.POST)
     public ResponseEntity<?> createUser(@RequestBody User user) {
-        int createdUser = userService.create(user);
+        int createdUserId = userService.create(user);
 
-        if (createdUser > 0) {
-            return new ResponseEntity<>(createdUser, HttpStatus.CREATED);
+        if (createdUserId > 0) {
+            return new ResponseEntity<>(createdUserId, HttpStatus.CREATED);
         } else {
-            return new ResponseEntity<>(createdUser, HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(createdUserId, HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -134,13 +134,15 @@ public class UserController {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
+        int createdUserId;
+
         try {
-            userService.signUp(username, password);
+            createdUserId = userService.signUp(username, password);
         } catch (UserException e) {
             return new ResponseEntity<>(HttpStatus.CONFLICT);
         }
 
-        return new ResponseEntity<>(HttpStatus.OK);
+        return new ResponseEntity<>(createdUserId, HttpStatus.OK);
 
     }
 }
