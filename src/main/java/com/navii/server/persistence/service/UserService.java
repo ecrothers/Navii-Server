@@ -54,7 +54,7 @@ public interface UserService {
      * Attempts to sign up a user
      * @param username      Username of the user.
      * @param password      Password of the user.
-     * @return                  The user id of the created user.
+     * @return              The user id of the created user.
      */
     int signUp(String username, String password) throws UserException;
 
@@ -62,6 +62,7 @@ public interface UserService {
      * Attempts to login a user
      * @param username      Username of the user.
      * @param password      Password of the user.
+     * @return              The user id of the user.
      */
-    void login(String username, String password) throws UserException;
+    int login(String username, String password) throws UserException;
 }

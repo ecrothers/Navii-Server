@@ -67,9 +67,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void login(String username, String password) throws UserException {
+    public int login(String username, String password) throws UserException {
         if (!userDAO.usernameAndPasswordMatch(username, password)) {
             throw new UserException("Username and password don't match");
         }
+
+        return userDAO.getUserIdFromUsernameAndPassword(username, password);
     }
 }

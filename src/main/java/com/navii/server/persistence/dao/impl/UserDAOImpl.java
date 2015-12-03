@@ -180,4 +180,13 @@ public class UserDAOImpl implements UserDAO {
         Integer numUsers = jdbc.queryForObject(sqlString, new Object[]{username, password}, Integer.class);
         return numUsers != 0;
     }
+
+    @Override
+    public int getUserIdFromUsernameAndPassword(String username, String password) {
+        String sqlString =
+                "SELECT user_id FROM users " +
+                        "WHERE username = ? AND password = ?;";
+
+        return jdbc.queryForObject(sqlString, new Object[]{username, password}, Integer.class);
+    }
 }

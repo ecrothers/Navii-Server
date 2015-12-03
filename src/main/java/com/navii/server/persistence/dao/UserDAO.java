@@ -62,4 +62,12 @@ public interface UserDAO {
      * @return              Whether username and password match
      */
     boolean usernameAndPasswordMatch(String username, String password);
+
+    /**
+     * Fetches the user id of the user given the username and password
+     * @param username      Username of the user.
+     * @param password      Password of the user.
+     * @return              User id
+     */
+    int getUserIdFromUsernameAndPassword(String username, String password);
 }

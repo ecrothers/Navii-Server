@@ -81,6 +81,7 @@ public class UserController {
      */
 
     // TODO: change to use exception
+    // TODO: this won't make. Path variables and RequestBody don't match
     @RequestMapping(value = "/{userId}", method = RequestMethod.PUT)
     public ResponseEntity<?> updateUser(@RequestBody User user) {
         int updatedUser = userService.update(user);
@@ -159,12 +160,14 @@ public class UserController {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
+        int loggedInUserId;
+
         try {
-            userService.login(username, password);
+            loggedInUserId = userService.login(username, password);
         } catch (UserException e) {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
 
-        return new ResponseEntity<>(HttpStatus.OK);
+        return new ResponseEntity<>(loggedInUserId, HttpStatus.OK);
     }
 }

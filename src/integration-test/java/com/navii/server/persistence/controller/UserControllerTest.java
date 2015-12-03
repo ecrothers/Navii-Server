@@ -202,8 +202,13 @@ public class UserControllerTest {
         sendCreateUserRequest(user)
                 .andExpect(MockMvcResultMatchers.status().isCreated());
 
-        sendLoginRequest(user.getUsername(), user.getPassword())
-                .andExpect(MockMvcResultMatchers.status().isOk());
+        MvcResult result = sendLoginRequest(user.getUsername(), user.getPassword())
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andReturn();
+
+        Integer userId = objectMapper.readValue(result.getResponse().getContentAsString(), Integer.class);
+
+        Assert.assertThat(userId, Matchers.greaterThan(0));
     }
 
     private User createGenericTestUser() {
