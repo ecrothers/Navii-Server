@@ -148,6 +148,7 @@ public class UserControllerTest {
         User user = objectMapper.readValue(result.getResponse().getContentAsString(), User.class);
         Assert.assertEquals(username, user.getUsername());
         Assert.assertEquals(password, user.getPassword());
+        Assert.assertEquals(false, user.isFacebook());
     }
 
     @Test
