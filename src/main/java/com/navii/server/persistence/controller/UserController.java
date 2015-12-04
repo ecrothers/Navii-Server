@@ -26,7 +26,7 @@ public class UserController {
     /**
      * Gets a user by id
      * @param userId    Identifier for user
-     * @return          If user is found, return the user object and HTTP status 302; otherwise, 400
+     * @return          If user is found, return the user object and HTTP status 200; otherwise, 400
      */
     @RequestMapping(value = "/{userId}", method = RequestMethod.GET)
     public ResponseEntity<User> getUser(@PathVariable int userId) {
@@ -41,7 +41,9 @@ public class UserController {
 
     /**
      * Gets all users
-     * @return      If users exist, return list of users and HTTP status 302; otherwise, 400
+     * @return      If users exist, return list of users and HTTP status 200; otherwise, 400
+     *
+     * TODO: this doesn't make sense. Why would we return a 400 when there is no parameter
      */
     @RequestMapping(value = "", method = RequestMethod.GET)
     public ResponseEntity<List<User>> getAllUsers() {
@@ -63,12 +65,12 @@ public class UserController {
     // TODO: change to use exception
     @RequestMapping(value = "", method = RequestMethod.POST)
     public ResponseEntity<?> createUser(@RequestBody User user) {
-        int createdUser = userService.create(user);
+        int createdUserId = userService.create(user);
 
-        if (createdUser > 0) {
-            return new ResponseEntity<>(createdUser, HttpStatus.CREATED);
+        if (createdUserId > 0) {
+            return new ResponseEntity<>(createdUserId, HttpStatus.CREATED);
         } else {
-            return new ResponseEntity<>(createdUser, HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(createdUserId, HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -81,6 +83,7 @@ public class UserController {
      */
 
     // TODO: change to use exception
+    // TODO: this won't make. Path variables and RequestBody don't match
     @RequestMapping(value = "/{userId}", method = RequestMethod.PUT)
     public ResponseEntity<?> updateUser(@RequestBody User user) {
         int updatedUser = userService.update(user);
@@ -134,13 +137,39 @@ public class UserController {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
+        int createdUserId;
+
         try {
-            userService.signUp(username, password);
+            createdUserId = userService.signUp(username, password);
         } catch (UserException e) {
             return new ResponseEntity<>(HttpStatus.CONFLICT);
         }
 
-        return new ResponseEntity<>(HttpStatus.OK);
+        return new ResponseEntity<>(createdUserId, HttpStatus.OK);
+    }
 
+    /**
+     * This is a crappy implementation of the login endpoints. This will most likely be modified or removed
+     * in later implementations.
+     *
+     * @param username Username to add to the user
+     * @param password Password attached to the user
+     * @return If the username already exists, return a 401. Otherwise, return a 200 to indicate success.
+     */
+    @RequestMapping(value = "/login", method = RequestMethod.GET)
+    public ResponseEntity<?> login(@RequestParam(required = true) String username, @RequestParam(required = true) String password) {
+        if (username.isEmpty() || password.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+
+        int loggedInUserId;
+
+        try {
+            loggedInUserId = userService.login(username, password);
+        } catch (UserException e) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+
+        return new ResponseEntity<>(loggedInUserId, HttpStatus.OK);
     }
 }

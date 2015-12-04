@@ -2,9 +2,10 @@ package com.navii.server.persistence.controller;
 
 import com.navii.server.persistence.service.TagService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -20,11 +21,12 @@ public class TagController {
     @Autowired
     private TagService tagService;
 
-
+    /**
+     * Gets 20 random tags from the data
+     * @return      If tags exist, return list of tags and HTTP status 200
+     */
     @RequestMapping(value = "", method = RequestMethod.GET)
-    public @ResponseBody List<String> getTags() {
-        List<String> users = tagService.findTags();
-        return users;
+    public ResponseEntity<List<String>> getTags() {
+        return new ResponseEntity<>(tagService.findTags(), HttpStatus.OK);
     }
-
 }

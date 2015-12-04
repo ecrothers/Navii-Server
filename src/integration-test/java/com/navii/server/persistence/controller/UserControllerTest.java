@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.navii.server.Application;
 import com.navii.server.persistence.domain.User;
 import com.navii.server.util.ObjectMapperFactory;
+import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -79,8 +80,8 @@ public class UserControllerTest {
                 .andExpect(MockMvcResultMatchers.status().isCreated())
                 .andReturn();
 
-        Integer numUpdated = objectMapper.readValue(result.getResponse().getContentAsString(), Integer.class);
-        Assert.assertEquals(1, numUpdated.intValue());
+        Integer createdUserId = objectMapper.readValue(result.getResponse().getContentAsString(), Integer.class);
+        Assert.assertThat(createdUserId, Matchers.greaterThan(0));
     }
 
     @Test
@@ -117,6 +118,113 @@ public class UserControllerTest {
                 .param("username", username));
     }
 
+    @Test
+    public void signUpFailsSinceUserAlreadyExists() throws Exception {
+        User user = createGenericTestUser();
+
+        sendCreateUserRequest(user)
+                .andExpect(MockMvcResultMatchers.status().isCreated());
+
+        sendSignUpRequest(user.getUsername(), user.getPassword())
+                .andExpect(MockMvcResultMatchers.status().isConflict());
+    }
+
+    @Test
+    public void signUpSucceeds() throws Exception {
+        int randomId = random.nextInt(1000);
+        String username = "user-test" + randomId;
+        String password = "password-test" + randomId;
+
+        MvcResult result = sendSignUpRequest(username, password)
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andReturn();
+
+        Integer createdUserId = objectMapper.readValue(result.getResponse().getContentAsString(), Integer.class);
+
+        result = getUserRequest(createdUserId)
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andReturn();
+
+        User user = objectMapper.readValue(result.getResponse().getContentAsString(), User.class);
+        Assert.assertEquals(username, user.getUsername());
+        Assert.assertEquals(password, user.getPassword());
+        Assert.assertEquals(false, user.isFacebook());
+    }
+
+    @Test
+    public void loginFailsDueToBlankUsername() throws Exception {
+        String username = "";
+        String password = "anyPassword";
+
+        sendLoginRequest(username, password)
+                .andExpect(MockMvcResultMatchers.status().isBadRequest());
+    }
+
+    @Test
+    public void loginFailsDueToMissingUsername() throws Exception {
+        String password = "anyPassword";
+
+        mvc.perform(MockMvcRequestBuilders.post("/user/login")
+                .param("password", password));
+    }
+
+    @Test
+    public void loginFailsDueToBlankPassword() throws Exception {
+        String username = "anyUsername";
+        String password = "";
+
+        sendLoginRequest(username, password)
+                .andExpect(MockMvcResultMatchers.status().isBadRequest());
+    }
+
+    @Test
+    public void loginFailsDueToMissingPassword() throws Exception {
+        String username = "anyUsername";
+
+        mvc.perform(MockMvcRequestBuilders.post("/user/login")
+                .param("username", username));
+    }
+
+    @Test
+    public void loginFailsSinceUsernameAndPasswordDoNotMatch() throws Exception {
+        User user = createGenericTestUser();
+
+        sendCreateUserRequest(user)
+                .andExpect(MockMvcResultMatchers.status().isCreated());
+
+        sendLoginRequest(user.getUsername(), "someWrongPassword")
+                .andExpect(MockMvcResultMatchers.status().isUnauthorized());
+    }
+
+    @Test
+    public void loginSucceeds() throws Exception {
+        User user = createGenericTestUser();
+
+        sendCreateUserRequest(user)
+                .andExpect(MockMvcResultMatchers.status().isCreated());
+
+        MvcResult result = sendLoginRequest(user.getUsername(), user.getPassword())
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andReturn();
+
+        Integer userId = objectMapper.readValue(result.getResponse().getContentAsString(), Integer.class);
+
+        Assert.assertThat(userId, Matchers.greaterThan(0));
+    }
+
+    private User createGenericTestUser() {
+        int randomId = random.nextInt(1000);
+        String username = "user-test_" + randomId;
+        String password = "password-test_" + randomId;
+
+        return new User.Builder()
+                .username(username)
+                .password(password)
+                .salt("salt-test_" + randomId)
+                .isFacebook(false)
+                .build();
+    }
+
     private ResultActions getUserRequest(int userId) throws Exception {
         return mvc.perform(MockMvcRequestBuilders.get(String.format("/user/%s", userId)));
     }
@@ -137,5 +245,12 @@ public class UserControllerTest {
                 .perform(MockMvcRequestBuilders.post("/user/signUp", username, password)
                 .param("username", username)
                 .param("password", password));
+    }
+
+    private ResultActions sendLoginRequest(String username, String password) throws Exception {
+        return mvc
+                .perform(MockMvcRequestBuilders.get("/user/login", username, password)
+                        .param("username", username)
+                        .param("password", password));
     }
 }

@@ -4,14 +4,10 @@ import com.navii.server.persistence.dao.UserPreferenceDAO;
 import com.navii.server.persistence.domain.Preference;
 import com.navii.server.persistence.domain.UserPreference;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataAccessException;
-import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.PreparedStatementCallback;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -59,7 +55,7 @@ public class UserPreferenceDAOImpl implements UserPreferenceDAO {
                 new RowMapper<ArrayList<Preference>>() {
                     @Override
                     public ArrayList<Preference> mapRow(ResultSet rs, int rowNum) throws SQLException {
-                        ArrayList<Preference> preferences = new ArrayList<Preference>();
+                        ArrayList<Preference> preferences = new ArrayList<>();
                         while(rs.next()) {
                             Preference preference = new Preference();
                             preference.setPreference(rs.getString("preference"));

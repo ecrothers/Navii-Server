@@ -8,9 +8,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -90,19 +95,31 @@ public class UserDAOImpl implements UserDAO {
     }
 
     @Override
-    public int create(User createdUser) {
+    public int create(final User createdUser) {
         try {
-            String sqlString =
+            KeyHolder keyHolder = new GeneratedKeyHolder();
+
+            final String sqlString =
                     "INSERT INTO users (username, password, salt, is_facebook) " +
                             "VALUES (?, ?, ?, ?);";
 
-            return jdbc.update(
-                    sqlString,
-                    createdUser.getUsername(),
-                    createdUser.getPassword(),
-                    createdUser.getSalt(),
-                    createdUser.isFacebook()
+            jdbc.update(
+                    new PreparedStatementCreator() {
+                        @Override
+                        public PreparedStatement createPreparedStatement(Connection con) throws SQLException {
+                            PreparedStatement pst = con.prepareStatement(sqlString, new String[] {"user_id"});
+                            pst.setString(1, createdUser.getUsername());
+                            pst.setString(2, createdUser.getPassword());
+                            pst.setString(3, createdUser.getSalt());
+                            pst.setBoolean(4, createdUser.isFacebook());
+                            return pst;
+                        }
+                    },
+                    keyHolder
             );
+
+            return keyHolder.getKey().intValue();
+
         } catch (DataAccessException e) {
             logger.warn("User: create returns no rows or contains an error");
             return 0;
@@ -152,5 +169,24 @@ public class UserDAOImpl implements UserDAO {
 
         Integer numUsers = jdbc.queryForObject(sqlString, new Object[]{username}, Integer.class);
         return numUsers != 0;
+    }
+
+    @Override
+    public boolean usernameAndPasswordMatch(String username, String password) {
+        String sqlString =
+                "SELECT COUNT(*) FROM users " +
+                        "WHERE username = ? AND password = ?;";
+
+        Integer numUsers = jdbc.queryForObject(sqlString, new Object[]{username, password}, Integer.class);
+        return numUsers != 0;
+    }
+
+    @Override
+    public int getUserIdFromUsernameAndPassword(String username, String password) {
+        String sqlString =
+                "SELECT user_id FROM users " +
+                        "WHERE username = ? AND password = ?;";
+
+        return jdbc.queryForObject(sqlString, new Object[]{username, password}, Integer.class);
     }
 }

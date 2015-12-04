@@ -50,7 +50,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void signUp(String username, String password) throws UserException {
+    public int signUp(String username, String password) throws UserException {
         if (userDAO.userExistsFromUsername(username)) {
             throw new UserException("User already exists.");
         }
@@ -63,6 +63,15 @@ public class UserServiceImpl implements UserService {
                 .build();
 
         // TODO: use exception to check
-        userDAO.create(user);
+        return userDAO.create(user);
+    }
+
+    @Override
+    public int login(String username, String password) throws UserException {
+        if (!userDAO.usernameAndPasswordMatch(username, password)) {
+            throw new UserException("Username and password don't match");
+        }
+
+        return userDAO.getUserIdFromUsernameAndPassword(username, password);
     }
 }

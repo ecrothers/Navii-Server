@@ -24,7 +24,7 @@ public interface UserDAO {
     /**
      * Creates a new user entry to the database.
      * @param createdUser       The information of the new user entry.
-     * @return                  The number of created users.
+     * @return                  The user id of the created user.
      */
     int create(User createdUser);
 
@@ -54,4 +54,20 @@ public interface UserDAO {
      * @return              Whether a user exists
      */
     boolean userExistsFromUsername(String username);
+
+    /**
+     * Checks if username and password math
+     * @param username      Username of the user.
+     * @param password      Password of the user.
+     * @return              Whether username and password match
+     */
+    boolean usernameAndPasswordMatch(String username, String password);
+
+    /**
+     * Fetches the user id of the user given the username and password
+     * @param username      Username of the user.
+     * @param password      Password of the user.
+     * @return              User id
+     */
+    int getUserIdFromUsernameAndPassword(String username, String password);
 }

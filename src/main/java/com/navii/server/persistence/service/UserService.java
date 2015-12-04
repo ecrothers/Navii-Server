@@ -26,7 +26,7 @@ public interface UserService {
     /**
      * Creates a new user entry to the database.
      * @param createdUser       The information of the new user entry.
-     * @return                  The number of created users.
+     * @return                  The user id of the created user.
      */
     int create(User createdUser);
 
@@ -54,6 +54,15 @@ public interface UserService {
      * Attempts to sign up a user
      * @param username      Username of the user.
      * @param password      Password of the user.
+     * @return              The user id of the created user.
      */
-    void signUp(String username, String password) throws UserException;
+    int signUp(String username, String password) throws UserException;
+
+    /**
+     * Attempts to login a user
+     * @param username      Username of the user.
+     * @param password      Password of the user.
+     * @return              The user id of the user.
+     */
+    int login(String username, String password) throws UserException;
 }
