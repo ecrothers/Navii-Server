@@ -49,7 +49,7 @@
 <input id="subButton" type="button" value="Submit"/><!--<input type="submit" value="Submit" />--><input type="reset" value="Reset"/>
 </form>
 <script th:inline="javascript">
-    $("#subButton").click(function() {
+    $("#entry").click(function() {
         $.ajax({
             type: 'POST',
             crossDomain: true,
@@ -57,12 +57,13 @@
             contentType: 'application/json',
             dataType: 'json',
             data: JSON.stringify($('#entry').serializeObject())
-            success: function(data) {
+            /*success: function(data) {
+                alert('test');
                 if (data != "") {
                     var link = "result.html";
                     window.open(link, 'Result');
                 }
-            }
+            }*/
         });
         return true;
     });
