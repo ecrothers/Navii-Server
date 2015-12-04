@@ -4,7 +4,6 @@ import com.navii.server.persistence.dao.UserPreferenceDAO;
 import com.navii.server.persistence.domain.Preference;
 import com.navii.server.persistence.domain.UserPreference;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
@@ -24,7 +23,7 @@ public class UserPreferenceDAOImpl implements UserPreferenceDAO {
     protected JdbcTemplate jdbc;
 
     @Override
-    public boolean create(UserPreference saved) {
+    public boolean create(final UserPreference saved) {
         String insertString =
                 "INSERT INTO userspreferences (username, preference) VALUES (?, ?)";
         List<Object[]> input = new ArrayList<>();
@@ -32,27 +31,31 @@ public class UserPreferenceDAOImpl implements UserPreferenceDAO {
         for (String pref : saved.getPreferences()) {
             input.add(new Object[]{saved.getUsername(), pref});
         }
-
         try {
-            jdbc.batchUpdate(insertString, input);
-        } catch (DataAccessException e) {
+            int[] results = jdbc.batchUpdate(insertString, input);
+
+        }
+        catch (Exception e) {
             e.printStackTrace();
             return false;
         }
 
         return true;
+
+
+
     }
 
     @Override
     public List<Preference> obtain(final String username) {
         String selectString =
                 "SELECT preference FROM userspreferences WHERE username = ?";
-        List<Preference> retrieved = jdbc.queryForObject(selectString,
+        ArrayList<Preference> retrieved = jdbc.queryForObject(selectString,
                 new String[]{username},
                 new RowMapper<ArrayList<Preference>>() {
                     @Override
                     public ArrayList<Preference> mapRow(ResultSet rs, int rowNum) throws SQLException {
-                        ArrayList<Preference> preferences = new ArrayList<Preference>();
+                        ArrayList<Preference> preferences = new ArrayList<>();
                         while(rs.next()) {
                             Preference preference = new Preference();
                             preference.setPreference(rs.getString("preference"));
@@ -69,6 +72,7 @@ public class UserPreferenceDAOImpl implements UserPreferenceDAO {
         String sqlString =
                 "DELETE FROM userspreferences " +
                         "WHERE username = ?";
+        System.out.println(username);
         return jdbc.update(sqlString, username);
 
     }
