@@ -10,6 +10,13 @@ public class UserPreference {
     private List<String> preferences;
     private String username;
 
+    public UserPreference() {}
+
+    private UserPreference(Builder builder) {
+        this.username = builder.username;
+        this.preferences = builder.preferences;
+    }
+
     public List<String> getPreferences() {
         return preferences;
     }
@@ -26,13 +33,6 @@ public class UserPreference {
         this.username = username;
     }
 
-    public UserPreference() {}
-
-    private UserPreference(Builder builder) {
-        this.username = builder.username;
-        this.preferences = builder.preferences;
-    }
-
     public static Builder getBuilder() {
         return new Builder();
     }
@@ -41,7 +41,6 @@ public class UserPreference {
 
         private List<String> preferences;
         private String username;
-
 
         public Builder() {}
 
@@ -55,7 +54,6 @@ public class UserPreference {
             return this;
         }
 
-        // TODO: potentially check for non-null values
         public UserPreference build() {
             return new UserPreference(this);
         }

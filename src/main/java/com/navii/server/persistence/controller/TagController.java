@@ -23,8 +23,7 @@ public class TagController {
 
     @RequestMapping(value = "", method = RequestMethod.GET)
     public @ResponseBody List<String> getTags() {
-        List<String> users = tagService.findTags();
-        return users;
+        return tagService.findTags();
     }
 
 }

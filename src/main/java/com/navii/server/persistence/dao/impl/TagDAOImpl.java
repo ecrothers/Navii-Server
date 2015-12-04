@@ -20,7 +20,6 @@ public class TagDAOImpl implements TagDAO {
     @Autowired
     protected JdbcTemplate jdbc;
 
-
     @Override
     public List<String> findTags() {
         String sqlString =

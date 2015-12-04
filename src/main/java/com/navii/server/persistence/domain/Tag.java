@@ -8,6 +8,12 @@ public class Tag {
     private String tag;
     private int counter;
 
+    public Tag() {}
+
+    private Tag(Builder builder) {
+
+    }
+
     public String getTag() {
         return tag;
     }
@@ -22,12 +28,6 @@ public class Tag {
 
     public void setCounter(int counter) {
         this.counter = counter;
-    }
-
-    public Tag() {}
-
-    private Tag(Builder builder) {
-
     }
 
     public static Builder getBuilder() {
@@ -51,7 +51,6 @@ public class Tag {
             return this;
         }
 
-        // TODO: potentially check for non-null values
         public Tag build() {
             return new Tag(this);
         }
