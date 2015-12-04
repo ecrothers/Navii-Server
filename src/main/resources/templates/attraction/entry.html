@@ -49,21 +49,40 @@
 <input id="subButton" type="button" value="Submit"/><!--<input type="submit" value="Submit" />--><input type="reset" value="Reset"/>
 </form>
 <script th:inline="javascript">
-    /*<![CDATA[*/
     $("#subButton").click(function() {
-        var attraction = $('#entry').serialize();
-
         $.ajax({
             type: 'POST',
             crossDomain: true,
             url: 'https://localhost:8443/attraction',
             contentType: 'application/json',
             dataType: 'json',
-            data: JSON.stringify(attraction)
+            data: JSON.stringify($('#entry').serializeObject())
+            success: function(data) {
+                if (data != "") {
+                    var link = "result.html";
+                    window.open(link, 'Result');
+                }
+            }
         });
         return true;
     });
-    /*]]>*/
+
+    $.fn.serializeObject = function()
+    {
+        var o = {};
+        var a = this.serializeArray();
+        $.each(a, function() {
+            if (o[this.name] !== undefined) {
+                if (!o[this.name].push) {
+                    o[this.name] = [o[this.name]];
+                }
+                o[this.name].push(this.value || '');
+            } else {
+                o[this.name] = this.value || '';
+            }
+        });
+        return o;
+    };
 </script>
 </body>
 </html>

@@ -145,7 +145,7 @@ public class AttractionDAOImpl implements AttractionDAO {
                 SQL_BLURB_URI + ", " +
                 SQL_PRICE + ", " +
                 SQL_PURCHASE + ", " +
-                SQL_DURATION + ", " +
+                SQL_DURATION +
                 ") VALUES (?, ?, ?, ?, ?, ?, ?)";
 
         return jdbc.update(query,
@@ -155,7 +155,6 @@ public class AttractionDAOImpl implements AttractionDAO {
                 created.getBlurbUri(),
                 created.getPrice(),
                 created.getPurchase(),
-                created.getDuration(),
-                created.getAttractionId());
+                created.getDuration());
     }
 }
