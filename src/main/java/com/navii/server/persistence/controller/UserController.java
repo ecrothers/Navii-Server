@@ -26,7 +26,7 @@ public class UserController {
     /**
      * Gets a user by id
      * @param userId    Identifier for user
-     * @return          If user is found, return the user object and HTTP status 302; otherwise, 400
+     * @return          If user is found, return the user object and HTTP status 200; otherwise, 400
      */
     @RequestMapping(value = "/{userId}", method = RequestMethod.GET)
     public ResponseEntity<User> getUser(@PathVariable int userId) {
@@ -41,7 +41,9 @@ public class UserController {
 
     /**
      * Gets all users
-     * @return      If users exist, return list of users and HTTP status 302; otherwise, 400
+     * @return      If users exist, return list of users and HTTP status 200; otherwise, 400
+     *
+     * TODO: this doesn't make sense. Why would we return a 400 when there is no parameter
      */
     @RequestMapping(value = "", method = RequestMethod.GET)
     public ResponseEntity<List<User>> getAllUsers() {

@@ -11,31 +11,19 @@ public class Tag {
     public Tag() {}
 
     private Tag(Builder builder) {
-
+        this.tag = builder.tag;
+        this.counter = builder.counter;
     }
 
     public String getTag() {
         return tag;
     }
 
-    public void setTag(String tag) {
-        this.tag = tag;
-    }
-
     public int getCounter() {
         return counter;
     }
 
-    public void setCounter(int counter) {
-        this.counter = counter;
-    }
-
-    public static Builder getBuilder() {
-        return new Builder();
-    }
-
     public static class Builder {
-
         private String tag;
         private int counter;
 
