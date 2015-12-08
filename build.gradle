@@ -76,3 +76,16 @@ task integrationTest(type: Test) {
 check {
     dependsOn integrationTest
 }
+
+build {
+    dependsOn check
+}
+
+[test, integrationTest].each { task ->
+    task.testLogging {
+        events "passed", "skipped", "failed", "standardError"
+        showCauses = true
+        showExceptions = true
+        showStandardStreams = true
+    }
+}
