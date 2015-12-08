@@ -1,5 +1,6 @@
 package com.navii.server.persistence.controller;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.navii.server.Application;
 import com.navii.server.persistence.domain.User;
@@ -15,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.boot.test.WebIntegrationTest;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -24,6 +26,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
+import java.util.List;
 import java.util.Random;
 
 /**
@@ -32,6 +35,7 @@ import java.util.Random;
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = Application.class)
 @WebIntegrationTest(randomPort = true)
+@TestPropertySource(properties = "spring.datasource.url=jdbc:mysql://naviappdbinstance.cmd4kpxqni0s.us-east-1.rds.amazonaws.com:3306/naviDB_test")
 public class UserControllerTest {
     private static final Logger logger = LoggerFactory.getLogger(UserControllerTest.class);
 
@@ -61,12 +65,16 @@ public class UserControllerTest {
 
     @Test
     public void getUserFailsDueToMissingUser() throws Exception {
-        getUserRequest(1234567890)
+        sendGetUserRequest(1234567890)
                 .andExpect(MockMvcResultMatchers.status().isBadRequest());
     }
 
     @Test
     public void createUserSucceeds() throws Exception {
+        // just a precaution
+        sendDeleteAllUserRequest()
+                .andExpect(MockMvcResultMatchers.status().isOk());
+
         int randomId = random.nextInt(1000);
 
         User user = new User.Builder()
@@ -82,6 +90,19 @@ public class UserControllerTest {
 
         Integer createdUserId = objectMapper.readValue(result.getResponse().getContentAsString(), Integer.class);
         Assert.assertThat(createdUserId, Matchers.greaterThan(0));
+    }
+
+    @Test
+    public void deleteAllUsersSucceeds() throws Exception {
+        sendDeleteAllUserRequest()
+                .andExpect(MockMvcResultMatchers.status().isOk());
+
+        MvcResult result = sendGetAllUsersRequest()
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andReturn();
+
+        List<User> users = objectMapper.readValue(result.getResponse().getContentAsString(), new TypeReference<List<User>>(){});
+        Assert.assertEquals(0, users.size());
     }
 
     @Test
@@ -131,6 +152,10 @@ public class UserControllerTest {
 
     @Test
     public void signUpSucceeds() throws Exception {
+        // just a precaution
+        sendDeleteAllUserRequest()
+                .andExpect(MockMvcResultMatchers.status().isOk());
+
         int randomId = random.nextInt(1000);
         String username = "user-test" + randomId;
         String password = "password-test" + randomId;
@@ -141,7 +166,7 @@ public class UserControllerTest {
 
         Integer createdUserId = objectMapper.readValue(result.getResponse().getContentAsString(), Integer.class);
 
-        result = getUserRequest(createdUserId)
+        result = sendGetUserRequest(createdUserId)
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andReturn();
 
@@ -198,6 +223,10 @@ public class UserControllerTest {
 
     @Test
     public void loginSucceeds() throws Exception {
+        // just a precaution
+        sendDeleteAllUserRequest()
+                .andExpect(MockMvcResultMatchers.status().isOk());
+
         User user = createGenericTestUser();
 
         sendCreateUserRequest(user)
@@ -225,8 +254,12 @@ public class UserControllerTest {
                 .build();
     }
 
-    private ResultActions getUserRequest(int userId) throws Exception {
+    private ResultActions sendGetUserRequest(int userId) throws Exception {
         return mvc.perform(MockMvcRequestBuilders.get(String.format("/user/%s", userId)));
+    }
+
+    private ResultActions sendGetAllUsersRequest() throws Exception {
+        return mvc.perform(MockMvcRequestBuilders.get("/user"));
     }
 
     private ResultActions sendCreateUserRequest(User user) throws Exception {
@@ -235,7 +268,6 @@ public class UserControllerTest {
             .content(objectMapper.writeValueAsString(user)));
     }
 
-    // TODO: implement delete all test
     private ResultActions sendDeleteAllUserRequest() throws Exception {
         return mvc.perform(MockMvcRequestBuilders.delete("/user/all"));
     }

@@ -41,19 +41,11 @@ public class UserController {
 
     /**
      * Gets all users
-     * @return      If users exist, return list of users and HTTP status 200; otherwise, 400
-     *
-     * TODO: this doesn't make sense. Why would we return a 400 when there is no parameter
+     * @return      A 200 with a list of users
      */
     @RequestMapping(value = "", method = RequestMethod.GET)
     public ResponseEntity<List<User>> getAllUsers() {
-        List<User> users = userService.findAll();
-
-        if (users != null) {
-            return new ResponseEntity<>(users, HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
+        return new ResponseEntity<>(userService.findAll(), HttpStatus.OK);
     }
 
     /**

@@ -15,6 +15,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.boot.test.WebIntegrationTest;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -32,6 +33,7 @@ import java.util.List;
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = Application.class)
 @WebIntegrationTest(randomPort = true)
+@TestPropertySource(properties = "spring.datasource.url=jdbc:mysql://naviappdbinstance.cmd4kpxqni0s.us-east-1.rds.amazonaws.com:3306/naviDB_test")
 public class TagControllerTest {
     private static final Logger logger = LoggerFactory.getLogger(TagControllerTest.class);
 
@@ -66,8 +68,10 @@ public class TagControllerTest {
         // TODO: implement me once deleteAll is implemented
     }
 
+    @Ignore
     @Test
     public void getTagsAlwaysReturnsRandomList() throws Exception {
+        // TODO: delete then add tags before doing all this
         MvcResult result = sendGetTagsRequest()
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andReturn();

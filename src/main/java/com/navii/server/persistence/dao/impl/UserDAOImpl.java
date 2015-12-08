@@ -31,6 +31,11 @@ import java.util.Map;
 public class UserDAOImpl implements UserDAO {
 
     private static final Logger logger = LoggerFactory.getLogger(UserDAOImpl.class);
+    private static final String USER_ID_FIELD = "user_id";
+    private static final String USERNAME_FIELD = "username";
+    private static final String PASSWORD_FIELD = "password";
+    private static final String SALT_FIELD = "salt";
+    private static final String IS_FACEBOOK_FIELD = "is_facebook";
 
     @Autowired
     protected JdbcTemplate jdbc;
@@ -41,27 +46,21 @@ public class UserDAOImpl implements UserDAO {
                 "SELECT * FROM users;";
 
         List<User> users = new ArrayList<>();
+        List<Map<String, Object>> rows = jdbc.queryForList(sqlString);
 
-        try {
-            List<Map<String, Object>> rows = jdbc.queryForList(sqlString);
+        for (Map row : rows) {
+            User user = new User.Builder()
+                    .userId((int) row.get(USER_ID_FIELD))
+                    .username((String) row.get(USERNAME_FIELD))
+                    .password((String) row.get(PASSWORD_FIELD))
+                    .salt((String) row.get(SALT_FIELD))
+                    .isFacebook((boolean) row.get(IS_FACEBOOK_FIELD))
+                    .build();
 
-            for (Map row : rows) {
-                User user = new User.Builder()
-                        .userId((int) row.get("user_id"))
-                        .username((String) row.get("username"))
-                        .password((String) row.get("password"))
-                        .salt((String) row.get("salt"))
-                        .isFacebook((boolean) row.get("is_facebook"))
-                        .build();
-
-                users.add(user);
-            }
-
-            return users;
-        } catch (EmptyResultDataAccessException e) {
-            logger.warn("User: findAll returns no rows");
-            return null;
+            users.add(user);
         }
+
+        return users;
     }
 
     @Override
@@ -79,11 +78,11 @@ public class UserDAOImpl implements UserDAO {
                         return null;
                     } else {
                         return new User.Builder(                        )
-                            .userId(rs.getInt("user_id"))
-                            .username(rs.getString("username"))
-                            .password(rs.getString("password"))
-                            .salt(rs.getString("salt"))
-                            .isFacebook(rs.getBoolean("is_facebook"))
+                            .userId(rs.getInt(USER_ID_FIELD))
+                            .username(rs.getString(USERNAME_FIELD))
+                            .password(rs.getString(PASSWORD_FIELD))
+                            .salt(rs.getString(SALT_FIELD))
+                            .isFacebook(rs.getBoolean(IS_FACEBOOK_FIELD))
                             .build();
                     }
                 }
