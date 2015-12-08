@@ -11,8 +11,8 @@
             width: 75%;
         }
     </style>
+    <script src="https://code.jquery.com/jquery-1.10.2.js"></script>
 </head>
-<script src="https://code.jquery.com/jquery-1.10.2.js"></script>
 <body>
 <h1>Create New Attraction</h1>
 <form id="entry" enctype="application/json" action="#" th:action="@{/attraction}" th:object="${attraction}" method="post">
@@ -48,6 +48,7 @@
 </table>
 <input id="subButton" type="button" value="Submit"/><!--<input type="submit" value="Submit" />--><input type="reset" value="Reset"/>
 </form>
+<div class="result"></div>
 <script th:inline="javascript">
     $("#entry").click(function() {
         $.ajax({
@@ -56,14 +57,13 @@
             url: 'https://localhost:8443/attraction',
             contentType: 'application/json',
             dataType: 'json',
-            data: JSON.stringify($('#entry').serializeObject())
-            /*success: function(data) {
-                alert('test');
-                if (data != "") {
-                    var link = "result.html";
-                    window.open(link, 'Result');
-                }
-            }*/
+            data: JSON.stringify($('#entry').serializeObject()),
+            success: function(data) {
+                $('.result').html('<p>Added attraction successfully.</p>');
+            },
+            error: function(data) {
+                $('.result').html('<p>Error adding attraction.</p>');
+            }
         });
         return true;
     });

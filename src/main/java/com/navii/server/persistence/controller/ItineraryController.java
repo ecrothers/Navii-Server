@@ -1,10 +1,12 @@
 package com.navii.server.persistence.controller;
 
+import com.amazonaws.http.HttpResponse;
 import com.navii.server.persistence.domain.Itinerary;
 import com.navii.server.persistence.service.ItineraryService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -29,7 +31,7 @@ public class ItineraryController {
         Itinerary foundItinerary = itineraryService.findOne(itineraryId);
 
         if (foundItinerary != null) {
-            return new ResponseEntity<>(foundItinerary, HttpStatus.FOUND);
+            return new ResponseEntity<>(foundItinerary, HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
@@ -44,7 +46,7 @@ public class ItineraryController {
         List<Itinerary> geese = itineraryService.findAll();
 
         if (geese != null) {
-            return new ResponseEntity<>(geese, HttpStatus.FOUND);
+            return new ResponseEntity<>(geese, HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }

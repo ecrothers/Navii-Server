@@ -29,7 +29,7 @@ public class AttractionController {
         Attraction foundAttraction = attractionService.findOne(attractionId);
 
         if (foundAttraction != null) {
-            return new ResponseEntity<>(foundAttraction, HttpStatus.FOUND);
+            return new ResponseEntity<>(foundAttraction, HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
@@ -41,10 +41,10 @@ public class AttractionController {
      */
     @RequestMapping(value = "", method = RequestMethod.GET)
     public ResponseEntity<List<Attraction>> getAllAttractions() {
-        List<Attraction> geese = attractionService.findAll();
+        List<Attraction> attractions = attractionService.findAll();
 
-        if (geese != null) {
-            return new ResponseEntity<>(geese, HttpStatus.FOUND);
+        if (attractions != null) {
+            return new ResponseEntity<>(attractions, HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
@@ -60,7 +60,7 @@ public class AttractionController {
         int numCreatedAttraction = attractionService.create(attraction);
 
         if (numCreatedAttraction > 0) {
-            return new ResponseEntity<>(HttpStatus.CREATED);
+            return new ResponseEntity<>(attraction, HttpStatus.CREATED);
         } else {
             // TODO: choose better HTTP status
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
@@ -78,7 +78,7 @@ public class AttractionController {
         int numUpdatedAttraction = attractionService.update(attractionId, attraction);
 
         if (numUpdatedAttraction > 0) {
-            return new ResponseEntity<>(HttpStatus.ACCEPTED);
+            return new ResponseEntity<>(attraction, HttpStatus.ACCEPTED);
         } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
@@ -90,7 +90,7 @@ public class AttractionController {
      * @return          If the Attraction exists and is deleted, return HTTP status 202; otherwise 404.
      */
     @RequestMapping(value = "/{attractionId}", method = RequestMethod.DELETE)
-    public ResponseEntity<Attraction> deleteAttraction(@PathVariable String attractionId) {
+    public ResponseEntity<String> deleteAttraction(@PathVariable String attractionId) {
         int numDeletedAttraction = attractionService.delete(attractionId);
 
         if (numDeletedAttraction > 0) {
