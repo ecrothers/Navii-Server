@@ -29,7 +29,7 @@ public class ItineraryController {
         Itinerary foundItinerary = itineraryService.findOne(itineraryId);
 
         if (foundItinerary != null) {
-            return new ResponseEntity<>(foundItinerary, HttpStatus.FOUND);
+            return new ResponseEntity<>(foundItinerary, HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
@@ -41,10 +41,10 @@ public class ItineraryController {
      */
     @RequestMapping(value = "", method = RequestMethod.GET)
     public ResponseEntity<List<Itinerary>> getAllItinerarys() {
-        List<Itinerary> geese = itineraryService.findAll();
+        List<Itinerary> itin = itineraryService.findAll();
 
-        if (geese != null) {
-            return new ResponseEntity<>(geese, HttpStatus.FOUND);
+        if (itin != null) {
+            return new ResponseEntity<>(itin, HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
@@ -60,7 +60,7 @@ public class ItineraryController {
         int numCreatedItinerary = itineraryService.create(itinerary);
 
         if (numCreatedItinerary > 0) {
-            return new ResponseEntity<>(HttpStatus.CREATED);
+            return new ResponseEntity<>(itinerary, HttpStatus.CREATED);
         } else {
             // TODO: choose better HTTP status
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
@@ -78,7 +78,7 @@ public class ItineraryController {
         int numUpdatedItinerary = itineraryService.update(itineraryId, itinerary);
 
         if (numUpdatedItinerary > 0) {
-            return new ResponseEntity<>(HttpStatus.ACCEPTED);
+            return new ResponseEntity<>(itinerary, HttpStatus.ACCEPTED);
         } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
@@ -90,7 +90,7 @@ public class ItineraryController {
      * @return          If the Itinerary exists and is deleted, return HTTP status 202; otherwise 404.
      */
     @RequestMapping(value = "/{itineraryId}", method = RequestMethod.DELETE)
-    public ResponseEntity<Itinerary> deleteItinerary(@PathVariable String itineraryId) {
+    public ResponseEntity<String> deleteItinerary(@PathVariable String itineraryId) {
         int numDeletedItinerary = itineraryService.delete(itineraryId);
 
         if (numDeletedItinerary > 0) {
