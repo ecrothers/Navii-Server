@@ -19,11 +19,11 @@ public class WebtoolController {
         return "attraction/entry";
     }
 
-    @RequestMapping(value="/attraction", method=RequestMethod.POST)
+    /*@RequestMapping(value="/attraction", method=RequestMethod.POST)
     public String attractionSubmit(@ModelAttribute Attraction attraction, Model model) {
         model.addAttribute("attraction", attraction);
         return "attraction/result";
-    }
+    }*/
 
     @RequestMapping(value="/itinerary", method=RequestMethod.GET)
     public String itineraryForm(Model model) {
@@ -31,9 +31,9 @@ public class WebtoolController {
         return "itinerary/entry";
     }
 
-    @RequestMapping(value="/itinerary", method=RequestMethod.POST)
+    /*@RequestMapping(value="/itinerary", method=RequestMethod.POST)
     public String itinerarySubmit(@ModelAttribute Itinerary itinerary, Model model) {
         model.addAttribute("itinerary", itinerary);
         return "itinerary/result";
-    }
+    }*/
 }

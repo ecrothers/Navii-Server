@@ -1,12 +1,10 @@
 package com.navii.server.persistence.controller;
 
-import com.amazonaws.http.HttpResponse;
 import com.navii.server.persistence.domain.Itinerary;
 import com.navii.server.persistence.service.ItineraryService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -43,10 +41,10 @@ public class ItineraryController {
      */
     @RequestMapping(value = "", method = RequestMethod.GET)
     public ResponseEntity<List<Itinerary>> getAllItinerarys() {
-        List<Itinerary> geese = itineraryService.findAll();
+        List<Itinerary> itin = itineraryService.findAll();
 
-        if (geese != null) {
-            return new ResponseEntity<>(geese, HttpStatus.OK);
+        if (itin != null) {
+            return new ResponseEntity<>(itin, HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
@@ -62,7 +60,7 @@ public class ItineraryController {
         int numCreatedItinerary = itineraryService.create(itinerary);
 
         if (numCreatedItinerary > 0) {
-            return new ResponseEntity<>(HttpStatus.CREATED);
+            return new ResponseEntity<>(itinerary, HttpStatus.CREATED);
         } else {
             // TODO: choose better HTTP status
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
@@ -80,7 +78,7 @@ public class ItineraryController {
         int numUpdatedItinerary = itineraryService.update(itineraryId, itinerary);
 
         if (numUpdatedItinerary > 0) {
-            return new ResponseEntity<>(HttpStatus.ACCEPTED);
+            return new ResponseEntity<>(itinerary, HttpStatus.ACCEPTED);
         } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
@@ -92,7 +90,7 @@ public class ItineraryController {
      * @return          If the Itinerary exists and is deleted, return HTTP status 202; otherwise 404.
      */
     @RequestMapping(value = "/{itineraryId}", method = RequestMethod.DELETE)
-    public ResponseEntity<Itinerary> deleteItinerary(@PathVariable String itineraryId) {
+    public ResponseEntity<String> deleteItinerary(@PathVariable String itineraryId) {
         int numDeletedItinerary = itineraryService.delete(itineraryId);
 
         if (numDeletedItinerary > 0) {

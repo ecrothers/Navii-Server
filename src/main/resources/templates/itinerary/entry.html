@@ -15,26 +15,63 @@
 </head>
 <body>
 <h1>Create New Itinerary</h1>
-<form action="#" th:action="@{/itinerary}" th:object="${itinerary}" method="post">
+<form id="entry" action="#" th:action="@{/itinerary}" th:object="${itinerary}" method="post">
     <table style='width:100%'>
-    <tr>
-        <td class='col1'>Description:</td>
-        <td class='col2'><input type='text' th:field="*{description}"/></td>
-    </tr>
-    <tr>
-        <td class='col1'>Price:</td>
-        <td class ='col2'><input type='text' th:field="*{price}"/></td>
-    </tr>
-    <tr>
-    <td class='col1'>Duration:</td>
-    <td class ='col2'><input type='text' th:field="*{duration}"/></td>
-    </tr>
-    <tr>
-        <td class='col1'>Author ID:</td>
-        <td class ='col2'><input type='text' th:field="*{authorId}"/></td>
-    </tr>
-</table>
-<p><input type="submit" value="Submit" /> <input type="reset" value="Reset" /></p>
+        <tr>
+            <td class='col1'>Description:</td>
+            <td class='col2'><input type='text' th:field="*{description}"/></td>
+        </tr>
+        <tr>
+            <td class='col1'>Price:</td>
+            <td class ='col2'><input type='text' th:field="*{price}"/></td>
+        </tr>
+        <tr>
+            <td class='col1'>Duration:</td>
+            <td class ='col2'><input type='text' th:field="*{duration}"/></td>
+        </tr>
+        <tr>
+            <td class='col1'>Author ID:</td>
+            <td class ='col2'><input type='text' th:field="*{authorId}"/></td>
+        </tr>
+    </table>
+<input id="subButton" type="button" value="Submit"/><input type="reset" value="Reset"/>
 </form>
+<div class="result"></div>
+<script th:inline="javascript">
+    $("#subButton").click(function() {
+        $.ajax({
+            type: 'POST',
+            crossDomain: true,
+            url: 'https://localhost:8443/attraction',
+            contentType: 'application/json',
+            dataType: 'json',
+            data: JSON.stringify($('#entry').serializeObject()),
+            success: function(data) {
+                $('.result').html('<p>Added itinerary successfully.</p>');
+            },
+            error: function(data) {
+                $('.result').html('<p>Error adding itinerary.</p>');
+            }
+        });
+        return true;
+    });
+
+    $.fn.serializeObject = function()
+    {
+        var o = {};
+        var a = this.serializeArray();
+        $.each(a, function() {
+            if (o[this.name] !== undefined) {
+                if (!o[this.name].push) {
+                    o[this.name] = [o[this.name]];
+                }
+                o[this.name].push(this.value || '');
+            } else {
+                o[this.name] = this.value || '';
+            }
+        });
+        return o;
+    };
+</script>
 </body>
 </html>
