@@ -1,16 +1,42 @@
 
-INSERT INTO preferences(preference, photoURL) VALUES ('Fun', 'funpic.png');
-INSERT INTO preferences(preference, photoURL) VALUES ('Boring', 'boringpic.png');
-INSERT INTO preferences(preference, photoURL) VALUES ('Adult', 'adultpic.png');
-INSERT INTO preferences(preference, photoURL) VALUES ('Kids', 'kidspic.png');
-INSERT INTO preferences(preference, photoURL) VALUES ('Pious', 'piouspic.png');
-INSERT INTO preferences(preference, photoURL) VALUES ('Clean', 'cleanpic.png');
-INSERT INTO preferences(preference, photoURL) VALUES ('Dirty', 'dirtypic.png');
-INSERT INTO preferences(preference, photoURL) VALUES ('Hardcore', 'hardcorepic.png');
-INSERT INTO preferences(preference, photoURL) VALUES ('Chinese', 'chinesepic.png');
-INSERT INTO preferences(preference, photoURL) VALUES ('French', 'frenchpic.png');
-INSERT INTO preferences(preference, photoURL) VALUES ('Black', 'blackpic.png');
-INSERT INTO preferences(preference, photoURL) VALUES ('White', 'whitepic.png');
+INSERT INTO preferences(preference, photoURL, preference_type) VALUES ('Fun', 'funpic.png', 1);
+INSERT INTO preferences(preference, photoURL, preference_type) VALUES ('Boring', 'boringpic.png', 1);
+INSERT INTO preferences(preference, photoURL, preference_type) VALUES ('Adult', 'adultpic.png', 1);
+INSERT INTO preferences(preference, photoURL, preference_type) VALUES ('Kids', 'kidspic.png', 1);
+INSERT INTO preferences(preference, photoURL, preference_type) VALUES ('Pious', 'piouspic.png', 1);
+INSERT INTO preferences(preference, photoURL, preference_type) VALUES ('Clean', 'cleanpic.png', 1);
+INSERT INTO preferences(preference, photoURL, preference_type) VALUES ('Dirty', 'dirtypic.png', 1);
+INSERT INTO preferences(preference, photoURL, preference_type) VALUES ('Hardcore', 'hardcorepic.png', 1);
+INSERT INTO preferences(preference, photoURL, preference_type) VALUES ('Chinese', 'chinesepic.png', 1);
+INSERT INTO preferences(preference, photoURL, preference_type) VALUES ('French', 'frenchpic.png', 1);
+INSERT INTO preferences(preference, photoURL, preference_type VALUES ('Black', 'blackpic.png', 1);
+INSERT INTO preferences(preference, photoURL, preference_type) VALUES ('White', 'whitepic.png', 1);
+
+INSERT INTO preferences(preference, photoURL, preference_type) VALUES ('Dancing', 'funpic.png', 2);
+INSERT INTO preferences(preference, photoURL, preference_type) VALUES ('Museum', 'boringpic.png', 2);
+INSERT INTO preferences(preference, photoURL, preference_type) VALUES ('Sports', 'adultpic.png', 2);
+INSERT INTO preferences(preference, photoURL, preference_type) VALUES ('Silent', 'kidspic.png', 2);
+INSERT INTO preferences(preference, photoURL, preference_type) VALUES ('Film', 'piouspic.png', 2);
+INSERT INTO preferences(preference, photoURL, preference_type) VALUES ('Crack', 'cleanpic.png', 2);
+INSERT INTO preferences(preference, photoURL, preference_type) VALUES ('Cocaine', 'dirtypic.png', 2);
+INSERT INTO preferences(preference, photoURL, preference_type) VALUES ('Hardcore', 'hardcorepic.png', 2);
+INSERT INTO preferences(preference, photoURL, preference_type) VALUES ('Chinese', 'chinesepic.png', 2);
+INSERT INTO preferences(preference, photoURL, preference_type) VALUES ('French', 'frenchpic.png', 2);
+INSERT INTO preferences(preference, photoURL, preference_type VALUES ('Black', 'blackpic.png', 2);
+INSERT INTO preferences(preference, photoURL, preference_type) VALUES ('White', 'whitepic.png', 2);
+
+INSERT INTO preferences(preference, photoURL, preference_type) VALUES ('Dancing', 'funpic.png', 3);
+INSERT INTO preferences(preference, photoURL, preference_type) VALUES ('Museum', 'boringpic.png', 3);
+INSERT INTO preferences(preference, photoURL, preference_type) VALUES ('Sports', 'adultpic.png', 3);
+INSERT INTO preferences(preference, photoURL, preference_type) VALUES ('Silent', 'kidspic.png', 3);
+INSERT INTO preferences(preference, photoURL, preference_type) VALUES ('Film', 'piouspic.png', 3);
+INSERT INTO preferences(preference, photoURL, preference_type) VALUES ('Crack', 'cleanpic.png', 3);
+INSERT INTO preferences(preference, photoURL, preference_type) VALUES ('Cocaine', 'dirtypic.png', 3);
+INSERT INTO preferences(preference, photoURL, preference_type) VALUES ('Hardcore', 'hardcorepic.png', 3);
+INSERT INTO preferences(preference, photoURL, preference_type) VALUES ('Chinese', 'chinesepic.png', 3);
+INSERT INTO preferences(preference, photoURL, preference_type) VALUES ('French', 'frenchpic.png', 3);
+INSERT INTO preferences(preference, photoURL, preference_type VALUES ('Black', 'blackpic.png', 3);
+INSERT INTO preferences(preference, photoURL, preference_type) VALUES ('White', 'whitepic.png', 3);
 
 INSERT INTO tags(tag) VALUES ('Lifechanging');
 INSERT INTO tags(tag) VALUES ('Cheat');

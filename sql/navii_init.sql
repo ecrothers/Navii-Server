@@ -29,7 +29,7 @@ CREATE TABLE IF NOT EXISTS itineraries (
     description VARCHAR(256),
 	authorid INT,
 	PRIMARY KEY (itineraryid),
-	FOREIGN KEY (authorid) REFERENCES users(userid) ON DELETE SET NULL
+	FOREIGN KEY (authorid) REFERENCES users(user_id) ON DELETE SET NULL
 );
 
 

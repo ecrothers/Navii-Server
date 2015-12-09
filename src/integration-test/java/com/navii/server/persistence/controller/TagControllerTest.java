@@ -56,7 +56,9 @@ public class TagControllerTest {
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andReturn();
 
-        List<String> tags = objectMapper.readValue(result.getResponse().getContentAsString(), new TypeReference<List<String>>(){});
+        List<String> tags = objectMapper.readValue(result.getResponse().getContentAsString(),
+                new TypeReference<List<String>>() {
+                });
 
         // TODO: clear the table data before doing this assert
         Assert.assertEquals(0, tags.size());
@@ -76,12 +78,14 @@ public class TagControllerTest {
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andReturn();
 
-        List<String> tags1 = objectMapper.readValue(result.getResponse().getContentAsString(), new TypeReference<List<String>>(){});
+        List<String> tags1 = objectMapper.readValue(result.getResponse().getContentAsString(), new TypeReference<List<String>>() {
+        });
 
         result = sendGetTagsRequest()
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andReturn();
-        List<String> tags2 = objectMapper.readValue(result.getResponse().getContentAsString(), new TypeReference<List<String>>(){});
+        List<String> tags2 = objectMapper.readValue(result.getResponse().getContentAsString(), new TypeReference<List<String>>() {
+        });
 
         Assert.assertEquals(tags1.size(), tags2.size());
 
