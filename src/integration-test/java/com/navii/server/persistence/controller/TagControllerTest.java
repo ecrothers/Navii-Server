@@ -3,6 +3,7 @@ package com.navii.server.persistence.controller;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.navii.server.Application;
+import com.navii.server.persistence.domain.Tag;
 import com.navii.server.util.ObjectMapperFactory;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
@@ -15,6 +16,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.boot.test.WebIntegrationTest;
+import org.springframework.http.MediaType;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.web.servlet.MockMvc;
@@ -25,6 +27,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -49,47 +52,110 @@ public class TagControllerTest {
         objectMapper = ObjectMapperFactory.createMapper();
     }
 
-    @Ignore
     @Test
     public void getTagsReturnsEmptyListIfThereAreNoTags() throws Exception {
+        sendDeleteTagsRequest()
+                .andExpect(MockMvcResultMatchers.status().isOk());
+
         MvcResult result = sendGetTagsRequest()
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andReturn();
 
-        List<String> tags = objectMapper.readValue(result.getResponse().getContentAsString(), new TypeReference<List<String>>(){});
+        List<String> tags = objectMapper.readValue(result.getResponse().getContentAsString(), new TypeReference<List<String>>() {
+        });
 
-        // TODO: clear the table data before doing this assert
         Assert.assertEquals(0, tags.size());
     }
 
-    @Ignore
     @Test
     public void getTagsReturnsListIfLessThan20Limit() throws Exception {
-        // TODO: implement me once deleteAll is implemented
-    }
+        sendDeleteTagsRequest()
+                .andExpect(MockMvcResultMatchers.status().isOk());
 
-    @Ignore
-    @Test
-    public void getTagsAlwaysReturnsRandomList() throws Exception {
-        // TODO: delete then add tags before doing all this
+        String[] tagsList = {"Cheese", "Pepperoni", "Black", "Copper", "a", "b", "c", "d", "Jesus", "God",
+        "apple", "Bell", "Banana", "Telephone", "Mouse", "Mickey", "Allah", "Tim", "Hortons"};
+
+        for (String tag : tagsList) {
+            sendCreateTagRequest(new Tag.Builder().tag(tag).build())
+                    .andExpect(MockMvcResultMatchers.status().isCreated());
+        }
+
         MvcResult result = sendGetTagsRequest()
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andReturn();
 
-        List<String> tags1 = objectMapper.readValue(result.getResponse().getContentAsString(), new TypeReference<List<String>>(){});
+        List<String> tags = objectMapper
+                .readValue(result.getResponse().getContentAsString(), new TypeReference<List<String>>() {});
+        Assert.assertEquals(tagsList.length, tags.size());
+    }
+
+    @Test
+    public void getTagsAlwaysReturnsRandomList() throws Exception {
+        String[] tagsList = {"Cheese", "Pepperoni", "Black", "Copper", "a", "b", "c", "d", "Jesus", "God",
+                "apple", "Bell", "Banana", "Telephone", "Mouse", "Mickey", "Allah", "Tim", "Hortons", "Christ",
+        "e", "f", "g"};
+
+        sendDeleteTagsRequest()
+                .andExpect(MockMvcResultMatchers.status().isOk());
+
+        for (String tag : tagsList) {
+            sendCreateTagRequest(new Tag.Builder().tag(tag).build())
+                    .andExpect(MockMvcResultMatchers.status().isCreated());
+        }
+
+        MvcResult result = sendGetTagsRequest()
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andReturn();
+
+        List<String> tags1 = objectMapper.readValue(result.getResponse().getContentAsString(), new TypeReference<List<String>>() {
+        });
 
         result = sendGetTagsRequest()
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andReturn();
-        List<String> tags2 = objectMapper.readValue(result.getResponse().getContentAsString(), new TypeReference<List<String>>(){});
+        List<String> tags2 = objectMapper.readValue(result.getResponse().getContentAsString(), new TypeReference<List<String>>() {
+        });
 
         Assert.assertEquals(tags1.size(), tags2.size());
 
-        // TODO: very risky shit here. There may be a rare case that it returns the same list of tags in the same order
         Assert.assertThat(tags1, Matchers.not(Matchers.equalTo(tags2)));
+    }
+
+    @Test
+    public void getTagsAlwaysReturns20Max() throws Exception {
+        String[] tagsList = {"Cheese", "Pepperoni", "Black", "Copper", "a", "b", "c", "d", "Jesus", "God",
+                "apple", "Bell", "Banana", "Telephone", "Mouse", "Mickey", "Allah", "Tim", "Hortons", "Christ",
+                "e", "f", "g"};
+
+        sendDeleteTagsRequest()
+                .andExpect(MockMvcResultMatchers.status().isOk());
+
+        for (String tag : tagsList) {
+            sendCreateTagRequest(new Tag.Builder().tag(tag).build())
+                    .andExpect(MockMvcResultMatchers.status().isCreated());
+        }
+
+        MvcResult result = sendGetTagsRequest()
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andReturn();
+
+        List<String> tags1 = objectMapper.readValue(result.getResponse().getContentAsString(), new TypeReference<List<String>>() {
+        });
+
+        Assert.assertEquals(20, tags1.size());
     }
 
     private ResultActions sendGetTagsRequest() throws Exception {
         return mvc.perform(MockMvcRequestBuilders.get("/tags"));
+    }
+
+    private ResultActions sendDeleteTagsRequest() throws Exception {
+        return mvc.perform(MockMvcRequestBuilders.delete("/tags/all"));
+    }
+
+    private ResultActions sendCreateTagRequest(Tag tag) throws Exception {
+        return mvc.perform(MockMvcRequestBuilders.post("/tags")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(tag)));
     }
 }

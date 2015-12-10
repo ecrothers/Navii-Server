@@ -1,6 +1,7 @@
 package com.navii.server.persistence.dao.impl;
 
 import com.navii.server.persistence.dao.TagDAO;
+import com.navii.server.persistence.domain.Tag;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,5 +47,24 @@ public class TagDAOImpl implements TagDAO {
         }
 
         return tags;
+    }
+
+    @Override
+    public int create(Tag tag) {
+        String sqlQuery = "INSERT INTO tags (tag) VALUES (?)";
+        return jdbc.update(sqlQuery, tag.getTag());
+    }
+
+    @Override
+    public int deleteAll() {
+        String setForeignKeyQuery = "SET FOREIGN_KEY_CHECKS = 0";
+        String deleteQuery = "TRUNCATE TABLE tags";
+        String resetForeignKeyQuery = "SET FOREIGN_KEY_CHECKS = 1";
+
+        jdbc.update(setForeignKeyQuery);
+        int returnCode = jdbc.update(deleteQuery);
+        jdbc.update(resetForeignKeyQuery);
+
+        return returnCode;
     }
 }
