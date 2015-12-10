@@ -32,6 +32,7 @@ public class PreferenceDAOImpl implements PreferenceDAO {
     @Override
     public List<Preference> getPreferences(int preferenceType) {
         try {
+            System.out.print(preferenceType);
             String fetchQuery = "SELECT * FROM preferences WHERE preference_type = ?";
             List<Preference> retrieved = jdbc.queryForObject(fetchQuery,
                     new Object[]{preferenceType},

@@ -28,12 +28,11 @@ public class UserPreferenceDAOImpl implements UserPreferenceDAO {
                 "INSERT INTO userspreferences (username, preference) VALUES (?, ?)";
         List<Object[]> input = new ArrayList<>();
 
-        for (String pref : saved.getPreferences()) {
-            input.add(new Object[]{saved.getUsername(), pref});
+        for (Preference preference : saved.getPreferences()) {
+            input.add(new Object[]{saved.getUsername(), preference.getPreference()});
         }
         try {
-            int[] results = jdbc.batchUpdate(insertString, input);
-
+            jdbc.batchUpdate(insertString, input);
         } catch (Exception e) {
             e.printStackTrace();
             return false;

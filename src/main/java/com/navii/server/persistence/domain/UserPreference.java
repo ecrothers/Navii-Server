@@ -7,7 +7,7 @@ import java.util.List;
  */
 @SuppressWarnings("unused")
 public class UserPreference {
-    private List<String> preferences;
+    private List<Preference> preferences;
     private String username;
 
     public UserPreference() {}
@@ -17,12 +17,8 @@ public class UserPreference {
         this.preferences = builder.preferences;
     }
 
-    public List<String> getPreferences() {
+    public List<Preference> getPreferences() {
         return preferences;
-    }
-
-    public void setPreferences(List<String> preferences) {
-        this.preferences = preferences;
     }
 
     public String getUsername() {
@@ -39,12 +35,12 @@ public class UserPreference {
 
     public static class Builder {
 
-        private List<String> preferences;
+        private List<Preference> preferences;
         private String username;
 
         public Builder() {}
 
-        public Builder preferences(List<String> preferences) {
+        public Builder preferences(List<Preference> preferences) {
             this.preferences = preferences;
             return this;
         }
