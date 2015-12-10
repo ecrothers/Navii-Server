@@ -61,8 +61,9 @@ public class TagControllerTest {
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andReturn();
 
-        List<String> tags = objectMapper.readValue(result.getResponse().getContentAsString(), new TypeReference<List<String>>() {
-        });
+        List<String> tags = objectMapper.readValue(result.getResponse().getContentAsString(),
+                new TypeReference<List<String>>() {
+                });
 
         Assert.assertEquals(0, tags.size());
     }
@@ -73,7 +74,7 @@ public class TagControllerTest {
                 .andExpect(MockMvcResultMatchers.status().isOk());
 
         String[] tagsList = {"Cheese", "Pepperoni", "Black", "Copper", "a", "b", "c", "d", "Jesus", "God",
-        "apple", "Bell", "Banana", "Telephone", "Mouse", "Mickey", "Allah", "Tim", "Hortons"};
+                "apple", "Bell", "Banana", "Telephone", "Mouse", "Mickey", "Allah", "Tim", "Hortons"};
 
         for (String tag : tagsList) {
             sendCreateTagRequest(new Tag.Builder().tag(tag).build())
@@ -85,7 +86,8 @@ public class TagControllerTest {
                 .andReturn();
 
         List<String> tags = objectMapper
-                .readValue(result.getResponse().getContentAsString(), new TypeReference<List<String>>() {});
+                .readValue(result.getResponse().getContentAsString(), new TypeReference<List<String>>() {
+                });
         Assert.assertEquals(tagsList.length, tags.size());
     }
 
@@ -93,7 +95,7 @@ public class TagControllerTest {
     public void getTagsAlwaysReturnsRandomList() throws Exception {
         String[] tagsList = {"Cheese", "Pepperoni", "Black", "Copper", "a", "b", "c", "d", "Jesus", "God",
                 "apple", "Bell", "Banana", "Telephone", "Mouse", "Mickey", "Allah", "Tim", "Hortons", "Christ",
-        "e", "f", "g"};
+                "e", "f", "g"};
 
         sendDeleteTagsRequest()
                 .andExpect(MockMvcResultMatchers.status().isOk());

@@ -29,7 +29,7 @@ CREATE TABLE IF NOT EXISTS itineraries (
     description VARCHAR(256),
 	authorid INT,
 	PRIMARY KEY (itineraryid),
-	FOREIGN KEY (authorid) REFERENCES users(userid) ON DELETE SET NULL
+	FOREIGN KEY (authorid) REFERENCES users(user_id) ON DELETE SET NULL
 );
 
 
@@ -91,7 +91,8 @@ CREATE TABLE IF NOT EXISTS preferences (
 	preference VARCHAR(10) NOT NULL,
     counter INT DEFAULT 0,
     photoURL VARCHAR(32),
-    PRIMARY KEY (preference)
+    preference_type INT,
+    PRIMARY KEY (preference, preference_type)
 );
 
 CREATE TABLE IF NOT EXISTS tags (

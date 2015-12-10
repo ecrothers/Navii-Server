@@ -1,74 +1,82 @@
 package com.navii.server.persistence.domain;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 /**
  * Created by sjung on 05/11/15.
  */
 public class Preference {
 
+    @JsonProperty(value = "preference")
     private String preference;
+
+    @JsonProperty(value = "counter")
     private int counter;
+
+    @JsonProperty(value = "preference_type")
+    private int preferenceType;
+
+    @JsonProperty(value = "photoURL")
     private String photoUrl;
 
     public String getPreference() {
         return preference;
     }
 
-    public void setPreference(String preference) {
-        this.preference = preference;
+    public int getPreferenceType() {
+        return preferenceType;
     }
 
     public int getCounter() {
         return counter;
     }
 
-    public void setCounter(int counter) {
-        this.counter = counter;
-    }
-
     public String getPhotoUrl() {
         return photoUrl;
     }
 
-    public void setPhotoUrl(String photoUrl) {
-        this.photoUrl = photoUrl;
+    private Preference(Builder builder) {
+        this.preference = builder.preference;
+        this.counter = builder.counter;
+        this.preferenceType = builder.preferenceType;
+        this.photoUrl = builder.photoUrl;
     }
 
-    public Preference() {}
-
-    public Preference(Builder builder) {
-
-    }
-
-    static Builder getBuilder() {
+    public static Builder getBuilder() {
         return new Builder();
     }
 
-    static class Builder {
+    public static class Builder {
 
         private String preference;
         private int counter;
+        private int preferenceType;
         private String photoUrl;
 
-        private Builder() {}
+        public Builder() {
+        }
 
-        Builder preference(String preference) {
+        public Builder preference(String preference) {
             this.preference = preference;
             return this;
         }
 
-        Builder counter(int counter) {
+        public Builder counter(int counter) {
             this.counter = counter;
             return this;
         }
 
-        Builder photoUrl(String photoUrl) {
+        public Builder preferenceType(int preferenceType) {
+            this.preferenceType = preferenceType;
+            return this;
+        }
+
+        public Builder photoUrl(String photoUrl) {
             this.photoUrl = photoUrl;
             return this;
         }
 
-
-        // TODO: potentially check for non-null values
-        Preference build() {
+        public Preference build() {
             return new Preference(this);
         }
     }
