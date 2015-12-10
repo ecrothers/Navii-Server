@@ -36,10 +36,10 @@ public class PreferenceDAOImpl implements PreferenceDAO {
             String fetchQuery = "SELECT * FROM preferences WHERE preference_type = ?";
             List<Preference> retrieved = jdbc.queryForObject(fetchQuery,
                     new Object[]{preferenceType},
-                    new RowMapper<ArrayList<Preference>>() {
+                    new RowMapper<List<Preference>>() {
                         @Override
-                        public ArrayList<Preference> mapRow(ResultSet rs, int rowNum) throws SQLException {
-                            ArrayList<Preference> preferences = new ArrayList<>();
+                        public List<Preference> mapRow(ResultSet rs, int rowNum) throws SQLException {
+                            List<Preference> preferences = new ArrayList<>();
                             while (rs.next()) {
 
                                 Preference preference = new Preference.Builder()

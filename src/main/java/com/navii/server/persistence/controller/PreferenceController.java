@@ -32,7 +32,6 @@ public class PreferenceController {
     public ResponseEntity<List<Preference>> getPreferences(@PathVariable int preferenceType) {
         List<Preference> foundPreferences = preferenceService.getPreferences(preferenceType);
         if (foundPreferences != null) {
-            System.out.println(new ResponseEntity<>(foundPreferences, HttpStatus.OK).toString());
             return new ResponseEntity<>(foundPreferences, HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
