@@ -91,7 +91,8 @@ CREATE TABLE IF NOT EXISTS preferences (
 	preference VARCHAR(10) NOT NULL,
     counter INT DEFAULT 0,
     photoURL VARCHAR(32),
-    PRIMARY KEY (preference)
+    preference_type INT,
+    PRIMARY KEY (preference, preference_type)
 );
 
 CREATE TABLE IF NOT EXISTS tags (
