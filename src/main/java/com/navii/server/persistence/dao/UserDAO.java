@@ -16,15 +16,15 @@ public interface UserDAO {
 
     /**
      * Finds the information of a single user entry.
-     * @param userId    The id of the requested user entry.
-     * @return          The information of the found user entry.
+     * @param username      The username of the requested user entry.
+     * @return              The information of the found user entry.
      */
-    User findOne(int userId);
+    User findOne(String username);
 
     /**
      * Creates a new user entry to the database.
      * @param createdUser       The information of the new user entry.
-     * @return                  The user id of the created user.
+     * @return                  The number of created users
      */
     int create(User createdUser);
 
@@ -37,16 +37,15 @@ public interface UserDAO {
 
     /**
      * Deletes a user from the database.
-     * @param deletedUser   The deleted user entry.
+     * @param username      The deleted username.
      * @return              The number of deleted users.
      */
-    int delete(int deletedUser);
+    int delete(String username);
 
     /**
      * Deletes a user from the database.
-     * @return              The number of deleted users.
      */
-    int deleteAll();
+    void deleteAll();
 
     /**
      * Checks if username exists
@@ -62,12 +61,4 @@ public interface UserDAO {
      * @return              Whether username and password match
      */
     boolean usernameAndPasswordMatch(String username, String password);
-
-    /**
-     * Fetches the user id of the user given the username and password
-     * @param username      Username of the user.
-     * @param password      Password of the user.
-     * @return              User id
-     */
-    int getUserIdFromUsernameAndPassword(String username, String password);
 }

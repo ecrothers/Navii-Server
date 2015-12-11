@@ -1,7 +1,6 @@
 package com.navii.server.persistence.controller;
 
 import com.navii.server.persistence.domain.User;
-import com.navii.server.persistence.exception.UserException;
 import com.navii.server.persistence.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,19 +23,19 @@ public class UserController {
     private UserService userService;
 
     /**
-     * Gets a user by id
-     * @param userId    Identifier for user
-     * @return          If user is found, return the user object and HTTP status 200; otherwise, 400
+     * Gets a user by username
+     * @param username      Identifier for user
+     * @return              If user is found, return the user object and HTTP status 200; otherwise, 400
      */
-    @RequestMapping(value = "/{userId}", method = RequestMethod.GET)
-    public ResponseEntity<User> getUser(@PathVariable int userId) {
-        User foundUser = userService.findOne(userId);
+    @RequestMapping(value = "/{username}", method = RequestMethod.GET)
+    public ResponseEntity<User> getUser(@PathVariable String username) {
+        User foundUser = userService.findOne(username);
 
         if (foundUser != null) {
             return new ResponseEntity<>(foundUser, HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
+
+        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
 
     /**
@@ -53,17 +52,15 @@ public class UserController {
      * @param user  User to persist in server
      * @return      If user is successfully created, return HTTP status 201; otherwise, 400
      */
-
-    // TODO: change to use exception
     @RequestMapping(value = "", method = RequestMethod.POST)
     public ResponseEntity<?> createUser(@RequestBody User user) {
-        int createdUserId = userService.create(user);
+        int numCreatedUsers = userService.create(user);
 
-        if (createdUserId > 0) {
-            return new ResponseEntity<>(createdUserId, HttpStatus.CREATED);
-        } else {
-            return new ResponseEntity<>(createdUserId, HttpStatus.BAD_REQUEST);
+        if (numCreatedUsers > 0) {
+            return new ResponseEntity<>(numCreatedUsers, HttpStatus.CREATED);
         }
+
+        return new ResponseEntity<>(numCreatedUsers, HttpStatus.BAD_REQUEST);
     }
 
     /**
@@ -82,36 +79,36 @@ public class UserController {
 
         if (updatedUser > 0) {
             return new ResponseEntity<>(HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
+
+        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
 
     /**
      * Deletes an existing user
-     * @param userId    Identifier for the user
-     * @return          If the user exists and is deleted, return HTTP status 200; otherwise 400.
+     * @param username      Username for the user
+     * @return              If the user exists and is deleted, return HTTP status 200; otherwise 400.
      */
-
     // TODO: change to use exceptions
-    @RequestMapping(value = "/{userId}", method = RequestMethod.DELETE)
-    public ResponseEntity<?> deleteUser(@PathVariable int userId) {
-        int deletedUser = userService.delete(userId);
+    @RequestMapping(value = "/{username}", method = RequestMethod.DELETE)
+    public ResponseEntity<?> deleteUser(@PathVariable String username) {
+        int deletedUser = userService.delete(username);
 
         if (deletedUser > 0) {
             return new ResponseEntity<>(HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
+
+        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
 
     /**
      * Deletes all users
-     * @return          The number of deleted rows with a HTTP status 200; otherwise 400.
+     * @return          HTTP status 200
      */
     @RequestMapping(value = "/all", method = RequestMethod.DELETE)
     public ResponseEntity<?> deleteAll() {
-        return new ResponseEntity<>(userService.deleteAll(), HttpStatus.OK);
+        userService.deleteAll();
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     /**
@@ -129,15 +126,12 @@ public class UserController {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
-        int createdUserId;
-
-        try {
-            createdUserId = userService.signUp(username, password);
-        } catch (UserException e) {
-            return new ResponseEntity<>(HttpStatus.CONFLICT);
+        int numCreatedUsers = userService.signUp(username, password);
+        if (numCreatedUsers > 0) {
+            return new ResponseEntity<>(HttpStatus.OK);
         }
 
-        return new ResponseEntity<>(createdUserId, HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.CONFLICT);
     }
 
     /**
@@ -154,14 +148,11 @@ public class UserController {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
-        int loggedInUserId;
-
-        try {
-            loggedInUserId = userService.login(username, password);
-        } catch (UserException e) {
-            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        boolean isValid = userService.login(username, password);
+        if (isValid) {
+            return new ResponseEntity<>(HttpStatus.OK);
         }
 
-        return new ResponseEntity<>(loggedInUserId, HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
     }
 }

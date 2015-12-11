@@ -7,9 +7,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  */
 public class User {
 
-    @JsonProperty(value = "user_id")
-    private int userId;
-
     @JsonProperty(value = "username")
     private String username;
 
@@ -25,15 +22,10 @@ public class User {
     public User() {}
 
     private User(Builder builder) {
-        this.userId = builder.userId;
         this.username = builder.username;
         this.password = builder.password;
         this.salt = builder.salt;
         this.isFacebook = builder.isFacebook;
-    }
-
-    public int getUserId() {
-        return userId;
     }
 
     public String getUsername() {
@@ -53,18 +45,12 @@ public class User {
     }
 
     public static class Builder {
-        private int userId;
         private String username;
         private String password;
         private String salt;
         private boolean isFacebook;
 
         public Builder() {}
-
-        public Builder userId(int userId) {
-            this.userId = userId;
-            return this;
-        }
 
         public Builder username(String username) {
             this.username = username;

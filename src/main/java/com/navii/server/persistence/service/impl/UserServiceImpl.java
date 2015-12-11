@@ -2,7 +2,6 @@ package com.navii.server.persistence.service.impl;
 
 import com.navii.server.persistence.dao.UserDAO;
 import com.navii.server.persistence.domain.User;
-import com.navii.server.persistence.exception.UserException;
 import com.navii.server.persistence.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -25,8 +24,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User findOne(int userId) {
-        return userDAO.findOne(userId);
+    public User findOne(String username) {
+        return userDAO.findOne(username);
     }
 
     @Override
@@ -40,21 +39,22 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public int delete(int userId) {
-        return userDAO.delete(userId);
+    public int delete(String username) {
+        return userDAO.delete(username);
     }
 
     @Override
-    public int deleteAll() {
-        return userDAO.deleteAll();
+    public void deleteAll() {
+        userDAO.deleteAll();
     }
 
     @Override
-    public int signUp(String username, String password) throws UserException {
+    public int signUp(String username, String password) {
         if (userDAO.userExistsFromUsername(username)) {
-            throw new UserException("User already exists.");
+            return 0;
         }
 
+        // TODO: salt and set isFacebook properly
         User user = new User.Builder()
                 .username(username)
                 .password(password)
@@ -62,16 +62,11 @@ public class UserServiceImpl implements UserService {
                 .isFacebook(false)
                 .build();
 
-        // TODO: use exception to check
         return userDAO.create(user);
     }
 
     @Override
-    public int login(String username, String password) throws UserException {
-        if (!userDAO.usernameAndPasswordMatch(username, password)) {
-            throw new UserException("Username and password don't match");
-        }
-
-        return userDAO.getUserIdFromUsernameAndPassword(username, password);
+    public boolean login(String username, String password) {
+        return userDAO.usernameAndPasswordMatch(username, password);
     }
 }

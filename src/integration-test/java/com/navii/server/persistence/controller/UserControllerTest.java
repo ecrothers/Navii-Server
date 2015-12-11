@@ -65,7 +65,7 @@ public class UserControllerTest {
 
     @Test
     public void getUserFailsDueToMissingUser() throws Exception {
-        sendGetUserRequest(1234567890)
+        sendGetUserRequest("someMissingUser")
                 .andExpect(MockMvcResultMatchers.status().isBadRequest());
     }
 
@@ -88,8 +88,8 @@ public class UserControllerTest {
                 .andExpect(MockMvcResultMatchers.status().isCreated())
                 .andReturn();
 
-        Integer createdUserId = objectMapper.readValue(result.getResponse().getContentAsString(), Integer.class);
-        Assert.assertThat(createdUserId, Matchers.greaterThan(0));
+        Integer numCreatedUsers = objectMapper.readValue(result.getResponse().getContentAsString(), Integer.class);
+        Assert.assertThat(numCreatedUsers, Matchers.greaterThan(0));
     }
 
     @Test
@@ -160,13 +160,10 @@ public class UserControllerTest {
         String username = "user-test" + randomId;
         String password = "password-test" + randomId;
 
-        MvcResult result = sendSignUpRequest(username, password)
-                .andExpect(MockMvcResultMatchers.status().isOk())
-                .andReturn();
+        sendSignUpRequest(username, password)
+                .andExpect(MockMvcResultMatchers.status().isOk());
 
-        Integer createdUserId = objectMapper.readValue(result.getResponse().getContentAsString(), Integer.class);
-
-        result = sendGetUserRequest(createdUserId)
+        MvcResult result = sendGetUserRequest(username)
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andReturn();
 
@@ -232,13 +229,8 @@ public class UserControllerTest {
         sendCreateUserRequest(user)
                 .andExpect(MockMvcResultMatchers.status().isCreated());
 
-        MvcResult result = sendLoginRequest(user.getUsername(), user.getPassword())
-                .andExpect(MockMvcResultMatchers.status().isOk())
-                .andReturn();
-
-        Integer userId = objectMapper.readValue(result.getResponse().getContentAsString(), Integer.class);
-
-        Assert.assertThat(userId, Matchers.greaterThan(0));
+        sendLoginRequest(user.getUsername(), user.getPassword())
+                .andExpect(MockMvcResultMatchers.status().isOk());
     }
 
     private User createGenericTestUser() {
@@ -254,8 +246,8 @@ public class UserControllerTest {
                 .build();
     }
 
-    private ResultActions sendGetUserRequest(int userId) throws Exception {
-        return mvc.perform(MockMvcRequestBuilders.get(String.format("/user/%s", userId)));
+    private ResultActions sendGetUserRequest(String username) throws Exception {
+        return mvc.perform(MockMvcRequestBuilders.get(String.format("/user/%s", username)));
     }
 
     private ResultActions sendGetAllUsersRequest() throws Exception {
@@ -282,7 +274,7 @@ public class UserControllerTest {
     private ResultActions sendLoginRequest(String username, String password) throws Exception {
         return mvc
                 .perform(MockMvcRequestBuilders.get("/user/login", username, password)
-                        .param("username", username)
-                        .param("password", password));
+                .param("username", username)
+                .param("password", password));
     }
 }

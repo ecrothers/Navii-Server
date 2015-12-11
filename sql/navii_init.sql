@@ -1,13 +1,11 @@
 Use naviDB;
 
 CREATE TABLE IF NOT EXISTS users (
-	user_id INT NOT NULL AUTO_INCREMENT,
 	username VARCHAR(16) NOT NULL,
 	password CHAR(64) NOT NULL,
 	salt CHAR(64) NOT NULL,
-  	is_facebook TINYINT(1),
-	PRIMARY KEY (user_id),
-	UNIQUE(username)
+	is_facebook TINYINT(1),
+	PRIMARY KEY (username)
 );
 
 CREATE TABLE IF NOT EXISTS attractions (
@@ -17,7 +15,7 @@ CREATE TABLE IF NOT EXISTS attractions (
 	photoURI VARCHAR(256),
 	blurbURI VARCHAR(256),
 	price INT,
-  purchase CHAR(1),
+	purchase CHAR(1),
 	duration INT,
 	PRIMARY KEY (attractionid)
 );
@@ -26,10 +24,10 @@ CREATE TABLE IF NOT EXISTS itineraries (
 	itineraryid INT NOT NULL AUTO_INCREMENT,
 	totalcost DECIMAL(10,2),
 	duration INT,
-    description VARCHAR(256),
-	authorid INT,
+	description VARCHAR(256),
+	authorid VARCHAR(16),
 	PRIMARY KEY (itineraryid),
-	FOREIGN KEY (authorid) REFERENCES users(user_id) ON DELETE SET NULL
+	FOREIGN KEY (authorid) REFERENCES users(username) ON DELETE SET NULL
 );
 
 
@@ -89,42 +87,42 @@ CREATE TABLE IF NOT EXISTS pointofinterests (
 
 CREATE TABLE IF NOT EXISTS preferences (
 	preference VARCHAR(10) NOT NULL,
-    counter INT DEFAULT 0,
-    photoURL VARCHAR(32),
-    preference_type INT,
-    PRIMARY KEY (preference, preference_type)
+	counter INT DEFAULT 0,
+	photoURL VARCHAR(32),
+	preference_type INT,
+	PRIMARY KEY (preference, preference_type)
 );
 
 CREATE TABLE IF NOT EXISTS tags (
 	tag VARCHAR(10) NOT NULL,
-    counter INT DEFAULT 0,
-    PRIMARY KEY (tag)
+	counter INT DEFAULT 0,
+	PRIMARY KEY (tag)
 );
 
 CREATE TABLE IF NOT EXISTS userspreferences (
 	username VARCHAR(16) NOT NULL,
-    preference VARCHAR(10) NOT NULL,
-    FOREIGN KEY (username) REFERENCES users(username) ON DELETE CASCADE,
-    FOREIGN KEY (preference) REFERENCES preferences(preference) ON DELETE CASCADE,
-    CONSTRAINT pk_userpreference PRIMARY KEY (username,preference)
+	preference VARCHAR(10) NOT NULL,
+	FOREIGN KEY (username) REFERENCES users(username) ON DELETE CASCADE,
+	FOREIGN KEY (preference) REFERENCES preferences(preference) ON DELETE CASCADE,
+	CONSTRAINT pk_userpreference PRIMARY KEY (username,preference)
 );
 
 CREATE TABLE IF NOT EXISTS itinerariespreferences (
 	itineraryid INT,
-    preference VARCHAR(10),
-    UNIQUE KEY (itineraryid,preference),
-    FOREIGN KEY (itineraryid) REFERENCES itineraries(itineraryid) ON DELETE CASCADE,
-    FOREIGN KEY (preference) REFERENCES preferences(preference) ON DELETE CASCADE,
-    CONSTRAINT pk_itinerarypreference PRIMARY KEY (itineraryid,preference)
+	preference VARCHAR(10),
+	UNIQUE KEY (itineraryid,preference),
+	FOREIGN KEY (itineraryid) REFERENCES itineraries(itineraryid) ON DELETE CASCADE,
+	FOREIGN KEY (preference) REFERENCES preferences(preference) ON DELETE CASCADE,
+	CONSTRAINT pk_itinerarypreference PRIMARY KEY (itineraryid,preference)
 );
 
 
 CREATE TABLE IF NOT EXISTS itinerariestags (
 	itineraryid INT,
-    tag VARCHAR(10),
-    UNIQUE KEY (itineraryid,tag),
-    FOREIGN KEY (itineraryid) REFERENCES itineraries(itineraryid) ON DELETE CASCADE,
-    FOREIGN KEY (tag) REFERENCES tags(tag) ON DELETE CASCADE,
-    CONSTRAINT pk_itinerarytag PRIMARY KEY (tag,itineraryid)
+	tag VARCHAR(10),
+	UNIQUE KEY (itineraryid,tag),
+	FOREIGN KEY (itineraryid) REFERENCES itineraries(itineraryid) ON DELETE CASCADE,
+	FOREIGN KEY (tag) REFERENCES tags(tag) ON DELETE CASCADE,
+	CONSTRAINT pk_itinerarytag PRIMARY KEY (tag,itineraryid)
 );
 

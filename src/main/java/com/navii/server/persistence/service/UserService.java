@@ -1,7 +1,6 @@
 package com.navii.server.persistence.service;
 
 import com.navii.server.persistence.domain.User;
-import com.navii.server.persistence.exception.UserException;
 
 import java.util.List;
 
@@ -18,15 +17,15 @@ public interface UserService {
 
     /**
      * Finds the a single user.
-     * @param userId    The userId of the requested User entry.
-     * @return          The found user.
+     * @param username      The username of the requested User entry.
+     * @return              The found user.
      */
-    User findOne(int userId);
+    User findOne(String username);
 
     /**
      * Creates a new user entry to the database.
      * @param createdUser       The information of the new user entry.
-     * @return                  The user id of the created user.
+     * @return                  The number of created users.
      */
     int create(User createdUser);
 
@@ -39,30 +38,29 @@ public interface UserService {
 
     /**
      * Deletes a user from the database.
-     * @param userId        ID to delete from database.
+     * @param username      Username of the user to delete from database.
      * @return              The number of deleted users.
      */
-    int delete(int userId);
+    int delete(String username);
 
     /**
      * Deletes all users
-     * @return              The number of deleted users.
      */
-    int deleteAll();
+    void deleteAll();
 
     /**
      * Attempts to sign up a user
      * @param username      Username of the user.
      * @param password      Password of the user.
-     * @return              The user id of the created user.
+     * @return              The number of created users.
      */
-    int signUp(String username, String password) throws UserException;
+    int signUp(String username, String password);
 
     /**
      * Attempts to login a user
      * @param username      Username of the user.
      * @param password      Password of the user.
-     * @return              The user id of the user.
+     * @return              Whether the username and password match in the database
      */
-    int login(String username, String password) throws UserException;
+    boolean login(String username, String password);
 }
