@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.navii.server.Application;
 import com.navii.server.persistence.domain.User;
 import com.navii.server.util.ObjectMapperFactory;
-import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -84,12 +83,8 @@ public class UserControllerTest {
                 .isFacebook(false)
                 .build();
 
-        MvcResult result = sendCreateUserRequest(user)
-                .andExpect(MockMvcResultMatchers.status().isCreated())
-                .andReturn();
-
-        Integer numCreatedUsers = objectMapper.readValue(result.getResponse().getContentAsString(), Integer.class);
-        Assert.assertThat(numCreatedUsers, Matchers.greaterThan(0));
+        sendCreateUserRequest(user)
+                .andExpect(MockMvcResultMatchers.status().isCreated());
     }
 
     @Test

@@ -57,10 +57,10 @@ public class UserController {
         int numCreatedUsers = userService.create(user);
 
         if (numCreatedUsers > 0) {
-            return new ResponseEntity<>(numCreatedUsers, HttpStatus.CREATED);
+            return new ResponseEntity<>(HttpStatus.CREATED);
         }
 
-        return new ResponseEntity<>(numCreatedUsers, HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
 
     /**
