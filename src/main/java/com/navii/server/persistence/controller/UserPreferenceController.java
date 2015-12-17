@@ -24,7 +24,7 @@ public class UserPreferenceController {
      * @return      If user is successfully created, return HTTP status 201; otherwise, 400
      */
     @RequestMapping(value = "", method = RequestMethod.POST)
-    public ResponseEntity<UserPreference> createUserPreference(@RequestBody UserPreference userPreference) {
+    public ResponseEntity<?> createUserPreference(@RequestBody UserPreference userPreference) {
         boolean createdUserPreference = userPreferenceService.create(userPreference);
 
         if (createdUserPreference) {
@@ -36,13 +36,14 @@ public class UserPreferenceController {
     }
 
     /**
-     * Deletes an existing user
+     * Deletes all userspreference that are of a given preference Type
      * @param username    Identifier for the user
+     * @param preferenceType Identifier for the preferenceType
      * @return          Deletes all UserPreference return HTTP status 202; otherwise 404.
      */
-    @RequestMapping(value = "/{username}", method = RequestMethod.DELETE)
-    public ResponseEntity<User> deleteAllUserPreference(@PathVariable String username) {
-        int deletedUsersPreferences = userPreferenceService.deleteAllPreference(username);
+    @RequestMapping(value = "/{username}/{preferenceType}", method = RequestMethod.DELETE)
+    public ResponseEntity<?> deleteAllUserPreference(@PathVariable String username, @PathVariable("preferenceType") int preferenceType) {
+        int deletedUsersPreferences = userPreferenceService.deleteAllPreference(username, preferenceType);
 
         if (deletedUsersPreferences > 0) {
             return new ResponseEntity<>(HttpStatus.ACCEPTED);

@@ -42,6 +42,8 @@ public class Preference {
         this.photoUrl = builder.photoUrl;
     }
 
+    public Preference() {}
+
     public static Builder getBuilder() {
         return new Builder();
     }

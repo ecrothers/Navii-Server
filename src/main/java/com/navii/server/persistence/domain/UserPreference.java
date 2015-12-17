@@ -25,10 +25,6 @@ public class UserPreference {
         return username;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
     public static Builder getBuilder() {
         return new Builder();
     }

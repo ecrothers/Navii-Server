@@ -25,11 +25,14 @@ public class UserPreferenceDAOImpl implements UserPreferenceDAO {
     @Override
     public boolean create(final UserPreference saved) {
         String insertString =
-                "INSERT INTO userspreferences (username, preference) VALUES (?, ?)";
+                "INSERT INTO userspreferences (username, preference, preference_type) VALUES (?, ?, ?)";
         List<Object[]> input = new ArrayList<>();
 
         for (Preference preference : saved.getPreferences()) {
-            input.add(new Object[]{saved.getUsername(), preference.getPreference()});
+            input.add(new Object[]{saved.getUsername(),
+                    preference.getPreference(),
+                    preference.getPreferenceType()
+            });
         }
         try {
             jdbc.batchUpdate(insertString, input);
@@ -39,19 +42,17 @@ public class UserPreferenceDAOImpl implements UserPreferenceDAO {
         }
 
         return true;
-
-
     }
 
     @Override
     public List<Preference> obtain(final String username) {
         String selectString =
                 "SELECT preference FROM userspreferences WHERE username = ?";
-        ArrayList<Preference> retrieved = jdbc.queryForObject(selectString,
+        List<Preference> retrieved = jdbc.queryForObject(selectString,
                 new String[]{username},
-                new RowMapper<ArrayList<Preference>>() {
+                new RowMapper<List<Preference>>() {
                     @Override
-                    public ArrayList<Preference> mapRow(ResultSet rs, int rowNum) throws SQLException {
+                    public List<Preference> mapRow(ResultSet rs, int rowNum) throws SQLException {
                         ArrayList<Preference> preferences = new ArrayList<>();
                         while (rs.next()) {
                             Preference preference = new Preference.Builder()
@@ -67,12 +68,11 @@ public class UserPreferenceDAOImpl implements UserPreferenceDAO {
     }
 
     @Override
-    public int deleteAllPreference(String username) {
+    public int deleteAllPreference(String username, int preferenceType) {
         String sqlString =
                 "DELETE FROM userspreferences " +
-                        "WHERE username = ?";
-        System.out.println(username);
-        return jdbc.update(sqlString, username);
+                        "WHERE username = ? AND preference_type = ?";
 
+        return jdbc.update(sqlString, username, preferenceType);
     }
 }

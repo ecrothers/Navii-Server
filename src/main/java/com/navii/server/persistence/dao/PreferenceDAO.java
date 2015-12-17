@@ -11,8 +11,17 @@ public interface PreferenceDAO {
 
     /**
      * Finds all preference entries from the database based on preference type
+     *
      * @param preferenceType type of preference in the database
-     * @return  All existing preferences based on the preference type.
+     * @return All existing preferences based on the preference type.
      */
     List<Preference> getPreferences(int preferenceType);
+
+    /**
+     * Returns the question based on the preference type
+     *
+     * @param preferenceType preferenceType type of preference in the database
+     * @return existing question found based on the preference type
+     */
+    String getQuestion(int preferenceType);
 }
