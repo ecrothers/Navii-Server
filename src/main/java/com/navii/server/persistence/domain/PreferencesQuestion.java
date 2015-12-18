@@ -14,8 +14,7 @@ public class PreferencesQuestion {
         this.preferences = builder.preferences;
     }
 
-    public PreferencesQuestion() {
-    }
+    public PreferencesQuestion() {}
 
     public static Builder getBuilder() {
         return new Builder();
@@ -34,8 +33,7 @@ public class PreferencesQuestion {
         private String question;
         private List<Preference> preferences;
 
-        public Builder() {
-        }
+        public Builder() {}
 
         public Builder question(String question) {
             this.question = question;

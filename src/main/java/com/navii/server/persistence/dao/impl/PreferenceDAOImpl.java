@@ -63,9 +63,7 @@ public class PreferenceDAOImpl implements PreferenceDAO {
     @Override
     public String getQuestion(int preferenceType) {
         String fetchQuery = "SELECT preference_question FROM preference_questions WHERE preference_type = ?";
-        String question = jdbc.queryForObject(fetchQuery, new Object[]{preferenceType}, String.class);
-
-        return question;
+        return jdbc.queryForObject(fetchQuery, new Object[]{preferenceType}, String.class);
     }
 
 }

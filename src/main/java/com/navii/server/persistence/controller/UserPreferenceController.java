@@ -1,6 +1,5 @@
 package com.navii.server.persistence.controller;
 
-import com.navii.server.persistence.domain.User;
 import com.navii.server.persistence.domain.UserPreference;
 import com.navii.server.persistence.service.UserPreferenceService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,6 +39,8 @@ public class UserPreferenceController {
      * @param username    Identifier for the user
      * @param preferenceType Identifier for the preferenceType
      * @return          Deletes all UserPreference return HTTP status 202; otherwise 404.
+     *
+     * TODO: change path variables to request parameters
      */
     @RequestMapping(value = "/{username}/{preferenceType}", method = RequestMethod.DELETE)
     public ResponseEntity<?> deleteAllUserPreference(@PathVariable String username, @PathVariable("preferenceType") int preferenceType) {

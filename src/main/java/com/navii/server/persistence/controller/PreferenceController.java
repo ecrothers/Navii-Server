@@ -31,14 +31,12 @@ public class PreferenceController {
      * @return list of preferences
      */
     @RequestMapping(value = "/{preferenceType}", method = RequestMethod.GET)
-    public ResponseEntity<PreferencesQuestion> getPreferences(@PathVariable int preferenceType) {
+    public ResponseEntity<?> getPreferences(@PathVariable int preferenceType) {
         List<Preference> foundPreferences = preferenceService.getPreferences(preferenceType);
 
         String question = preferenceService.getQuestion(preferenceType);
-        System.out.println(question);
 
-        PreferencesQuestion preferencesQuestion =
-                new PreferencesQuestion.Builder()
+        PreferencesQuestion preferencesQuestion = new PreferencesQuestion.Builder()
                 .question(question)
                 .preferences(foundPreferences)
                 .build();

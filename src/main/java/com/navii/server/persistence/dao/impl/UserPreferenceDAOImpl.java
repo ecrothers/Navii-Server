@@ -29,11 +29,13 @@ public class UserPreferenceDAOImpl implements UserPreferenceDAO {
         List<Object[]> input = new ArrayList<>();
 
         for (Preference preference : saved.getPreferences()) {
-            input.add(new Object[]{saved.getUsername(),
+            input.add(new Object[] {
+                    saved.getUsername(),
                     preference.getPreference(),
                     preference.getPreferenceType()
             });
         }
+
         try {
             jdbc.batchUpdate(insertString, input);
         } catch (Exception e) {
@@ -44,6 +46,7 @@ public class UserPreferenceDAOImpl implements UserPreferenceDAO {
         return true;
     }
 
+    // TODO: move to Preference
     @Override
     public List<Preference> obtain(final String username) {
         String selectString =
