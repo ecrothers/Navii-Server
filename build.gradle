@@ -1,3 +1,8 @@
+import org.apache.tools.ant.filters.ReplaceTokens
+
+def environment = hasProperty('env') ? env : 'ci'
+def ver = hasProperty('ver') ? ver : ''
+
 buildscript {
     repositories {
         mavenCentral()
@@ -11,16 +16,44 @@ apply plugin: 'java'
 apply plugin: 'idea'
 apply plugin: 'spring-boot'
 
-mainClassName = 'com.navii.server.Application'
+group = 'com.navii.server'
 
-version = '0.1-SNAPSHOT'
+// For deployment-related builds, we will need to pass the version in, otherwise we generate it.
+if (ver.equals('')) {
+    def MAJOR_VERSION = 1
+    def minorVer = hasProperty('minorVersion') ? minorVersion : 'local'
+    println "Minor version is $minorVer."
+    ver = "${MAJOR_VERSION}.$minorVer".toString()
+}
 
-repositories {
-    mavenCentral()
+println "Environment is $environment."
+println "Service version is $ver."
+
+task writeBuildProperties() << {
+    def buildDir = new File("${project.rootDir}/build")
+    if (!buildDir.exists()) {
+        buildDir.mkdir()
+    }
+    def buildProps = new File("${project.rootDir}/build/buildinfo.properties")
+    def w = buildProps.newWriter()
+    w << "version=$ver\n"
+    w.close()
+}
+
+jar() {
+    dependsOn writeBuildProperties
+    baseName = 'navi'
+    version = ver
 }
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
+
+//mainClassName = 'com.navii.server.Application'
+
+repositories {
+    mavenCentral()
+}
 
 sourceSets {
     integrationTest {
@@ -40,6 +73,11 @@ configurations {
     integrationTestRuntime.extendsFrom testRuntime
 }
 
+configurations.all {
+    resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
+    resolutionStrategy.cacheDynamicVersionsFor 0, 'seconds'
+}
+
 dependencies {
     def springBootVersion = '1.3.0.RELEASE'
 
@@ -56,11 +94,6 @@ dependencies {
     testCompile("org.springframework.boot:spring-boot-starter-test:$springBootVersion")
     testCompile("org.springframework:spring-test:4.2.2.RELEASE")
     testCompile("junit:junit:4.12")
-}
-
-jar {
-    baseName = 'gs-navii'
-    version =  '0.0.1'
 }
 
 task wrapper(type: Wrapper) {
@@ -89,3 +122,49 @@ build {
         showStandardStreams = true
     }
 }
+
+// Below here are deployment-related tasks. They are not meant to be run locally (may change when/if we decide to run Docker locally).
+
+task copyConfig(type: Copy) {
+    from 'src/main/resources/application.properties'
+    into 'docker-ready'
+}
+
+/* Currently, this task expects the jar to be in the top-level folder. Jenkins is responsible for putting the jar there
+ * as part of a copy artifact. We could make this look for a local jar in build/libs if we can't find the one that
+ * should have been copied by Jenkins. That, however, implies that we want to do the build/test/configure/deploy in one
+ * job, but I'd rather keep the build/package separate from configure/deploy.
+ */
+task copyJar(type: Copy) {
+    from 'build/libs/'
+    into 'docker-ready'
+    include '*.jar'
+
+    rename { String fileName ->
+        fileName = 'navi.jar'
+    }
+}
+
+task copyDockerfile(type: Copy) {
+    from ('config/docker') {
+        filter(ReplaceTokens, tokens: [environment: environment, version: ver])
+    }
+    into 'docker-ready'
+}
+
+//task copyOptionSettings(type: Copy) {
+//    from "config/beanstalk/optionsettings.json.$environment"
+//    into 'build'
+//
+//    rename { String fileName ->
+//        fileName.replace(".$environment", '')
+//    }
+//}
+
+task zipImage(type: Zip) {
+    from 'docker-ready'
+    baseName = 'navi'
+    destinationDir file('build')
+}
+
+task dockerBundle(dependsOn: ['copyConfig', 'copyJar', 'copyDockerfile', 'zipImage']) {}
