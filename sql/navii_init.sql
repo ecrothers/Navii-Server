@@ -9,7 +9,7 @@ CREATE TABLE IF NOT EXISTS users (
 );
 
 CREATE TABLE IF NOT EXISTS attractions (
-	attractionid INT NOT NULL AUTO_INCREMENT,	
+	attractionid INT NOT NULL AUTO_INCREMENT,
 	name VARCHAR(256),
 	location VARCHAR(256),
 	photoURI VARCHAR(256),
@@ -39,7 +39,7 @@ CREATE TABLE IF NOT EXISTS activities (
 	attractionid INT NOT NULL,
 	PRIMARY KEY (activityid),
 	FOREIGN KEY (attractionid) REFERENCES attractions(attractionid) ON DELETE CASCADE,
-	FOREIGN KEY (itineraryid) REFERENCES itineraries(itineraryid) ON DELETE SET NULL 
+	FOREIGN KEY (itineraryid) REFERENCES itineraries(itineraryid) ON DELETE SET NULL
 );
 
 CREATE TABLE IF NOT EXISTS cuisines (
@@ -66,7 +66,7 @@ CREATE TABLE IF NOT EXISTS restaurants (
 	restaurantid INT NOT NULL AUTO_INCREMENT,
 	cuisineid INT,
 	RankOfLife INT,
-	atmosphereid INT, 
+	atmosphereid INT,
 	dietid INT,
 	attractionid INT,
 	PRIMARY KEY (restaurantid),
@@ -90,7 +90,14 @@ CREATE TABLE IF NOT EXISTS preferences (
 	counter INT DEFAULT 0,
 	photoURL VARCHAR(32),
 	preference_type INT,
-	PRIMARY KEY (preference, preference_type)
+	PRIMARY KEY (preference, preference_type),
+  FOREIGN KEY (preference_type) REFERENCES preference_questions(preference_type) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS preference_questions (
+  preference_type INT,
+  preference_question VARCHAR(256),
+  PRIMARY KEY (preference_type)
 );
 
 CREATE TABLE IF NOT EXISTS tags (
@@ -102,9 +109,11 @@ CREATE TABLE IF NOT EXISTS tags (
 CREATE TABLE IF NOT EXISTS userspreferences (
 	username VARCHAR(16) NOT NULL,
 	preference VARCHAR(10) NOT NULL,
+	preference_type INT NOT NULL,
 	FOREIGN KEY (username) REFERENCES users(username) ON DELETE CASCADE,
 	FOREIGN KEY (preference) REFERENCES preferences(preference) ON DELETE CASCADE,
-	CONSTRAINT pk_userpreference PRIMARY KEY (username,preference)
+	FOREIGN KEY (preference_type) REFERENCES preferences(preference_type) ON DELETE CASCADE,
+	CONSTRAINT pk_userpreference PRIMARY KEY (username,preference,preference_type)
 );
 
 CREATE TABLE IF NOT EXISTS itinerariespreferences (
@@ -115,7 +124,6 @@ CREATE TABLE IF NOT EXISTS itinerariespreferences (
 	FOREIGN KEY (preference) REFERENCES preferences(preference) ON DELETE CASCADE,
 	CONSTRAINT pk_itinerarypreference PRIMARY KEY (itineraryid,preference)
 );
-
 
 CREATE TABLE IF NOT EXISTS itinerariestags (
 	itineraryid INT,

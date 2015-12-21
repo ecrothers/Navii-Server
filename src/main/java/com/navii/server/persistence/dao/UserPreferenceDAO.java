@@ -10,9 +10,28 @@ import java.util.List;
  */
 public interface UserPreferenceDAO {
 
+    /**
+     * Saves a new UserPreference entry to the database.
+     *
+     * @param saved The information of the saved UserPreference entry.
+     * @return true if successful, false otherwise
+     */
     boolean create(UserPreference saved);
 
+    /**
+     * Return list of preferences based on the username
+     *
+     * @param username Username of the user
+     * @return List of preferences
+     */
     List<Preference> obtain(String username);
 
-    int deleteAllPreference(String username);
+    /**
+     * Deletes all userspreferences from the database based on the username and the type of preference
+     *
+     * @param username       Username of the userpreference to be deleted
+     * @param preferenceType Identifier for userpreference to be deleted
+     * @return Number of rows effected
+     */
+    int deleteAllPreference(String username, int preferenceType);
 }

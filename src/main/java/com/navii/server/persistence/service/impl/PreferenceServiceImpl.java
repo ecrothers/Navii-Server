@@ -22,4 +22,9 @@ public class PreferenceServiceImpl implements PreferenceService{
     public List<Preference> getPreferences(int preferenceType) {
         return preferenceDAO.getPreferences(preferenceType);
     }
+
+    @Override
+    public String getQuestion(int preferenceType) {
+        return preferenceDAO.getQuestion(preferenceType);
+    }
 }
