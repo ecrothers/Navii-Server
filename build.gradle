@@ -90,6 +90,7 @@ dependencies {
     compile("com.google.guava:guava:18.0")
     compile("com.fasterxml.jackson.module:jackson-module-afterburner:2.6.3")
     compile("org.springframework.retry:spring-retry:1.1.2.RELEASE")
+    compile("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.4.0")
 
     testCompile("org.springframework.boot:spring-boot-starter-test:$springBootVersion")
     testCompile("org.springframework:spring-test:4.2.2.RELEASE")
