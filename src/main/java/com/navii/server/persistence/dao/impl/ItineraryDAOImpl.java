@@ -123,19 +123,17 @@ public class ItineraryDAOImpl implements ItineraryDAO {
 
     @Override
     public int create(final Itinerary created) {
-        System.out.println("Working?");
         String query = "INSERT INTO " + TABLE_NAME + " (" +
                 SQL_COST + ", " +
-                SQL_DESCRIPTION + ", " +
-                SQL_AUTHOR + ", " +
                 SQL_DURATION + ", " +
+                SQL_DESCRIPTION + ", " +
+                SQL_AUTHOR + " " +
                 ") VALUES (?, ?, ?, ?)";
 
         return jdbc.update(query,
                 created.getPrice(),
-                created.getDescription(),
-                created.getAuthorId(),
                 created.getDuration(),
-                created.getItineraryId());
+                created.getDescription(),
+                created.getAuthorId());
     }
 }
