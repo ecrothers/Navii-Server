@@ -42,11 +42,12 @@
         $.ajax({
             type: 'POST',
             crossDomain: true,
-            url: 'https://localhost:8443/attraction',
+            url: 'https://localhost:8443/itinerary',
             contentType: 'application/json',
             dataType: 'json',
             data: JSON.stringify($('#entry').serializeObject()),
             success: function(data) {
+                // This can be returned when not successfully added
                 $('.result').html('<p>Added itinerary successfully.</p>');
             },
             error: function(data) {

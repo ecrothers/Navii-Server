@@ -49,7 +49,7 @@ public class ItineraryDAOImpl implements ItineraryDAO {
                         .itineraryId((int) row.get(SQL_ID))
                         .price((int) row.get(SQL_COST))
                         .description((String) row.get(SQL_DESCRIPTION))
-                        .authorId((int) row.get(SQL_AUTHOR))
+                        .authorId((String) row.get(SQL_AUTHOR))
                         .duration((int) row.get(SQL_DURATION))
                         .build();
 
@@ -81,7 +81,7 @@ public class ItineraryDAOImpl implements ItineraryDAO {
                                 .itineraryId(rs.getInt(SQL_ID))
                                 .price(rs.getInt(SQL_COST))
                                 .description(rs.getString(SQL_DESCRIPTION))
-                                .authorId(rs.getInt(SQL_AUTHOR))
+                                .authorId(rs.getString(SQL_AUTHOR))
                                 .duration(rs.getInt(SQL_DURATION))
                                 .build();
                     }
@@ -123,6 +123,7 @@ public class ItineraryDAOImpl implements ItineraryDAO {
 
     @Override
     public int create(final Itinerary created) {
+        System.out.println("Working?");
         String query = "INSERT INTO " + TABLE_NAME + " (" +
                 SQL_COST + ", " +
                 SQL_DESCRIPTION + ", " +
