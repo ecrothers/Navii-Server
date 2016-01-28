@@ -5,7 +5,7 @@ public class Itinerary {
     private String description;
     private int duration;
     private int price;
-    private int authorId;
+    private String authorId;
 
     public Itinerary() {}
 
@@ -29,7 +29,7 @@ public class Itinerary {
         return duration;
     }
 
-    public int getAuthorId() {
+    public String getAuthorId() {
         return authorId;
     }
 
@@ -42,7 +42,7 @@ public class Itinerary {
         private String description;
         private int duration;
         private int price;
-        private int authorId;
+        private String authorId;
 
         public Builder() {}
 
@@ -61,7 +61,7 @@ public class Itinerary {
             return this;
         }
 
-        public Builder authorId(int authorId) {
+        public Builder authorId(String authorId) {
             this.authorId = authorId;
             return this;
         }

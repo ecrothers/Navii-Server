@@ -1,7 +1,8 @@
 <!DOCTYPE HTML>
+<!-- This is mostly just a placeholder for a more complex webpage with sanitation and whatnot-->
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Itinerary Entry Webtool</title>
+    <title>Activity Entry Webtool</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <style>
         .col1 {
@@ -14,24 +15,24 @@
     <script src="https://code.jquery.com/jquery-1.10.2.js"></script>
 </head>
 <body>
-<h1>Create New Itinerary</h1>
-<form id="entry" action="#" th:action="@{/itinerary}" th:object="${itinerary}" method="post">
+<h1>Create New Activity</h1>
+<form id="entry" action="#" th:action="@{/activity}" th:object="${activity}" method="post">
     <table style='width:100%'>
         <tr>
-            <td class='col1'>Description:</td>
-            <td class='col2'><input type='text' th:field="*{description}"/></td>
+            <td class='col1'>Start Time:</td>
+            <td class='col2'><input type='datetime-local' th:field="*{startTime}"/></td>
         </tr>
         <tr>
-            <td class='col1'>Price:</td>
-            <td class ='col2'><input type='text' th:field="*{price}"/></td>
+            <td class='col1'>End Time:</td>
+            <td class ='col2'><input type='datetime-local' th:field="*{endTime}"/></td>
         </tr>
         <tr>
-            <td class='col1'>Duration:</td>
-            <td class ='col2'><input type='text' th:field="*{duration}"/></td>
+            <td class='col1'>Itinerary ID:</td>
+            <td class ='col2'><input type='text' th:field="*{itineraryId}"/></td>
         </tr>
         <tr>
-            <td class='col1'>Author ID:</td>
-            <td class ='col2'><input type='text' th:field="*{authorId}"/></td>
+            <td class='col1'>Attraction ID:</td>
+            <td class ='col2'><input type='text' th:field="*{attractionId}"/></td>
         </tr>
     </table>
 <input id="subButton" type="button" value="Submit"/><input type="reset" value="Reset"/>
@@ -42,16 +43,15 @@
         $.ajax({
             type: 'POST',
             crossDomain: true,
-            url: 'https://localhost:8443/itinerary',
+            url: 'https://localhost:8443/activity',
             contentType: 'application/json',
             dataType: 'json',
             data: JSON.stringify($('#entry').serializeObject()),
             success: function(data) {
-                // This can be returned when not successfully added
-                $('.result').html('<p>Added itinerary successfully.</p>');
+                $('.result').html('<p>Added activity successfully.</p>');
             },
             error: function(data) {
-                $('.result').html('<p>Error adding itinerary.</p>');
+                $('.result').html('<p>Error adding activity.</p>');
             }
         });
         return true;
