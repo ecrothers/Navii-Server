@@ -40,4 +40,11 @@ public interface ItineraryDAO {
      * @return          The number of updated entries
      */
     int update(final Itinerary updated);
+
+    /**
+     * Return list of itineraries based on list of tags
+     * @param tagList   The list of tags provided by user
+     * @return          The list of itineraries
+     */
+    List<Itinerary> getItineraries(List<String> tagList);
 }
