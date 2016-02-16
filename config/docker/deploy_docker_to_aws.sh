@@ -27,7 +27,7 @@ PROFILE="default"
 APPNAME=
 VERSION=
 ENV=
-SOLUTION_STACK="64bit Amazon Linux 2015.09 v2.0.6 running Docker 1.7.1"
+SOLUTION_STACK="64bit Amazon Linux 2015.09 v2.0.7 running Docker 1.9.1"
 
 while getopts “hp:a:v:e:s:” OPTION
 do
