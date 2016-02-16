@@ -1,14 +1,17 @@
 package com.navii.server.persistence.domain;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 /**
  * Created by ecrothers on 2015-10-08.
  */
 public class Activity {
     private int activityId;
-    private LocalDateTime startTime;
-    private LocalDateTime endTime;
+    //private LocalDateTime startTime;
+    //private LocalDateTime endTime;
+    private String startTime;
+    private String endTime;
     private int itineraryId;
     private int attractionId;
 
@@ -26,11 +29,11 @@ public class Activity {
         return activityId;
     }
 
-    public LocalDateTime getStartTime() {
+    public String getStartTime() {
         return startTime;
     }
 
-    public LocalDateTime getEndTime() {
+    public String getEndTime() {
         return endTime;
     }
 
@@ -44,8 +47,8 @@ public class Activity {
 
     public static class Builder {
         private int activityId;
-        private LocalDateTime startTime;
-        private LocalDateTime endTime;
+        private String startTime;
+        private String endTime;
         private int itineraryId;
         private int attractionId;
 
@@ -56,7 +59,21 @@ public class Activity {
             return this;
         }
 
-        public Builder startTime(LocalDateTime startTime) {
+        public Builder startTime(String startTime) {
+            this.startTime = startTime;
+            //LocalDateTime dateTime = LocalDateTime.parse(startTime);
+            //this.startTime = dateTime;
+            return this;
+        }
+
+        public Builder endTime(String endTime) {
+            this.endTime = endTime;
+            //LocalDateTime dateTime = LocalDateTime.parse(endTime);
+            //this.endTime = dateTime;
+            return this;
+        }
+
+        /*public Builder startTime(LocalDateTime startTime) {
             this.startTime = startTime;
             return this;
         }
@@ -64,7 +81,7 @@ public class Activity {
         public Builder endTime(LocalDateTime endTime) {
             this.endTime = endTime;
             return this;
-        }
+        }*/
 
         public Builder  itineraryId(int itineraryId) {
             this.itineraryId = itineraryId;

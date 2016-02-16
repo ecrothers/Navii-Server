@@ -77,8 +77,10 @@ public class ActivityDAOImpl implements ActivityDAO {
                     } else {
                         return new Activity.Builder()
                                 .activityId(rs.getInt(SQL_ID))
-                                .startTime(DateTimeHelper.fromDB(rs.getTimestamp("startTime")))
-                                .endTime(DateTimeHelper.fromDB(rs.getTimestamp("endTime")))
+                                .startTime(DateTimeHelper.fromDB(rs.getTimestamp("startTime")).toString())
+                                .endTime(DateTimeHelper.fromDB(rs.getTimestamp("endTime")).toString())
+                                //.startTime(DateTimeHelper.fromDB(rs.getTimestamp("startTime")))
+                                //.endTime(DateTimeHelper.fromDB(rs.getTimestamp("endTime")))
                                 .itineraryId(rs.getInt(SQL_ITINERARY_ID))
                                 .attractionId(rs.getInt(SQL_ATTRACTION_ID))
                                 .build();
@@ -128,12 +130,12 @@ public class ActivityDAOImpl implements ActivityDAO {
                 SQL_END_TIME + ", " +
                 SQL_ITINERARY_ID + ", " +
                 SQL_ATTRACTION_ID + "" +
-                ") VALUES (?, ?, ?, ?, ?, ?, ?)";
+                ") VALUES (?, ?, ?, ?, ?)";
 
         return jdbc.update(query,
                 created.getActivityId(),
-                created.getStartTime(),
-                created.getEndTime(),
+                DateTimeHelper.toDB(LocalDateTime.parse(created.getStartTime())),
+                DateTimeHelper.toDB(LocalDateTime.parse(created.getEndTime())),
                 created.getItineraryId(),
                 created.getAttractionId());
     }
