@@ -42,5 +42,12 @@ public interface ItineraryService {
      * @return              The number of updated Itinerary objects.
      */
     int update(String itineraryId, Itinerary updatedItinerary);
+
+    /**
+     * Retrieve a list of itineraries from the tags from list
+     * @param tagList List of tags
+     * @return          The list of Itineraries
+     */
+    List<Itinerary> getItineraries(List<String> tagList);
 }
 

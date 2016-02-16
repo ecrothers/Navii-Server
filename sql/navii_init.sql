@@ -116,21 +116,21 @@ CREATE TABLE IF NOT EXISTS userspreferences (
 	CONSTRAINT pk_userpreference PRIMARY KEY (username,preference,preference_type)
 );
 
-CREATE TABLE IF NOT EXISTS itinerariespreferences (
-	itineraryid INT,
+CREATE TABLE IF NOT EXISTS attractionspreferences (
+	attractionid INT,
 	preference VARCHAR(10),
-	UNIQUE KEY (itineraryid,preference),
-	FOREIGN KEY (itineraryid) REFERENCES itineraries(itineraryid) ON DELETE CASCADE,
+	UNIQUE KEY (attractionid,preference),
+	FOREIGN KEY (attractionid) REFERENCES attractions(attractionid) ON DELETE CASCADE,
 	FOREIGN KEY (preference) REFERENCES preferences(preference) ON DELETE CASCADE,
-	CONSTRAINT pk_itinerarypreference PRIMARY KEY (itineraryid,preference)
+	CONSTRAINT pk_attractionpreference PRIMARY KEY (attractionid,preference)
 );
 
-CREATE TABLE IF NOT EXISTS itinerariestags (
-	itineraryid INT,
+CREATE TABLE IF NOT EXISTS attractionstags (
+	attractionid INT,
 	tag VARCHAR(10),
-	UNIQUE KEY (itineraryid,tag),
-	FOREIGN KEY (itineraryid) REFERENCES itineraries(itineraryid) ON DELETE CASCADE,
+	UNIQUE KEY (attractionid,tag),
+	FOREIGN KEY (attractionid) REFERENCES attractions(attractionid) ON DELETE CASCADE,
 	FOREIGN KEY (tag) REFERENCES tags(tag) ON DELETE CASCADE,
-	CONSTRAINT pk_itinerarytag PRIMARY KEY (tag,itineraryid)
+	CONSTRAINT pk_attractiontag PRIMARY KEY (tag,attractionid)
 );
 

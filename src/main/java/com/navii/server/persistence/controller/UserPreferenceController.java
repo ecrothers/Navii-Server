@@ -49,7 +49,7 @@ public class UserPreferenceController {
         if (deletedUsersPreferences > 0) {
             return new ResponseEntity<>(HttpStatus.ACCEPTED);
         } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
 

@@ -100,10 +100,19 @@ public class ItineraryController {
         }
     }
 
-    @RequestMapping(value="/tags" , method= RequestMethod.GET)
-    public List<Itinerary> getItinerariesFromTags(@RequestBody List<String> tagList) {
-        /*List<Itinerary> itineraries = itineraryService.getItineraries(tagList);
-        return itineraries;*/
-        return null;
+    /**
+     * Returns a recommended list of Itineraries based on tag list
+     * @param tagList   List of tags
+     * @return  List of itineraries
+     */
+    @RequestMapping(value="/tags" , method= RequestMethod.POST)
+    public ResponseEntity<List<Itinerary>> getItinerariesFromTags(@RequestBody List<String> tagList) {
+        List<Itinerary> itineraries = itineraryService.getItineraries(tagList);
+
+        if (itineraries.size() > 0) {
+            return new ResponseEntity<>(itineraries, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
     }
 }

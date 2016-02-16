@@ -113,6 +113,37 @@ public class ItineraryDAOImpl implements ItineraryDAO {
     }
 
     @Override
+    public List<Itinerary> getItineraries(List<String> tagList) {
+
+        //TODO: Change to actual query
+        String sqlString =
+                "SELECT * FROM " +TABLE_NAME +
+                        " ORDER BY RAND() " +
+                        "LIMIT 3;";
+
+        List<Itinerary> itineraries = new ArrayList<>();
+
+        try {
+            List<Map<String, Object>> rows = jdbc.queryForList(sqlString);
+
+            for (Map row : rows) {
+                Itinerary itinerary = new Itinerary.Builder()
+                        .itineraryId((int)row.get(SQL_ID))
+                        .authorId((String)row.get(SQL_AUTHOR))
+                        .description((String)row.get(SQL_DESCRIPTION))
+                        .duration((int)row.get(SQL_DURATION))
+                        .build();
+                itineraries.add(itinerary);
+            }
+
+        } catch (EmptyResultDataAccessException e) {
+            logger.warn("None found.");
+        }
+
+        return itineraries;
+    }
+
+    @Override
     public int delete(final int itineraryId) {
         String query =
                 "DELETE FROM " + TABLE_NAME + " " +
