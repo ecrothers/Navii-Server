@@ -127,8 +127,8 @@ build {
 // Below here are deployment-related tasks. They are not meant to be run locally (may change when/if we decide to run Docker locally).
 
 task copyConfig(type: Copy) {
-    from 'src/main/resources/application.properties'
-    into 'docker-ready'
+    from 'src/main/resources/.ebextensions'
+    into 'docker-ready/.ebextensions'
 }
 
 /* Currently, this task expects the jar to be in the top-level folder. Jenkins is responsible for putting the jar there
