@@ -93,9 +93,10 @@ public class UserController {
      */
     // TODO: change to use exception
     // TODO: this won't make. Path variables and RequestBody don't match
-    @RequestMapping(value = "/{userId}", method = RequestMethod.PUT)
-    public ResponseEntity<?> updateUser(@RequestBody User user) {
-        int updatedUser = userService.update(user);
+    @RequestMapping(value = "/update", method = RequestMethod.PUT)
+    public ResponseEntity<?> updateUser(@RequestBody User user, @RequestParam(required = true) String newUsername) {
+
+        int updatedUser = userService.update(user,newUsername);
 
         if (updatedUser > 0) {
             return new ResponseEntity<>(HttpStatus.OK);

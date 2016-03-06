@@ -126,17 +126,15 @@ public class UserDAOImpl implements UserDAO {
     }
 
     @Override
-    public int update(User updatedUser) {
+    public int update(User updatedUser, String newUsername) {
         final String sqlString =
                 "UPDATE users " +
-                        "SET username = ?, password = ?, is_facebook = ?" +
+                        "SET username = ? " +
                         "WHERE username = ?";
 
         return jdbc.update(
                 sqlString,
-                updatedUser.getUsername(),
-                updatedUser.getPassword(),
-                updatedUser.isFacebook(),
+                newUsername,
                 updatedUser.getUsername()
         );
     }
