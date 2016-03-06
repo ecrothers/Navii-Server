@@ -31,9 +31,10 @@ public interface UserDAO {
     /**
      * Updates an existing user in the database.
      * @param updatedUser   The information of the updated user entry.
+     * @param username       The new username
      * @return              The number of updated users.
      */
-    int update(User updatedUser);
+    int update(User updatedUser, String username);
 
     /**
      * Deletes a user from the database.

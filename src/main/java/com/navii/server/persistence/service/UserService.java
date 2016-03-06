@@ -34,7 +34,7 @@ public interface UserService {
      * @param updatedUser   The information of the updated user entry.
      * @return              The number of updated users.
      */
-    int update(User updatedUser);
+    int update(User updatedUser, String username);
 
     /**
      * Deletes a user from the database.
