@@ -29,6 +29,14 @@ public interface UserDAO {
     int create(User createdUser);
 
     /**
+     * Updates the password with a given new password
+     * @param username          Username of the user
+     * @param password       New password
+     * @return              The number of updated users.
+     */
+    int updatePassword(String username, String password);
+
+    /**
      * Updates an existing user in the database.
      * @param updatedUser   The information of the updated user entry.
      * @return              The number of updated users.

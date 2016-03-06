@@ -228,6 +228,20 @@ public class UserControllerTest {
                 .andExpect(MockMvcResultMatchers.status().isOk());
     }
 
+    @Test
+    public void updatePasswordSucceeds() throws Exception {
+        sendDeleteAllUserRequest()
+                .andExpect(MockMvcResultMatchers.status().isOk());
+
+        User user = createGenericTestUser();
+
+        sendCreateUserRequest(user)
+                .andExpect(MockMvcResultMatchers.status().isCreated());
+
+        sendUpdatePasswordRequest(user.getUsername(), user.getPassword(), "thisWillSucceed")
+                .andExpect(MockMvcResultMatchers.status().isOk());
+    }
+
     private User createGenericTestUser() {
         int randomId = random.nextInt(1000);
         String username = "user-test_" + randomId;
@@ -271,5 +285,13 @@ public class UserControllerTest {
                 .perform(MockMvcRequestBuilders.get("/user/login", username, password)
                 .param("username", username)
                 .param("password", password));
+    }
+
+    private ResultActions sendUpdatePasswordRequest(String username, String oldPassword, String newPassword) throws Exception {
+        return mvc
+                .perform(MockMvcRequestBuilders.put("/user/changePassword", username, oldPassword, newPassword)
+                        .param("username", username)
+                        .param("oldPassword", oldPassword)
+                        .param("newPassword", newPassword));
     }
 }

@@ -107,6 +107,25 @@ public class UserDAOImpl implements UserDAO {
     }
 
     @Override
+    public int updatePassword(String username, String password) {
+        final String sqlString =
+                "UPDATE users " +
+                        "SET password = ? " +
+                        "WHERE username = ?";
+        try {
+            return jdbc.update(
+                    sqlString,
+                    password,
+                    username
+            );
+        } catch (DataAccessException e) {
+            logger.warn("User: updatePassword returns no rows or contains an error");
+            return 0;
+        }
+
+    }
+
+    @Override
     public int update(User updatedUser) {
         final String sqlString =
                 "UPDATE users " +

@@ -39,6 +39,15 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public int updatePassword(String username, String oldPassword, String newPassword) {
+        if (userDAO.findOne(username).getPassword().equals(oldPassword)) {
+            return userDAO.updatePassword(username, newPassword);
+        }
+
+        return 0;
+    }
+
+    @Override
     public int delete(String username) {
         return userDAO.delete(username);
     }

@@ -30,6 +30,15 @@ public interface UserService {
     int create(User createdUser);
 
     /**
+     * Updates the password with a given new password
+     * @param username          Username of the user
+     * @param oldPassword       Old password
+     * @param newPassword       New password
+     * @return              The number of updated users.
+     */
+    int updatePassword(String username, String oldPassword, String newPassword);
+
+    /**
      * Updates an existing user in the database.
      * @param updatedUser   The information of the updated user entry.
      * @return              The number of updated users.

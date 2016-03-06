@@ -64,13 +64,33 @@ public class UserController {
     }
 
     /**
+     * Modify password
+     *
+     * @param username          Username of the user
+     * @param oldPassword       Old password
+     * @param newPassword       New password
+     * @return          If the user exists and is modified, return HTTP status 200; otherwise 400.
+     */
+    @RequestMapping(value = "/changePassword", method = RequestMethod.PUT)
+    public ResponseEntity<?> updatePassword(@RequestParam String username,
+                                            @RequestParam String oldPassword,
+                                            @RequestParam String newPassword) {
+        int updatedUser = userService.updatePassword(username, oldPassword, newPassword);
+
+        if (updatedUser > 0) {
+            return new ResponseEntity<>(HttpStatus.OK);
+        }
+
+        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+    }
+
+    /**
      * Updates an existing user
      *
      * NOTE: Currently, there is a foreign key constraint that needs to be modified/removed.
      * @param user      User to persist in server
      * @return          If the user exists and is changed, return HTTP status 200; otherwise 400.
      */
-
     // TODO: change to use exception
     // TODO: this won't make. Path variables and RequestBody don't match
     @RequestMapping(value = "/{userId}", method = RequestMethod.PUT)
