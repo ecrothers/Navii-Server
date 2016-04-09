@@ -85,14 +85,6 @@ CREATE TABLE IF NOT EXISTS pointofinterests (
 	FOREIGN KEY (typeid) REFERENCES types(typeid) ON DELETE SET NULL
 );
 
-CREATE TABLE IF NOT EXISTS preferences (
-	preference VARCHAR(10) NOT NULL,
-	counter INT DEFAULT 0,
-	photoURL VARCHAR(32),
-	preference_type INT,
-	PRIMARY KEY (preference, preference_type),
-  FOREIGN KEY (preference_type) REFERENCES preference_questions(preference_type) ON DELETE CASCADE
-);
 
 CREATE TABLE IF NOT EXISTS preference_questions (
   preference_type INT,
@@ -104,6 +96,15 @@ CREATE TABLE IF NOT EXISTS tags (
 	tag VARCHAR(10) NOT NULL,
 	counter INT DEFAULT 0,
 	PRIMARY KEY (tag)
+);
+
+CREATE TABLE IF NOT EXISTS preferences (
+	preference VARCHAR(10) NOT NULL,
+	counter INT DEFAULT 0,
+	photoURL VARCHAR(32),
+	preference_type INT,
+	PRIMARY KEY (preference, preference_type),
+  FOREIGN KEY (preference_type) REFERENCES preference_questions(preference_type) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS userspreferences (
