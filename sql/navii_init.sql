@@ -4,6 +4,7 @@ CREATE TABLE IF NOT EXISTS users (
 	username VARCHAR(16) NOT NULL,
 	password CHAR(64) NOT NULL,
 	salt CHAR(64) NOT NULL,
+	alive TINYINT(1), 
 	is_facebook TINYINT(1),
 	PRIMARY KEY (username)
 );
