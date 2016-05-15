@@ -2,6 +2,7 @@ package com.navii.server.persistence.yelpAPI;
 
 import com.navii.server.persistence.domain.Attraction;
 import com.navii.server.persistence.domain.Location;
+import com.navii.server.persistence.domain.Venture;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -62,25 +63,29 @@ public class YelpAPI {
     }
 
     /**
-     * Creates and sends a request to the Search API by term and location.
+     * Creates and sends a request to the Search API by venture and location.
      * <p>
      * See <a href="http://www.yelp.com/developers/documentation/v2/search_api">Yelp Search API V2</a>
      * for more info.
      *
-     * @param term           <tt>String</tt> of the search term to be queried
-     * @param categoryFilter <tt>String</tt> categories
+     * @param venture           <tt>String</tt> of the search venture to be queried
      * @return <tt>String</tt> JSON Response
      */
-    public String searchForBusinessesByLocation(String term, String categoryFilter, String cll, int sort) {
+    public String searchForBusinessesByLocation(Venture venture, String cll, int sort) {
         OAuthRequest request = createOAuthRequest(SEARCH_PATH);
         //TODO: PUT INTO OBJECTS
-        request.addQuerystringParameter("term", term);
+        request.addQuerystringParameter("venture", venture.getTerm());
         request.addQuerystringParameter("location", DEFAULT_LOCATION);
         request.addQuerystringParameter("cll", cll);
         request.addQuerystringParameter("limit", String.valueOf(SEARCH_LIMIT));
         request.addQuerystringParameter("radius_filter", DEFAULT_RADIUS_FILTER);
         request.addQuerystringParameter("sort", String.valueOf(sort));
-//        request.addQuerystringParameter("category_filter", "localflavor");
+        if (!venture.getCategories().isEmpty()) {
+            System.out.println(venture.getCategories());
+            request.addQuerystringParameter("category_filter", venture.getCategories());
+        } else {
+            System.out.println("empty");
+        }
         return sendRequestAndGetResponse(request);
     }
 
@@ -120,14 +125,13 @@ public class YelpAPI {
      * Queries the Search API based on the command line arguments and takes the first result to query
      * the Business API.
      *
-     * @param term     term
-     * @param category category
-     * @param cll      location of current
-     * @return
+     * @param venture     venture object to define correct attraction
+     * @param cll      location of current search place
+     * @return  an Attraction object
      */
-    private Attraction getAttraction(String term, String category, String cll, int sort) {
+    private Attraction getAttraction(Venture venture, String cll, int sort) {
         String searchResponseJSON =
-                searchForBusinessesByLocation(term, category, cll, sort);
+                searchForBusinessesByLocation(venture, cll, sort);
 
         JSONParser parser = new JSONParser();
         JSONObject response = null;
@@ -174,14 +178,13 @@ public class YelpAPI {
         return attraction;
     }
 
-    public List<Attraction> buildItinerary(List<String> potentialAttractionStack, int sort) {
+    public List<Attraction> buildItinerary(List<Venture> potentialAttractionStack, int sort) {
         String categories = "";
         //TODO: REPLACE WITH ACTUAL COORDINTATES
         String cll = "43.644176,-79.387375";
         List<Attraction> attractionList = new ArrayList<>();
-        for (String potentialAttraction : potentialAttractionStack) {
-            //TODO: REPLACE WITH TYPE IN OBJECT
-            Attraction attraction = getAttraction(potentialAttraction, categories, cll, sort);
+        for (Venture potentialAttraction : potentialAttractionStack) {
+            Attraction attraction = getAttraction(potentialAttraction, cll, sort);
             attractionList.add(attraction);
             cll = attraction.getLocation().getLatitude() + "," + attraction.getLocation().getLongitude();
         }
@@ -226,10 +229,10 @@ public class YelpAPI {
 
     public class YelpThread implements Runnable {
 
-        List<String> potentialAttractionStack;
+        List<Venture> potentialAttractionStack;
         int sort;
 
-        public YelpThread(List<String> potentialAttractionStack, int sort) {
+        public YelpThread(List<Venture> potentialAttractionStack, int sort) {
             this.potentialAttractionStack = potentialAttractionStack;
             this.sort = sort;
         }
