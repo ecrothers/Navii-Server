@@ -6,14 +6,16 @@ package com.navii.server.persistence.domain;
 public class Attraction {
     private int attractionId;
     private String name;
-    private String location;
+//    private String location;
+    private Location location;
     private String photoUri;
     private String blurbUri;
     private int price;
     private int duration;
     private String purchase;
 
-    public Attraction() {}
+    public Attraction() {
+    }
 
     private Attraction(Builder builder) {
         this.attractionId = builder.attractionId;
@@ -33,7 +35,7 @@ public class Attraction {
         return name;
     }
 
-    public String getLocation() {
+    public Location getLocation() {
         return location;
     }
 
@@ -60,14 +62,15 @@ public class Attraction {
     public static class Builder {
         private int attractionId;
         private String name;
-        private String location;
+        private Location location;
         private String photoUri;
         private String blurbUri;
         private int price;
         private int duration;
         private String purchase;
 
-        public Builder() {}
+        public Builder() {
+        }
 
         public Builder attractionId(int attractionId) {
             this.attractionId = attractionId;
@@ -79,8 +82,12 @@ public class Attraction {
             return this;
         }
 
-        public Builder location(String location) {
+        public Builder location(Location location) {
             this.location = location;
+            return this;
+        }
+
+        public Builder location (String location) {
             return this;
         }
 

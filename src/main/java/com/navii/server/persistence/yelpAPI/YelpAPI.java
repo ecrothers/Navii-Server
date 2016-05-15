@@ -1,51 +1,46 @@
 package com.navii.server.persistence.yelpAPI;
 
 import com.navii.server.persistence.domain.Attraction;
+import com.navii.server.persistence.domain.Location;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import org.scribe.builder.ServiceBuilder;
-import org.scribe.builder.api.DefaultApi10a;
 import org.scribe.model.OAuthRequest;
 import org.scribe.model.Response;
 import org.scribe.model.Token;
 import org.scribe.model.Verb;
 import org.scribe.oauth.OAuthService;
-
-import com.beust.jcommander.JCommander;
-import com.beust.jcommander.Parameter;
+import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 /**
  * Code sample for accessing the Yelp API V2.
- *
+ * <p>
  * This program demonstrates the capability of the Yelp API version 2.0 by using the Search API to
  * query for businesses by a search term and location, and the Business API to query additional
  * information about the top result from the search query.
- *
+ * <p>
  * <p>
  * See <a href="http://www.yelp.com/developers/documentation">Yelp Documentation</a> for more info.
- *
  */
+@Component
 public class YelpAPI {
 
     private static final String API_HOST = "api.yelp.com";
-    private static final String DEFAULT_TERM = "mexican";
+    private static final String DEFAULT_TERM = "attraction";
     private static final String DEFAULT_LOCATION = "Toronto, ON";
     private static final String DEFAULT_RADIUS_FILTER = "2000";
-    private static final String DEFAULT_CATEGORY_FILTER = "(arts,all)";
-
-
-    private double[] sw_bounds = {43.661579, -79.427017};
-    private double[] ne_bounds = {43.694960, -79.350738};
-
-    private static final int SEARCH_LIMIT = 10;
+    private static final String DEFAULT_BOUNDS = "43.661579,-79.427017|43.694960,-79.350738";
+    private static final String DEFAULT_CATEGORY = "museums";
+    //TODO: CHANGE TO ACTUAL LIMIT
+    private static final int SEARCH_LIMIT = 5;
 
     private static final String SEARCH_PATH = "/v2/search";
-    private static final String BUSINESS_PATH = "/v2/business";
     /*
      * Update OAuth credentials below from the Yelp Developers API site:
      * http://www.yelp.com/developers/getting_started/api_access
@@ -55,23 +50,15 @@ public class YelpAPI {
     private static final String CONSUMER_SECRET = "xu1yiJin42FEUg8xl4RFviDZqdg";
     private static final String TOKEN = "55bwV2Mxx8ZFvR41cx-pWawFpGLKlRoa";
     private static final String TOKEN_SECRET = "I55U5TwC4APJ-St6_LGDtN_GBFM";
+    private static final String ZOMATO_PATH = "https://developers.zomato.com/api/v2.1/";
 
     OAuthService service;
     Token accessToken;
 
-    /**
-     * Setup the Yelp API OAuth credentials.
-     *
-     * @param consumerKey Consumer key
-     * @param consumerSecret Consumer secret
-     * @param token Token
-     * @param tokenSecret Token secret
-     */
-    public YelpAPI(String consumerKey, String consumerSecret, String token, String tokenSecret) {
-        this.service =
-                new ServiceBuilder().provider(TwoStepOAuth.class).apiKey(consumerKey)
-                        .apiSecret(consumerSecret).build();
-        this.accessToken = new Token(token, tokenSecret);
+    public YelpAPI() {
+        this.service = new ServiceBuilder().provider(TwoStepOAuth.class).apiKey(CONSUMER_KEY)
+                .apiSecret(CONSUMER_SECRET).build();
+        this.accessToken = new Token(TOKEN, TOKEN_SECRET);
     }
 
     /**
@@ -80,30 +67,27 @@ public class YelpAPI {
      * See <a href="http://www.yelp.com/developers/documentation/v2/search_api">Yelp Search API V2</a>
      * for more info.
      *
-     * @param term <tt>String</tt> of the search term to be queried
-     * @param location <tt>String</tt> of the location
+     * @param term           <tt>String</tt> of the search term to be queried
+     * @param categoryFilter <tt>String</tt> categories
      * @return <tt>String</tt> JSON Response
      */
-    public String searchForBusinessesByLocation(String term, String location ) {
+    public String searchForBusinessesByLocation(String term, String categoryFilter, String cll, int sort) {
         OAuthRequest request = createOAuthRequest(SEARCH_PATH);
+        //TODO: PUT INTO OBJECTS
         request.addQuerystringParameter("term", term);
-        request.addQuerystringParameter("location", location);
+        request.addQuerystringParameter("location", DEFAULT_LOCATION);
+        request.addQuerystringParameter("cll", cll);
         request.addQuerystringParameter("limit", String.valueOf(SEARCH_LIMIT));
         request.addQuerystringParameter("radius_filter", DEFAULT_RADIUS_FILTER);
+        request.addQuerystringParameter("sort", String.valueOf(sort));
+//        request.addQuerystringParameter("category_filter", "localflavor");
         return sendRequestAndGetResponse(request);
     }
 
-    /**r
-     * Creates and sends a request to the Business API by business ID.
-     * <p>
-     * See <a href="http://www.yelp.com/developers/documentation/v2/business">Yelp Business API V2</a>
-     * for more info.
-     *
-     * @param businessID <tt>String</tt> business ID of the requested business
-     * @return <tt>String</tt> JSON Response
-     */
-    public String searchByBusinessId(String businessID) {
-        OAuthRequest request = createOAuthRequest(BUSINESS_PATH + "/" + businessID);
+    private String zomatoSearchQuery() {
+        OAuthRequest request = new OAuthRequest(Verb.GET, ZOMATO_PATH + "categories");
+        //TODO: PUT INTO OBJECTS
+        request.addHeader("user-key", "61790317f6b422951550e330a8689edc");
         return sendRequestAndGetResponse(request);
     }
 
@@ -131,16 +115,19 @@ public class YelpAPI {
         return response.getBody();
     }
 
+
     /**
      * Queries the Search API based on the command line arguments and takes the first result to query
      * the Business API.
      *
-     * @param yelpApi <tt>YelpAPI</tt> service instance
-     * @param yelpApiCli <tt>YelpAPICLI</tt> command line arguments
+     * @param term     term
+     * @param category category
+     * @param cll      location of current
+     * @return
      */
-    private static void queryAPI(YelpAPI yelpApi, YelpAPICLI yelpApiCli) {
+    private Attraction getAttraction(String term, String category, String cll, int sort) {
         String searchResponseJSON =
-                yelpApi.searchForBusinessesByLocation(yelpApiCli.term, yelpApiCli.location);
+                searchForBusinessesByLocation(term, category, cll, sort);
 
         JSONParser parser = new JSONParser();
         JSONObject response = null;
@@ -153,54 +140,103 @@ public class YelpAPI {
         }
 
         JSONArray businesses = (JSONArray) response.get("businesses");
-        List<Attraction> attractionList = new ArrayList<>();
+        Attraction attraction;
+        int index = new Random().nextInt(5);
 
+        JSONObject businessObject = (JSONObject) businesses.get(index);
+        JSONObject location = (JSONObject) businessObject.get("location");
 
-        for (Object business: businesses.toArray()) {
-            JSONObject businessObject = (JSONObject) business;
-            JSONObject location = (JSONObject) businessObject.get("location");
+        double latitude = 43.644176, longitude = -79.387375;
 
-            JSONArray address = (JSONArray) location.get("display_address");
-            Attraction attraction = new Attraction.Builder()
-                    .name(businessObject.get("name").toString())
-                    .photoUri(businessObject.get("image_url").toString())
-                    .location(address.get(0).toString() + " " + address.get(2).toString())
-                    .build();
-
-            System.out.println(attraction.getName() + " " + attraction.getLocation());
-
-            attractionList.add(attraction);
+        if (location.containsKey("coordinate")) {
+            JSONObject coordinate = (JSONObject) location.get("coordinate");
+            latitude = (double) coordinate.get("latitude");
+            longitude = (double) coordinate.get("longitude");
         }
 
-//        JSONObject firstBusiness = (JSONObject) businesses.get(0);
-//        String firstBusinessID = firstBusiness.get("id").toString();
-//        System.out.println(String.format(
-//                "%s businesses found, querying business info for the top result \"%s\" ...",
-//                businesses.size(), firstBusinessID));
-//
-//        // Select the first business and display business details
-//        String businessResponseJSON = yelpApi.searchByBusinessId(firstBusinessID.toString());
-//        System.out.println(String.format("Result for business \"%s\" found:", firstBusinessID));
-//        System.out.println(businessResponseJSON);
+        Location location1 = new Location.Builder()
+                .countryCode(location.getOrDefault("country_code", "N/A").toString())
+                .address(location.getOrDefault("display_address", "").toString())
+                .latitude(latitude)
+                .longitude(longitude)
+                .city("Toronto")
+                .neighborhoods("")
+                .build();
+
+        String photoUri = businessObject.getOrDefault("image_url", "N/A").toString();
+        attraction = new Attraction.Builder()
+                .name(businessObject.getOrDefault("name", "N/A").toString())
+                .photoUri(photoUri)
+                .location(location1)
+                .duration(3)
+                .build();
+
+        return attraction;
     }
 
-    /**
-     * Command-line interface for the sample Yelp API runner.
-     */
-    private static class YelpAPICLI {
-        @Parameter(names = {"-q", "--term"}, description = "Search Query Term")
-        public String term = DEFAULT_TERM;
+    public List<Attraction> buildItinerary(List<String> potentialAttractionStack, int sort) {
+        String categories = "";
+        //TODO: REPLACE WITH ACTUAL COORDINTATES
+        String cll = "43.644176,-79.387375";
+        List<Attraction> attractionList = new ArrayList<>();
+        for (String potentialAttraction : potentialAttractionStack) {
+            //TODO: REPLACE WITH TYPE IN OBJECT
+            Attraction attraction = getAttraction(potentialAttraction, categories, cll, sort);
+            attractionList.add(attraction);
+            cll = attraction.getLocation().getLatitude() + "," + attraction.getLocation().getLongitude();
+        }
 
-        @Parameter(names = {"-l", "--location"}, description = "Location to be Queried")
-        public String location = DEFAULT_LOCATION;
+        return attractionList;
+    }
 
-        @Parameter(names = {"--radius_filter"}, description = "Search radius in meters")
-        public String radius_filter = DEFAULT_RADIUS_FILTER;
+    public static void main(String args[]) {
+        String term = "";
+        String categories = "";
+        //TODO: REPLACE WITH ACTUAL COORDINTATES
+        String cll = "43.644176,-79.387375";
+        YelpAPI yelpAPI = new YelpAPI();
 
-        @Parameter(names = {"--category_filter"}, description = "Category to filter search results with" )
-        public String category_filter = DEFAULT_CATEGORY_FILTER;
+//        String searchResponseJSON = yelpAPI.queryThis("", "art", "");
+        String zomato = yelpAPI.zomatoSearchQuery();
 
-        @Parameter(names = {"--bounds"}, description = "Bounds to search")
-        public String bounds = null;
+        JSONParser parser = new JSONParser();
+        JSONObject response = null;
+
+        try {
+            response = (JSONObject) parser.parse(zomato);
+            System.out.println(response);
+        } catch (ParseException pe) {
+        }
+
+
+    }
+
+    public String queryThis(String term, String category, String cll) {
+        OAuthRequest request = createOAuthRequest(SEARCH_PATH);
+        //TODO: PUT INTO OBJECTS
+//        request.addQuerystringParameter("term", term);
+        request.addQuerystringParameter("location", DEFAULT_LOCATION);
+//        request.addQuerystringParameter("cll", cll);
+        request.addQuerystringParameter("limit", String.valueOf(SEARCH_LIMIT));
+
+        request.addQuerystringParameter("radius_filter", DEFAULT_RADIUS_FILTER);
+        request.addQuerystringParameter("category_filter", category);
+        return sendRequestAndGetResponse(request);
+    }
+
+    public class YelpThread implements Runnable {
+
+        List<String> potentialAttractionStack;
+        int sort;
+
+        public YelpThread(List<String> potentialAttractionStack, int sort) {
+            this.potentialAttractionStack = potentialAttractionStack;
+            this.sort = sort;
+        }
+
+        @Override
+        public void run() {
+            buildItinerary(potentialAttractionStack, sort);
+        }
     }
 }

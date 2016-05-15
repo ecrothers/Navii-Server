@@ -3,7 +3,10 @@ package com.navii.server.persistence.dao.impl;
 import com.navii.server.persistence.dao.UserPreferenceDAO;
 import com.navii.server.persistence.domain.Preference;
 import com.navii.server.persistence.domain.UserPreference;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
@@ -18,6 +21,8 @@ import java.util.List;
  */
 @Repository
 public class UserPreferenceDAOImpl implements UserPreferenceDAO {
+
+    private static final Logger logger = LoggerFactory.getLogger(UserPreferenceDAOImpl.class);
 
     @Autowired
     protected JdbcTemplate jdbc;
@@ -51,23 +56,29 @@ public class UserPreferenceDAOImpl implements UserPreferenceDAO {
     public List<Preference> obtain(final String username) {
         String selectString =
                 "SELECT preference FROM userspreferences WHERE username = ?";
-        List<Preference> retrieved = jdbc.queryForObject(selectString,
-                new String[]{username},
-                new RowMapper<List<Preference>>() {
-                    @Override
-                    public List<Preference> mapRow(ResultSet rs, int rowNum) throws SQLException {
-                        ArrayList<Preference> preferences = new ArrayList<>();
-                        while (rs.next()) {
-                            Preference preference = new Preference.Builder()
-                                    .preference(rs.getString("preference"))
-                                    .build();
+        try {
+            List<Preference> retrieved = jdbc.queryForObject(selectString,
+                    new String[]{username},
+                    new RowMapper<List<Preference>>() {
+                        @Override
+                        public List<Preference> mapRow(ResultSet rs, int rowNum) throws SQLException {
+                            ArrayList<Preference> preferences = new ArrayList<>();
+                            while (rs.next()) {
+                                Preference preference = new Preference.Builder()
+                                        .preference(rs.getString("preference"))
+                                        .build();
 
-                            preferences.add(preference);
+                                preferences.add(preference);
+                            }
+                            return preferences;
                         }
-                        return preferences;
-                    }
-                });
-        return retrieved;
+                    });
+            return retrieved;
+
+        } catch (EmptyResultDataAccessException e) {
+            logger.error(e.toString());
+            return new ArrayList<>();
+        }
     }
 
     @Override
