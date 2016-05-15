@@ -12,6 +12,11 @@ public class Attraction {
     private int price;
     private int duration;
     private String purchase;
+    private Type type;
+
+    public enum Type {
+        BREAKFAST, LUNCH, DINNER, ATTRACTION
+    }
 
     public Attraction() {}
 
@@ -23,6 +28,7 @@ public class Attraction {
         this.blurbUri = builder.blurbUri;
         this.price = builder.price;
         this.duration = builder.duration;
+        this.type = builder.type;
     }
 
     public int getAttractionId() {
@@ -66,6 +72,7 @@ public class Attraction {
         private int price;
         private int duration;
         private String purchase;
+        private Type type;
 
         public Builder() {}
 
@@ -106,6 +113,11 @@ public class Attraction {
 
         public Builder duration(int duration) {
             this.duration = duration;
+            return this;
+        }
+
+        public Builder type(Type type) {
+            this.type = type;
             return this;
         }
 
