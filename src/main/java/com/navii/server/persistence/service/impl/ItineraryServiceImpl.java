@@ -5,9 +5,15 @@ import com.navii.server.persistence.dao.UserPreferenceDAO;
 import com.navii.server.persistence.domain.*;
 import com.navii.server.persistence.service.ItineraryService;
 import com.navii.server.persistence.yelpAPI.YelpAPI;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -72,10 +78,18 @@ public class ItineraryServiceImpl implements ItineraryService {
         return itineraryList;
     }
 
+    public static void main(String[] args) {
+        ItineraryServiceImpl itineraryService = new ItineraryServiceImpl();
+        itineraryService.buildPotentialAttractionStack(new ArrayList<Preference>(), new ArrayList<String>());
+    }
+
     private List<Venture> buildPotentialAttractionStack(List<Preference> preferences, List<String> tags) {
         List<Venture> potentialAttractionStack = new ArrayList<>();
+        List<String> preferenceList = new ArrayList<>();
 
-        //TODO: USE PREFERENCES AND TAGS
+        for (Preference preference : preferences)
+                preferenceList.add(preference.getPreference().toLowerCase());
+
         // Initialize all possible venture variables
         Venture breakfast;
         Venture lunch;
@@ -84,16 +98,84 @@ public class ItineraryServiceImpl implements ItineraryService {
         Venture attraction2;
         Venture attraction3;
 
-        List<String> categories = new ArrayList<>();
-        categories.add("arts");
-        categories.add("localflavor");
-        // Based on the preferences initialize Venture object
+        // Initialize venture objects
         breakfast = new Venture(Venture.Type.MEAL, "Breakfast");
         lunch = new Venture(Venture.Type.MEAL, "Lunch");
         dinner = new Venture(Venture.Type.MEAL, "Dinner");
-        attraction1 = new Venture(Venture.Type.ATTRACTION, "Park", "active");
+
+        attraction1 = new Venture(Venture.Type.ATTRACTION, "Landmark");
         attraction2 = new Venture(Venture.Type.ATTRACTION, "Landmark");
-        attraction3 = new Venture(Venture.Type.ATTRACTION, "Museum", categories );
+        attraction3 = new Venture(Venture.Type.ATTRACTION, "Landmark");
+
+        // Modify venture objects based on preferences and tags
+        if (preferenceList.contains("sophistica")) {
+            attraction1.addCategory("arts");
+            attraction2.addCategory("arts");
+            attraction3.addCategory("arts");
+        } else if (preferenceList.contains("hipster")) {
+            attraction1.addCategory("arts");
+            attraction2.addCategory("arts");
+            attraction3.addCategory("arts");
+        } else if (preferenceList.contains("adventure")) {
+            attraction1.addCategory("active");
+            attraction2.addCategory("active");
+            attraction3.addCategory("active");
+            attraction1.addCategory("nightlife");
+            attraction2.addCategory("nightlife");
+            attraction3.addCategory("nightlife");
+            attraction1.addCategory("localflavor");
+            attraction2.addCategory("localflavor");
+            attraction3.addCategory("localflavor");
+        } else if (preferenceList.contains("sporty")) {
+            attraction1.addCategory("active");
+            attraction2.addCategory("active");
+            attraction3.addCategory("active");
+        } else if (preferenceList.contains("slutty")) {
+            attraction1.addCategory("adult");
+            attraction2.addCategory("adult");
+            attraction3.addCategory("adult");
+            attraction1.addCategory("nightlife");
+            attraction2.addCategory("nightlife");
+            attraction3.addCategory("nightlife");
+            attraction1.addCategory("beautysvc");
+            attraction2.addCategory("beautysvc");
+            attraction3.addCategory("beautysvc");
+        } else if (preferenceList.contains("outdoor")) {
+            attraction1.addCategory("active");
+            attraction2.addCategory("active");
+            attraction3.addCategory("active");
+        } else if (preferenceList.contains("lazy")) {
+            breakfast.addCategory("fooddeliveryservices");
+            lunch.addCategory("fooddeliveryservices");
+            dinner.addCategory("fooddeliveryservices");
+            attraction1.addCategory("shopping");
+            attraction2.addCategory("shopping");
+            attraction3.addCategory("shopping");
+        } else if (preferenceList.contains("foodie")) {
+            attraction1.addCategory("food");
+            attraction2.addCategory("food");
+            attraction3.addCategory("food");
+        } else if (preferenceList.contains("cultural")) {
+            attraction1.addCategory("localflavor");
+            attraction2.addCategory("localflavor");
+            attraction3.addCategory("localflavor");
+        } else if (preferenceList.contains("halal")) {
+            breakfast.addCategory("halal");
+            lunch.addCategory("halal");
+            dinner.addCategory("halal");
+        } else if (preferenceList.contains("gluten-free")) {
+            breakfast.addCategory("gluten-free");
+            lunch.addCategory("gluten-free");
+            dinner.addCategory("gluten-free");
+        } else if (preferenceList.contains("vegan")) {
+            breakfast.addCategory("vegan");
+            lunch.addCategory("vegan");
+            dinner.addCategory("vegan");
+        } else if (preferenceList.contains("vegetarian")) {
+            breakfast.addCategory("vegetarian");
+            lunch.addCategory("vegetarian");
+            dinner.addCategory("vegetarian");
+        }
 
         potentialAttractionStack.addAll(
                 Arrays.asList(breakfast, attraction1, lunch, attraction2, attraction3, dinner));

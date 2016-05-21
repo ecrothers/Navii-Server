@@ -35,6 +35,7 @@ public class Venture {
 
     public Venture(Type type, String term, String category) {
         this.type = type;
+        this.term = term;
         this.categories = Arrays.asList(category);
     }
 
@@ -56,5 +57,9 @@ public class Venture {
             return "";
         }
         return categories.stream().collect(Collectors.joining(","));
+    }
+
+    public void addCategory(String category) {
+        categories.add(category);
     }
 }
