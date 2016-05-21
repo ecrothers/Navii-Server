@@ -77,12 +77,7 @@ public class ItineraryServiceImpl implements ItineraryService {
 
         return itineraryList;
     }
-
-    public static void main(String[] args) {
-        ItineraryServiceImpl itineraryService = new ItineraryServiceImpl();
-        itineraryService.buildPotentialAttractionStack(new ArrayList<Preference>(), new ArrayList<String>());
-    }
-
+    
     private List<Venture> buildPotentialAttractionStack(List<Preference> preferences, List<String> tags) {
         List<Venture> potentialAttractionStack = new ArrayList<>();
         List<String> preferenceList = new ArrayList<>();
