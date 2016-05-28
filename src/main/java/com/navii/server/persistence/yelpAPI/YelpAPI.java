@@ -16,8 +16,10 @@ import org.scribe.oauth.OAuthService;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 /**
  * Code sample for accessing the Yelp API V2.
@@ -74,7 +76,7 @@ public class YelpAPI {
     public String searchForBusinessesByLocation(Venture venture, String cll, int sort) {
         OAuthRequest request = createOAuthRequest(SEARCH_PATH);
         //TODO: PUT INTO OBJECTS
-        request.addQuerystringParameter("venture", venture.getTerm());
+        request.addQuerystringParameter("term", venture.getTerm());
         request.addQuerystringParameter("location", DEFAULT_LOCATION);
         request.addQuerystringParameter("cll", cll);
         request.addQuerystringParameter("limit", String.valueOf(SEARCH_LIMIT));
@@ -83,17 +85,25 @@ public class YelpAPI {
         if (!venture.getCategories().isEmpty()) {
             System.out.println(venture.getCategories());
             request.addQuerystringParameter("category_filter", venture.getCategories());
-        } else {
-            System.out.println("empty");
         }
         return sendRequestAndGetResponse(request);
     }
 
-    private String zomatoSearchQuery() {
-        OAuthRequest request = new OAuthRequest(Verb.GET, ZOMATO_PATH + "categories");
+    private String zomatoSearchQuery(String query, String category, double latitude, double longitude) {
+        OAuthRequest request = new OAuthRequest(Verb.GET, ZOMATO_PATH + "search");
         //TODO: PUT INTO OBJECTS
         request.addHeader("user-key", "61790317f6b422951550e330a8689edc");
-        return sendRequestAndGetResponse(request);
+        request.addHeader("Accept", "application/json");
+        request.addQuerystringParameter("lat", String.valueOf(latitude));
+        request.addQuerystringParameter("lon", String.valueOf(longitude));
+        request.addQuerystringParameter("radius", DEFAULT_RADIUS_FILTER);
+        request.addQuerystringParameter("sort", "real_distance");
+        request.addQuerystringParameter("q", query);
+        request.addQuerystringParameter("category", category);
+
+        System.out.println("Querying " + request.getCompleteUrl() + " ...");
+        Response response = request.send();
+        return response.getBody();
     }
 
     /**
@@ -120,7 +130,33 @@ public class YelpAPI {
         return response.getBody();
     }
 
+    public int getZomatoPrice(String name, String category, double latitude, double longitude) {
+        String zomatoResponseJSON = zomatoSearchQuery(name, category, latitude, longitude);
+        JSONParser parser = new JSONParser();
+        JSONObject response = null;
 
+        try {
+            response = (JSONObject) parser.parse(zomatoResponseJSON);
+
+        } catch (ParseException e) {
+            System.out.println("Error: could not parse JSON response:");
+            System.out.println(zomatoResponseJSON);
+
+            e.printStackTrace();
+        }
+        JSONArray restaurants = (JSONArray) response.get("restaurants");
+
+        //TODO: CHANGE TO SOMETHING BETTER TO MATCH YELP RESTAURANT WITH ZOMATO RESTAURANT (LOCATION, CATEGORIES...)
+
+        JSONObject restaurant = (JSONObject) ((JSONObject) restaurants.get(0)).get("restaurant");
+
+        if (restaurant.containsKey("average_cost_for_two")) {
+            return ((Long) restaurant.get("average_cost_for_two")).intValue();
+        } else {
+            return 0;
+        }
+
+    }
     /**
      * Queries the Search API based on the command line arguments and takes the first result to query
      * the Business API.
@@ -140,7 +176,6 @@ public class YelpAPI {
         } catch (ParseException pe) {
             System.out.println("Error: could not parse JSON response:");
             System.out.println(searchResponseJSON);
-            System.exit(1);
         }
 
         JSONArray businesses = (JSONArray) response.get("businesses");
@@ -167,26 +202,48 @@ public class YelpAPI {
                 .neighborhoods("")
                 .build();
 
+        int price = 0;
+
+        String name = businessObject.getOrDefault("name", "N/A").toString();
+        if (venture.getType().equals(Venture.Type.MEAL)) {
+            JSONArray jsonArray = null;
+
+            if (businessObject.containsKey("categories")) {
+                jsonArray = (JSONArray) businessObject.get("categories");
+            }
+
+            List<String> categories = new ArrayList<>();
+            for (Object object : jsonArray.toArray()) {
+                JSONArray array = (JSONArray) object;
+                categories.add(array.get(1).toString());
+            }
+            String zomatoCategories = categories.stream().collect(Collectors.joining(","));
+
+            price = getZomatoPrice(name, zomatoCategories, latitude, longitude);
+        }
+
         String photoUri = businessObject.getOrDefault("image_url", "N/A").toString();
         attraction = new Attraction.Builder()
-                .name(businessObject.getOrDefault("name", "N/A").toString())
+                .name(name)
                 .photoUri(photoUri)
                 .location(location1)
                 .duration(3)
+                .price(price)
                 .build();
 
         return attraction;
     }
 
     public List<Attraction> buildItinerary(List<Venture> potentialAttractionStack, int sort) {
-        String categories = "";
         //TODO: REPLACE WITH ACTUAL COORDINTATES
         String cll = "43.644176,-79.387375";
         List<Attraction> attractionList = new ArrayList<>();
         for (Venture potentialAttraction : potentialAttractionStack) {
             Attraction attraction = getAttraction(potentialAttraction, cll, sort);
             attractionList.add(attraction);
-            cll = attraction.getLocation().getLatitude() + "," + attraction.getLocation().getLongitude();
+            double latitude = attraction.getLocation().getLongitude() + 0.00001;
+            double longitude = attraction.getLocation().getLongitude() - 0.00001;
+            cll = latitude+ "," + longitude;
         }
 
         return attractionList;

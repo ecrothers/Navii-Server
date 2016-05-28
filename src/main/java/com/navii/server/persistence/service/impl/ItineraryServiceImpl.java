@@ -2,21 +2,20 @@ package com.navii.server.persistence.service.impl;
 
 import com.navii.server.persistence.dao.ItineraryDAO;
 import com.navii.server.persistence.dao.UserPreferenceDAO;
-import com.navii.server.persistence.domain.*;
+import com.navii.server.persistence.dao.impl.UserPreferenceDAOImpl;
+import com.navii.server.persistence.domain.Attraction;
+import com.navii.server.persistence.domain.Itinerary;
+import com.navii.server.persistence.domain.Preference;
+import com.navii.server.persistence.domain.Venture;
 import com.navii.server.persistence.service.ItineraryService;
 import com.navii.server.persistence.yelpAPI.YelpAPI;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Created by ecrothers on 2015-10-08.
@@ -60,7 +59,8 @@ public class ItineraryServiceImpl implements ItineraryService {
 
     @Override
     public List<Itinerary> getItineraries(List<String> tagList) {
-        List<Preference> preferences = userPreferenceDAO.obtain("username");
+        //TODO: GET PREFERENCE LIST FROM DB
+        List<Preference> preferences = userPreferenceDAO.obtain("akhan");
 
         List<Venture> potentialAttractionStack = buildPotentialAttractionStack(preferences, tagList);
         List<Itinerary> itineraryList = new ArrayList<>();
@@ -77,14 +77,13 @@ public class ItineraryServiceImpl implements ItineraryService {
 
         return itineraryList;
     }
-    
+
     private List<Venture> buildPotentialAttractionStack(List<Preference> preferences, List<String> tags) {
         List<Venture> potentialAttractionStack = new ArrayList<>();
-        List<String> preferenceList = new ArrayList<>();
 
-        for (Preference preference : preferences)
-                preferenceList.add(preference.getPreference().toLowerCase());
-
+        List<String> preferenceList =
+                preferences.stream().map(preference -> preference.getPreference().toLowerCase()).collect(Collectors.toList());
+        preferenceList.addAll(tags);
         // Initialize all possible venture variables
         Venture breakfast;
         Venture lunch;
@@ -102,16 +101,18 @@ public class ItineraryServiceImpl implements ItineraryService {
         attraction2 = new Venture(Venture.Type.ATTRACTION, "Landmark");
         attraction3 = new Venture(Venture.Type.ATTRACTION, "Landmark");
 
+        //TODO: Move to database because relational
+        //OR CHANGE TO static map
         // Modify venture objects based on preferences and tags
         if (preferenceList.contains("sophistica")) {
             attraction1.addCategory("arts");
             attraction2.addCategory("arts");
             attraction3.addCategory("arts");
-        } else if (preferenceList.contains("hipster")) {
+        } if (preferenceList.contains("hipster")) {
             attraction1.addCategory("arts");
             attraction2.addCategory("arts");
             attraction3.addCategory("arts");
-        } else if (preferenceList.contains("adventure")) {
+        } if (preferenceList.contains("adventure")) {
             attraction1.addCategory("active");
             attraction2.addCategory("active");
             attraction3.addCategory("active");
@@ -121,11 +122,11 @@ public class ItineraryServiceImpl implements ItineraryService {
             attraction1.addCategory("localflavor");
             attraction2.addCategory("localflavor");
             attraction3.addCategory("localflavor");
-        } else if (preferenceList.contains("sporty")) {
+        } if (preferenceList.contains("sporty")) {
             attraction1.addCategory("active");
             attraction2.addCategory("active");
             attraction3.addCategory("active");
-        } else if (preferenceList.contains("slutty")) {
+        } if (preferenceList.contains("slutty")) {
             attraction1.addCategory("adult");
             attraction2.addCategory("adult");
             attraction3.addCategory("adult");
@@ -135,42 +136,43 @@ public class ItineraryServiceImpl implements ItineraryService {
             attraction1.addCategory("beautysvc");
             attraction2.addCategory("beautysvc");
             attraction3.addCategory("beautysvc");
-        } else if (preferenceList.contains("outdoor")) {
+        } if (preferenceList.contains("outdoor")) {
             attraction1.addCategory("active");
             attraction2.addCategory("active");
             attraction3.addCategory("active");
-        } else if (preferenceList.contains("lazy")) {
+        } if (preferenceList.contains("lazy")) {
             breakfast.addCategory("fooddeliveryservices");
             lunch.addCategory("fooddeliveryservices");
             dinner.addCategory("fooddeliveryservices");
             attraction1.addCategory("shopping");
             attraction2.addCategory("shopping");
             attraction3.addCategory("shopping");
-        } else if (preferenceList.contains("foodie")) {
-            attraction1.addCategory("food");
-            attraction2.addCategory("food");
-            attraction3.addCategory("food");
-        } else if (preferenceList.contains("cultural")) {
+        } if (preferenceList.contains("foodie")) {
+//            attraction1.addCategory("food");
+//            attraction2.addCategory("food");
+//            attraction3.addCategory("food");
+        } if (preferenceList.contains("cultural")) {
             attraction1.addCategory("localflavor");
             attraction2.addCategory("localflavor");
             attraction3.addCategory("localflavor");
-        } else if (preferenceList.contains("halal")) {
+        } if (preferenceList.contains("halal")) {
             breakfast.addCategory("halal");
             lunch.addCategory("halal");
             dinner.addCategory("halal");
-        } else if (preferenceList.contains("gluten-free")) {
+        } if (preferenceList.contains("gluten-free")) {
             breakfast.addCategory("gluten-free");
             lunch.addCategory("gluten-free");
             dinner.addCategory("gluten-free");
-        } else if (preferenceList.contains("vegan")) {
+        } if (preferenceList.contains("vegan")) {
             breakfast.addCategory("vegan");
             lunch.addCategory("vegan");
             dinner.addCategory("vegan");
-        } else if (preferenceList.contains("vegetarian")) {
+        } if (preferenceList.contains("vegetarian")) {
             breakfast.addCategory("vegetarian");
             lunch.addCategory("vegetarian");
             dinner.addCategory("vegetarian");
         }
+
 
         potentialAttractionStack.addAll(
                 Arrays.asList(breakfast, attraction1, lunch, attraction2, attraction3, dinner));

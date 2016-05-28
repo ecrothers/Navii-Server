@@ -1,8 +1,6 @@
 package com.navii.server.persistence.domain;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.StringJoiner;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -11,7 +9,7 @@ import java.util.stream.Collectors;
 public class Venture {
 
     private Type type;
-    private List<String> categories;
+    private Set<String> categories;
     private String term;
 
     public enum Type {
@@ -27,7 +25,7 @@ public class Venture {
         }
     }
 
-    public Venture(Type type, String term, List<String> categories) {
+    public Venture(Type type, String term, Set<String> categories) {
         this.type = type;
         this.term = term;
         this.categories = categories;
@@ -36,7 +34,7 @@ public class Venture {
     public Venture(Type type, String term, String category) {
         this.type = type;
         this.term = term;
-        this.categories = Arrays.asList(category);
+        this.categories = new HashSet<>(Arrays.asList(category));
     }
 
     public Venture(Type type, String term) {
@@ -48,8 +46,8 @@ public class Venture {
         return term;
     }
 
-    public void setTerm(String term) {
-        this.term = term;
+    public Type getType() {
+        return type;
     }
 
     public String getCategories() {
@@ -60,6 +58,9 @@ public class Venture {
     }
 
     public void addCategory(String category) {
+        if (this.categories == null) {
+            this.categories = new HashSet<>();
+        }
         categories.add(category);
     }
 }

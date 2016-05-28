@@ -10,7 +10,6 @@ import org.springframework.stereotype.Repository;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -26,33 +25,28 @@ public class PreferenceDAOImpl implements PreferenceDAO {
 
     private static final String PARAM_PREFERENCE = "preference";
     private static final String PARAM_PREFERENCE_TYPE = "preference_type";
-    private static final String PARAM_PHOTOURL = "photoURL";
+    private static final String PARAM_PHOTO_URL = "photoURL";
     private static final String PARAM_COUNTER = "counter";
 
     @Override
     public List<Preference> getPreferences(int preferenceType) {
         try {
             String fetchQuery = "SELECT * FROM preferences WHERE preference_type = ?";
-            List<Preference> retrieved = jdbc.queryForObject(fetchQuery,
+            List<Preference> retrieved = jdbc.query(fetchQuery,
                     new Object[]{preferenceType},
-                    new RowMapper<List<Preference>>() {
+                    new RowMapper<Preference>() {
                         @Override
-                        public List<Preference> mapRow(ResultSet rs, int rowNum) throws SQLException {
-                            List<Preference> preferences = new ArrayList<>();
-                            while (rs.next()) {
+                        public Preference mapRow(ResultSet rs, int rowNum) throws SQLException {
+                            Preference preference = new Preference.Builder()
+                                    .preference(rs.getString(PARAM_PREFERENCE))
+                                    .preferenceType(rs.getInt(PARAM_PREFERENCE_TYPE))
+                                    .photoUrl(rs.getString(PARAM_PHOTO_URL))
+                                    .counter(rs.getInt(PARAM_COUNTER))
+                                    .build();
 
-                                Preference preference = new Preference.Builder()
-                                        .preference(rs.getString(PARAM_PREFERENCE))
-                                        .preferenceType(rs.getInt(PARAM_PREFERENCE_TYPE))
-                                        .photoUrl(rs.getString(PARAM_PHOTOURL))
-                                        .counter(rs.getInt(PARAM_COUNTER))
-                                        .build();
-                                preferences.add(preference);
-                            }
-                            return preferences;
+                            return preference;
                         }
                     });
-
             return retrieved;
         } catch (EmptyResultDataAccessException e) {
             return null;
