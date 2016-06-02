@@ -14,12 +14,16 @@ import org.scribe.model.Token;
 import org.scribe.model.Verb;
 import org.scribe.oauth.OAuthService;
 import org.springframework.stereotype.Component;
+import org.w3c.dom.Attr;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.RunnableFuture;
 import java.util.stream.Collectors;
+
+import static com.navii.server.persistence.yelpAPI.ZomatoAPI.getZomatoPrice;
 
 /**
  * Code sample for accessing the Yelp API V2.
@@ -31,15 +35,12 @@ import java.util.stream.Collectors;
  * <p>
  * See <a href="http://www.yelp.com/developers/documentation">Yelp Documentation</a> for more info.
  */
-@Component
-public class YelpAPI {
+
+public class YelpThread extends Thread {
 
     private static final String API_HOST = "api.yelp.com";
-    private static final String DEFAULT_TERM = "attraction";
     private static final String DEFAULT_LOCATION = "Toronto, ON";
     private static final String DEFAULT_RADIUS_FILTER = "2000";
-    private static final String DEFAULT_BOUNDS = "43.661579,-79.427017|43.694960,-79.350738";
-    private static final String DEFAULT_CATEGORY = "museums";
     //TODO: CHANGE TO ACTUAL LIMIT
     private static final int SEARCH_LIMIT = 5;
 
@@ -53,15 +54,22 @@ public class YelpAPI {
     private static final String CONSUMER_SECRET = "xu1yiJin42FEUg8xl4RFviDZqdg";
     private static final String TOKEN = "55bwV2Mxx8ZFvR41cx-pWawFpGLKlRoa";
     private static final String TOKEN_SECRET = "I55U5TwC4APJ-St6_LGDtN_GBFM";
-    private static final String ZOMATO_PATH = "https://developers.zomato.com/api/v2.1/";
+
+    private List<Attraction> attractions;
+    private List<Venture> potentialAttractionStack;
+    private int sort;
+    private String TAG;
 
     OAuthService service;
     Token accessToken;
 
-    public YelpAPI() {
+    public YelpThread(List<Venture> potentialAttractionStack, int sort, String tag) {
         this.service = new ServiceBuilder().provider(TwoStepOAuth.class).apiKey(CONSUMER_KEY)
                 .apiSecret(CONSUMER_SECRET).build();
         this.accessToken = new Token(TOKEN, TOKEN_SECRET);
+        this.potentialAttractionStack = potentialAttractionStack;
+        this.sort = sort;
+        this.TAG = tag;
     }
 
     /**
@@ -83,28 +91,12 @@ public class YelpAPI {
         request.addQuerystringParameter("radius_filter", DEFAULT_RADIUS_FILTER);
         request.addQuerystringParameter("sort", String.valueOf(sort));
         if (!venture.getCategories().isEmpty()) {
-            System.out.println(venture.getCategories());
             request.addQuerystringParameter("category_filter", venture.getCategories());
         }
         return sendRequestAndGetResponse(request);
     }
 
-    private String zomatoSearchQuery(String query, String category, double latitude, double longitude) {
-        OAuthRequest request = new OAuthRequest(Verb.GET, ZOMATO_PATH + "search");
-        //TODO: PUT INTO OBJECTS
-        request.addHeader("user-key", "61790317f6b422951550e330a8689edc");
-        request.addHeader("Accept", "application/json");
-        request.addQuerystringParameter("lat", String.valueOf(latitude));
-        request.addQuerystringParameter("lon", String.valueOf(longitude));
-        request.addQuerystringParameter("radius", DEFAULT_RADIUS_FILTER);
-        request.addQuerystringParameter("sort", "real_distance");
-        request.addQuerystringParameter("q", query);
-        request.addQuerystringParameter("category", category);
 
-        System.out.println("Querying " + request.getCompleteUrl() + " ...");
-        Response response = request.send();
-        return response.getBody();
-    }
 
     /**
      * Creates and returns an {@link OAuthRequest} based on the API endpoint specified.
@@ -124,39 +116,12 @@ public class YelpAPI {
      * @return <tt>String</tt> body of API response
      */
     private String sendRequestAndGetResponse(OAuthRequest request) {
-        System.out.println("Querying " + request.getCompleteUrl() + " ...");
+        System.out.println(TAG + ":Querying " + request.getCompleteUrl() + " ...");
         this.service.signRequest(this.accessToken, request);
         Response response = request.send();
         return response.getBody();
     }
 
-    public int getZomatoPrice(String name, String category, double latitude, double longitude) {
-        String zomatoResponseJSON = zomatoSearchQuery(name, category, latitude, longitude);
-        JSONParser parser = new JSONParser();
-        JSONObject response = null;
-
-        try {
-            response = (JSONObject) parser.parse(zomatoResponseJSON);
-
-        } catch (ParseException e) {
-            System.out.println("Error: could not parse JSON response:");
-            System.out.println(zomatoResponseJSON);
-
-            e.printStackTrace();
-        }
-        JSONArray restaurants = (JSONArray) response.get("restaurants");
-
-        //TODO: CHANGE TO SOMETHING BETTER TO MATCH YELP RESTAURANT WITH ZOMATO RESTAURANT (LOCATION, CATEGORIES...)
-
-        JSONObject restaurant = (JSONObject) ((JSONObject) restaurants.get(0)).get("restaurant");
-
-        if (restaurant.containsKey("average_cost_for_two")) {
-            return ((Long) restaurant.get("average_cost_for_two")).intValue();
-        } else {
-            return 0;
-        }
-
-    }
     /**
      * Queries the Search API based on the command line arguments and takes the first result to query
      * the Business API.
@@ -223,6 +188,7 @@ public class YelpAPI {
         }
 
         String photoUri = businessObject.getOrDefault("image_url", "N/A").toString();
+
         attraction = new Attraction.Builder()
                 .name(name)
                 .photoUri(photoUri)
@@ -247,5 +213,14 @@ public class YelpAPI {
         }
 
         return attractionList;
+    }
+
+    @Override
+    public void run() {
+        attractions = buildItinerary(potentialAttractionStack, sort);
+    }
+
+    public List<Attraction> getAttractions() {
+        return attractions;
     }
 }

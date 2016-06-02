@@ -2,13 +2,11 @@ package com.navii.server.persistence.service.impl;
 
 import com.navii.server.persistence.dao.ItineraryDAO;
 import com.navii.server.persistence.dao.UserPreferenceDAO;
-import com.navii.server.persistence.dao.impl.UserPreferenceDAOImpl;
-import com.navii.server.persistence.domain.Attraction;
 import com.navii.server.persistence.domain.Itinerary;
 import com.navii.server.persistence.domain.Preference;
 import com.navii.server.persistence.domain.Venture;
 import com.navii.server.persistence.service.ItineraryService;
-import com.navii.server.persistence.yelpAPI.YelpAPI;
+import com.navii.server.persistence.yelpAPI.YelpThread;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -28,9 +26,6 @@ public class ItineraryServiceImpl implements ItineraryService {
 
     @Autowired
     private UserPreferenceDAO userPreferenceDAO;
-
-    @Autowired
-    private YelpAPI yelpAPI;
 
     @Override
     public int delete(String itineraryId) {
@@ -63,16 +58,27 @@ public class ItineraryServiceImpl implements ItineraryService {
         List<Preference> preferences = userPreferenceDAO.obtain("akhan");
 
         List<Venture> potentialAttractionStack = buildPotentialAttractionStack(preferences, tagList);
-        List<Itinerary> itineraryList = new ArrayList<>();
+        YelpThread[] yelpThreads = new YelpThread[3];
+
+        //Start and store the threads
         for (int i = 0; i < 3; i++) {
-            List<Attraction> attractionList = yelpAPI.buildItinerary(potentialAttractionStack, i);
-            Itinerary itinerary = new Itinerary.Builder()
-                    .itineraryId(i)
-                    .authorId("yelp")
-                    .description("YelpAPI Generation " + i)
-                    .attractions(attractionList)
-                    .build();
-            itineraryList.add(itinerary);
+            yelpThreads[i] = new YelpThread(potentialAttractionStack, i, "Yelp " + i);
+            yelpThreads[i].start();
+        }
+
+        List<Itinerary> itineraryList = new ArrayList<>();
+        try {
+            for (YelpThread thread : yelpThreads){
+                thread.join();
+                Itinerary itinerary = new Itinerary.Builder()
+                        .description("Yelp Generation")
+                        .authorId("Yelp")
+                        .attractions(thread.getAttractions())
+                        .build();
+                itineraryList.add(itinerary);
+            }
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
 
         return itineraryList;
