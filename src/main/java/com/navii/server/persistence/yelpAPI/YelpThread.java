@@ -160,7 +160,7 @@ public class YelpThread extends Thread {
 
         Location location1 = new Location.Builder()
                 .countryCode(location.getOrDefault("country_code", "N/A").toString())
-                .address(location.getOrDefault("display_address", "").toString())
+                .address(location.getOrDefault("display_address", "No Location Found").toString())
                 .latitude(latitude)
                 .longitude(longitude)
                 .city("Toronto")
@@ -187,7 +187,7 @@ public class YelpThread extends Thread {
             price = getZomatoPrice(name, zomatoCategories, latitude, longitude);
         }
 
-        String photoUri = businessObject.getOrDefault("image_url", "N/A").toString();
+        String photoUri = businessObject.getOrDefault("image_url", "N/A").toString().replace("ms.jpg", "o.jpg");
 
         attraction = new Attraction.Builder()
                 .name(name)
@@ -217,7 +217,11 @@ public class YelpThread extends Thread {
 
     @Override
     public void run() {
-        attractions = buildItinerary(potentialAttractionStack, sort);
+        setAttractions(buildItinerary(potentialAttractionStack, sort));
+    }
+
+    private void setAttractions(List<Attraction> attractions) {
+        this.attractions = attractions;
     }
 
     public List<Attraction> getAttractions() {
