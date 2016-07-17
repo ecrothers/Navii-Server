@@ -16,10 +16,7 @@ import org.scribe.oauth.OAuthService;
 import org.springframework.stereotype.Component;
 import org.w3c.dom.Attr;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 import java.util.concurrent.RunnableFuture;
 import java.util.stream.Collectors;
 
@@ -59,6 +56,17 @@ public class YelpThread extends Thread {
     private List<Venture> potentialAttractionStack;
     private int sort;
     private String TAG;
+
+    private static Map<Integer, String> nameMap = new HashMap<>();
+    static {
+        nameMap.put(0, "Best Matched");
+        nameMap.put(1, "By Distance");
+        nameMap.put(2, "Highest Rated");
+    }
+
+    public static String getYelpName(int id) {
+        return nameMap.get(id);
+    }
 
     OAuthService service;
     Token accessToken;

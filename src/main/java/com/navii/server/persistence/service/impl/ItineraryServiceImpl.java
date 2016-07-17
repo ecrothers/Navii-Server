@@ -63,6 +63,7 @@ public class ItineraryServiceImpl implements ItineraryService {
         //Start and store the threads
         for (int i = 0; i < 3; i++) {
             yelpThreads[i] = new YelpThread(potentialAttractionStack, i, "Yelp " + i);
+            yelpThreads[i].setName(YelpThread.getYelpName(i));
             yelpThreads[i].start();
         }
 
@@ -71,7 +72,7 @@ public class ItineraryServiceImpl implements ItineraryService {
             for (YelpThread thread : yelpThreads){
                 thread.join();
                 Itinerary itinerary = new Itinerary.Builder()
-                        .description("Yelp Generation")
+                        .description(thread.getName())
                         .authorId("Yelp")
                         .attractions(thread.getAttractions())
                         .build();
@@ -110,7 +111,7 @@ public class ItineraryServiceImpl implements ItineraryService {
         //TODO: Move to database because relational
         //OR CHANGE TO static map
         // Modify venture objects based on preferences and tags
-        if (preferenceList.contains("sophistica")) {
+        if (preferenceList.contains("sophisticated")) {
             attraction1.addCategory("arts");
             attraction2.addCategory("arts");
             attraction3.addCategory("arts");
