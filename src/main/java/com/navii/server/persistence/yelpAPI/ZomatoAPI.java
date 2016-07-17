@@ -28,7 +28,6 @@ public class ZomatoAPI {
         request.addQuerystringParameter("q", query);
         request.addQuerystringParameter("category", category);
 
-        System.out.println("Querying " + request.getCompleteUrl() + " ...");
         Response response = request.send();
         return response.getBody();
     }
@@ -39,26 +38,34 @@ public class ZomatoAPI {
         JSONObject response = null;
 
         if (zomatoResponseJSON == null) {
-            return -1;
+            return 0;
         }
+
         try {
             response = (JSONObject) parser.parse(zomatoResponseJSON);
+            System.out.println(response);
 
+            if ((Integer)response.get("results_found") == 0) {
+                return 0;
+            }
+
+            JSONArray restaurants = (JSONArray) response.get("restaurants");
+
+            //TODO: CHANGE TO SOMETHING BETTER TO MATCH YELP RESTAURANT WITH ZOMATO RESTAURANT (LOCATION, CATEGORIES...)
+
+            JSONObject restaurant = (JSONObject) ((JSONObject) restaurants.get(0)).get("restaurant");
+
+            if (restaurant.containsKey("average_cost_for_two")) {
+                return ((Long) restaurant.get("average_cost_for_two")).intValue();
+            } else {
+                return 0;
+            }
         } catch (ParseException e) {
             System.out.println("Error: could not parse JSON response:");
             System.out.println(zomatoResponseJSON);
-
             e.printStackTrace();
-        }
-        JSONArray restaurants = (JSONArray) response.get("restaurants");
-
-        //TODO: CHANGE TO SOMETHING BETTER TO MATCH YELP RESTAURANT WITH ZOMATO RESTAURANT (LOCATION, CATEGORIES...)
-
-        JSONObject restaurant = (JSONObject) ((JSONObject) restaurants.get(0)).get("restaurant");
-
-        if (restaurant.containsKey("average_cost_for_two")) {
-            return ((Long) restaurant.get("average_cost_for_two")).intValue();
-        } else {
+            return 0;
+        } catch (IndexOutOfBoundsException e) {
             return 0;
         }
     }
