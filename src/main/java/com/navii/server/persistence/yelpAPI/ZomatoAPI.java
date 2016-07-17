@@ -43,9 +43,7 @@ public class ZomatoAPI {
 
         try {
             response = (JSONObject) parser.parse(zomatoResponseJSON);
-            System.out.println(response);
-
-            if ((Integer)response.get("results_found") == 0) {
+            if (response.get("results_found").toString() == Integer.toString(0)) {
                 return 0;
             }
 
@@ -66,6 +64,8 @@ public class ZomatoAPI {
             e.printStackTrace();
             return 0;
         } catch (IndexOutOfBoundsException e) {
+            return 0;
+        } catch (Exception e) {
             return 0;
         }
     }
