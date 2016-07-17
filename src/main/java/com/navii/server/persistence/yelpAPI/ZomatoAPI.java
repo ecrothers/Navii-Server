@@ -38,6 +38,9 @@ public class ZomatoAPI {
         JSONParser parser = new JSONParser();
         JSONObject response = null;
 
+        if (zomatoResponseJSON == null) {
+            return -1;
+        }
         try {
             response = (JSONObject) parser.parse(zomatoResponseJSON);
 
