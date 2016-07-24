@@ -30,6 +30,7 @@ public class UserDAOImpl implements UserDAO {
     private static final String PASSWORD_FIELD = "password";
     private static final String SALT_FIELD = "salt";
     private static final String IS_FACEBOOK_FIELD = "is_facebook";
+    private static final String VERIFIED_FIELD = "verified";
 
     @Autowired
     protected JdbcTemplate jdbc;
@@ -48,6 +49,7 @@ public class UserDAOImpl implements UserDAO {
                     .password((String) row.get(PASSWORD_FIELD))
                     .salt((String) row.get(SALT_FIELD))
                     .isFacebook((boolean) row.get(IS_FACEBOOK_FIELD))
+                    .verified((boolean) row.get(VERIFIED_FIELD))
                     .build();
 
             users.add(user);
@@ -75,6 +77,7 @@ public class UserDAOImpl implements UserDAO {
                             .password(rs.getString(PASSWORD_FIELD))
                             .salt(rs.getString(SALT_FIELD))
                             .isFacebook(rs.getBoolean(IS_FACEBOOK_FIELD))
+                            .verified(rs.getBoolean(VERIFIED_FIELD))
                             .build();
                     }
                 }
@@ -88,8 +91,8 @@ public class UserDAOImpl implements UserDAO {
     @Override
     public int create(User createdUser) {
         final String sqlString =
-                "INSERT INTO users (username, password, salt, is_facebook) " +
-                        "VALUES (?, ?, ?, ?);";
+                "INSERT INTO users (username, password, salt, is_facebook, verified) " +
+                        "VALUES (?, ?, ?, ?, ?);";
 
         try {
             return jdbc.update(
@@ -97,7 +100,8 @@ public class UserDAOImpl implements UserDAO {
                     createdUser.getUsername(),
                     createdUser.getPassword(),
                     createdUser.getSalt(),
-                    createdUser.isFacebook()
+                    createdUser.isFacebook(),
+                    createdUser.getVerified()
             );
 
         } catch (DataAccessException e) {
