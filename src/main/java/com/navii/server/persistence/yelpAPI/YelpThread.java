@@ -13,11 +13,8 @@ import org.scribe.model.Response;
 import org.scribe.model.Token;
 import org.scribe.model.Verb;
 import org.scribe.oauth.OAuthService;
-import org.springframework.stereotype.Component;
-import org.w3c.dom.Attr;
 
 import java.util.*;
-import java.util.concurrent.RunnableFuture;
 import java.util.stream.Collectors;
 
 import static com.navii.server.persistence.yelpAPI.ZomatoAPI.getZomatoPrice;
@@ -27,7 +24,7 @@ import static com.navii.server.persistence.yelpAPI.ZomatoAPI.getZomatoPrice;
  * <p>
  * This program demonstrates the capability of the Yelp API version 2.0 by using the Search API to
  * query for businesses by a search term and location, and the Business API to query additional
- * information about the top result from the search query.
+ * information about the top result nfrom the search query.
  * <p>
  * <p>
  * See <a href="http://www.yelp.com/developers/documentation">Yelp Documentation</a> for more info.
@@ -42,22 +39,32 @@ public class YelpThread extends Thread {
     private static final int SEARCH_LIMIT = 5;
 
     private static final String SEARCH_PATH = "/v2/search";
-    /*
-     * Update OAuth credentials below from the Yelp Developers API site:
-     * http://www.yelp.com/developers/getting_started/api_access
-     */
 
     private static final String CONSUMER_KEY = "bC7-svAVQhRSS5Xt6mWx_w";
     private static final String CONSUMER_SECRET = "xu1yiJin42FEUg8xl4RFviDZqdg";
     private static final String TOKEN = "55bwV2Mxx8ZFvR41cx-pWawFpGLKlRoa";
     private static final String TOKEN_SECRET = "I55U5TwC4APJ-St6_LGDtN_GBFM";
 
+    private static final String REQUEST_TERM = "term";
+    private static final String REQUEST_LOCATION = "location";
+    private static final String REQUEST_CLL = "cll";
+    private static final String REQUEST_LIMIT = "limit";
+    private static final String REQUEST_RADIUS_FILTER = "radius_filter";
+    private static final String REQUEST_SORT = "sort";
+    private static final String REQUEST_CATEGORY_FILTER = "category_filter";
+
+    private final static String JSON_BUSINESSES = "businesses";
+    private final static String JSON_LOCATION = "location";
+    private final static String JSON_NAME = "name";
+
     private List<Attraction> attractions;
+    private Map<String, Integer> uniqueCheckHashMap = new HashMap<>();
     private List<Venture> potentialAttractionStack;
     private int sort;
     private String TAG;
 
     private static Map<Integer, String> nameMap = new HashMap<>();
+
     static {
         nameMap.put(0, "Best Matched");
         nameMap.put(1, "By Distance");
@@ -86,24 +93,23 @@ public class YelpThread extends Thread {
      * See <a href="http://www.yelp.com/developers/documentation/v2/search_api">Yelp Search API V2</a>
      * for more info.
      *
-     * @param venture           <tt>String</tt> of the search venture to be queried
+     * @param venture <tt>String</tt> of the search venture to be queried
      * @return <tt>String</tt> JSON Response
      */
     public String searchForBusinessesByLocation(Venture venture, String cll, int sort) {
         OAuthRequest request = createOAuthRequest(SEARCH_PATH);
         //TODO: PUT INTO OBJECTS
-        request.addQuerystringParameter("term", venture.getTerm());
-        request.addQuerystringParameter("location", DEFAULT_LOCATION);
-        request.addQuerystringParameter("cll", cll);
-        request.addQuerystringParameter("limit", String.valueOf(SEARCH_LIMIT));
-        request.addQuerystringParameter("radius_filter", DEFAULT_RADIUS_FILTER);
-        request.addQuerystringParameter("sort", String.valueOf(sort));
+        request.addQuerystringParameter(REQUEST_TERM, venture.getTerm());
+        request.addQuerystringParameter(REQUEST_LOCATION, DEFAULT_LOCATION);
+        request.addQuerystringParameter(REQUEST_CLL, cll);
+        request.addQuerystringParameter(REQUEST_LIMIT, String.valueOf(SEARCH_LIMIT));
+        request.addQuerystringParameter(REQUEST_RADIUS_FILTER, DEFAULT_RADIUS_FILTER);
+        request.addQuerystringParameter(REQUEST_SORT, String.valueOf(sort));
         if (!venture.getCategories().isEmpty()) {
-            request.addQuerystringParameter("category_filter", venture.getCategories());
+            request.addQuerystringParameter(REQUEST_CATEGORY_FILTER, venture.getCategories());
         }
         return sendRequestAndGetResponse(request);
     }
-
 
 
     /**
@@ -134,9 +140,9 @@ public class YelpThread extends Thread {
      * Queries the Search API based on the command line arguments and takes the first result to query
      * the Business API.
      *
-     * @param venture     venture object to define correct attraction
-     * @param cll      location of current search place
-     * @return  an Attraction object
+     * @param venture venture object to define correct attraction
+     * @param cll     location of current search place
+     * @return an Attraction object
      */
     private Attraction getAttraction(Venture venture, String cll, int sort) {
         String searchResponseJSON =
@@ -151,13 +157,19 @@ public class YelpThread extends Thread {
             System.out.println(searchResponseJSON);
         }
 
-        JSONArray businesses = (JSONArray) response.get("businesses");
+
+        JSONArray businesses = (JSONArray) response.get(JSON_BUSINESSES);
         Attraction attraction;
         int index = new Random().nextInt(5);
 
         JSONObject businessObject = (JSONObject) businesses.get(index);
-        JSONObject location = (JSONObject) businessObject.get("location");
+        String name = businessObject.getOrDefault(JSON_NAME, "N/A").toString();
 
+        JSONObject location = (JSONObject) businessObject.get(JSON_LOCATION);
+
+        if (uniqueCheckHashMap.containsKey(name)) {
+        } else {
+        }
         double latitude = 43.644176, longitude = -79.387375;
 
         if (location.containsKey("coordinate")) {
@@ -177,7 +189,7 @@ public class YelpThread extends Thread {
 
         int price = 0;
 
-        String name = businessObject.getOrDefault("name", "N/A").toString();
+
         if (venture.getType().equals(Venture.Type.MEAL)) {
             JSONArray jsonArray = null;
 
@@ -217,7 +229,7 @@ public class YelpThread extends Thread {
             attractionList.add(attraction);
             double latitude = attraction.getLocation().getLongitude() + 0.00001;
             double longitude = attraction.getLocation().getLongitude() - 0.00001;
-            cll = latitude+ "," + longitude;
+            cll = latitude + "," + longitude;
         }
 
         return attractionList;
