@@ -138,20 +138,21 @@ CREATE TABLE IF NOT EXISTS attractionstags (
 );
 
 CREATE TABLE IF NOT EXISTS yelp_categories (
-	yelp_category VARCHAR(64) NOT NULL
+	yelp_category VARCHAR(64) NOT NULL,
+	PRIMARY KEY (yelp_category)
 );
 
-CREATE TABLE IF NOT EXISTS yelp_preference_category(
+CREATE TABLE IF NOT EXISTS yelp_preference_category (
 	yelp_category VARCHAR(64) NOT NULL, 
 	preference VARCHAR(32) NOT NULL,
-	CONSTRAINT FOREIGN KEY (preference) REFERENCES preferences (preference) ON DELETE CASCADE,
-	CONSTRAINT FOREIGN KEY (yelp_category) REFERENCES yelp_categories (yelp_category) ON DELETE CASCADE
+	FOREIGN KEY (preference) REFERENCES preferences(preference) ON DELETE CASCADE,
+	FOREIGN KEY (yelp_category) REFERENCES yelp_categories(yelp_category) ON DELETE CASCADE
 );
 
-CREATE TABLE IF NOT EXISTS yelp_tag_category(
+CREATE TABLE IF NOT EXISTS yelp_tag_category (
 	yelp_category VARCHAR(64) NOT NULL, 
 	tag VARCHAR(64) NOT NULL,
-	CONSTRAINT FOREIGN KEY (tag) REFERENCES tags (tag) ON DELETE CASCADE,
-	CONSTRAINT FOREIGN KEY (yelp_category) REFERENCES yelp_categories (yelp_category) ON DELETE CASCADE
+	FOREIGN KEY (tag) REFERENCES tags(tag) ON DELETE CASCADE,
+	FOREIGN KEY (yelp_category) REFERENCES yelp_categories(yelp_category) ON DELETE CASCADE
 );
 

@@ -108,7 +108,6 @@ public class ItineraryController {
      */
     @RequestMapping(value="/tags/{tag_list}" , method= RequestMethod.GET)
     public ResponseEntity<List<Itinerary>> getItinerariesFromTags(@PathVariable("tag_list") String[] tagList) {
-
         List<Itinerary> itinerary = itineraryService.getItineraries(Arrays.asList(tagList));
 
         if (itinerary.size() > 0) {
