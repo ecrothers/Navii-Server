@@ -1,5 +1,3 @@
-yelp_preference_category;
-
 Use naviDB;
 SET FOREIGN_KEY_CHECKS = 0;
 
@@ -24,6 +22,5 @@ DROP TABLE IF EXISTS itinereariestags;
 DROP TABLE IF EXISTS yelpcategories;
 DROP TABLE IF EXISTS yelp_preference_category;
 DROP TABLE IF EXISTS yelp_tag_category;
-
 
 SET FOREIGN_KEY_CHECKS = 1;
