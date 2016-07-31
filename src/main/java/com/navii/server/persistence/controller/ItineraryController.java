@@ -1,6 +1,5 @@
 package com.navii.server.persistence.controller;
 
-import com.navii.server.persistence.domain.Attraction;
 import com.navii.server.persistence.domain.Itinerary;
 import com.navii.server.persistence.service.ItineraryService;
 import org.slf4j.Logger;
@@ -10,7 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @RestController
@@ -107,9 +106,9 @@ public class ItineraryController {
      * @param tagList   List of tags
      * @return  List of itineraries
      */
-    @RequestMapping(value="/tags" , method= RequestMethod.POST)
-    public ResponseEntity<List<Itinerary>> getItinerariesFromTags(@RequestBody List<String> tagList) {
-        List<Itinerary> itinerary = itineraryService.getItineraries(tagList);
+    @RequestMapping(value="/tags/{tag_list}" , method= RequestMethod.GET)
+    public ResponseEntity<List<Itinerary>> getItinerariesFromTags(@PathVariable("tag_list") String[] tagList) {
+        List<Itinerary> itinerary = itineraryService.getItineraries(Arrays.asList(tagList));
 
         if (itinerary.size() > 0) {
             return new ResponseEntity<>(itinerary, HttpStatus.OK);

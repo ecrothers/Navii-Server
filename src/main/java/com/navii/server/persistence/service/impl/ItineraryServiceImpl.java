@@ -10,9 +10,7 @@ import com.navii.server.persistence.yelpAPI.YelpThread;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -108,45 +106,36 @@ public class ItineraryServiceImpl implements ItineraryService {
         attraction2 = new Venture(Venture.Type.ATTRACTION, "Landmark");
         attraction3 = new Venture(Venture.Type.ATTRACTION, "Landmark");
 
+        for (String tag : tags) {
+            breakfast.addCategory(tag);
+            lunch.addCategory(tag);
+            dinner.addCategory(tag);
+            attraction1.addCategory(tag);
+            attraction2.addCategory(tag);
+            attraction3.addCategory(tag);
+        }
+
+        Map<String, Integer> uniqueMap = new HashMap<>();
+        List<String> categories = new ArrayList<>();
+        List<String> foodCategories = new ArrayList<>();
+
         //TODO: Move to database because relational
         //OR CHANGE TO static map
         // Modify venture objects based on preferences and tags
-        if (preferenceList.contains("sophisticated")) {
-            attraction1.addCategory("arts");
-            attraction2.addCategory("arts");
-            attraction3.addCategory("arts");
-        } if (preferenceList.contains("hipster")) {
-            attraction1.addCategory("arts");
-            attraction2.addCategory("arts");
-            attraction3.addCategory("arts");
+        if (preferenceList.contains("sophisticated") || preferenceList.contains("hipster")) {
+            categories.add("arts");
         } if (preferenceList.contains("adventure")) {
-            attraction1.addCategory("active");
-            attraction2.addCategory("active");
-            attraction3.addCategory("active");
-            attraction1.addCategory("nightlife");
-            attraction2.addCategory("nightlife");
-            attraction3.addCategory("nightlife");
-            attraction1.addCategory("localflavor");
-            attraction2.addCategory("localflavor");
-            attraction3.addCategory("localflavor");
+            categories.add("active");
+            categories.add("nightlife");
+            categories.add("localflavor");
         } if (preferenceList.contains("sporty")) {
-            attraction1.addCategory("active");
-            attraction2.addCategory("active");
-            attraction3.addCategory("active");
-        } if (preferenceList.contains("slutty")) {
-            attraction1.addCategory("adult");
-            attraction2.addCategory("adult");
-            attraction3.addCategory("adult");
-            attraction1.addCategory("nightlife");
-            attraction2.addCategory("nightlife");
-            attraction3.addCategory("nightlife");
-            attraction1.addCategory("beautysvc");
-            attraction2.addCategory("beautysvc");
-            attraction3.addCategory("beautysvc");
+            categories.add("active");
+        } if (preferenceList.contains("adult")) {
+            categories.add("adult");
+            categories.add("nightlife");
+            categories.add("beautysvc");
         } if (preferenceList.contains("outdoor")) {
-            attraction1.addCategory("active");
-            attraction2.addCategory("active");
-            attraction3.addCategory("active");
+            categories.add("active");
         } if (preferenceList.contains("lazy")) {
             breakfast.addCategory("fooddeliveryservices");
             lunch.addCategory("fooddeliveryservices");
