@@ -38,7 +38,7 @@ INSERT INTO tags (tag) VALUES
 ('urban')
 ;
 
-INSERT INTO users (username, password, salt, is_facebook, verified) VALUES ('naviCreator', 'saltedpass', 'salt', 'n', 'n');
+INSERT INTO users (username, password, salt, is_facebook) VALUES ('naviCreator', 'saltedpass', 'salt', 'n', 'n');
 
 
 
