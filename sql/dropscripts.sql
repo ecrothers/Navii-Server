@@ -19,7 +19,7 @@ DROP TABLE IF EXISTS attractionspreferences;
 DROP TABLE IF EXISTS attractionstags;
 DROP TABLE IF EXISTS itinerariespreferences;
 DROP TABLE IF EXISTS itinereariestags;
-DROP TABLE IF EXISTS yelpcategories;
+DROP TABLE IF EXISTS yelp_categories;
 DROP TABLE IF EXISTS yelp_preference_category;
 
 
