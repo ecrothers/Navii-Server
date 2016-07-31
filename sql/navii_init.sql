@@ -6,7 +6,6 @@ CREATE TABLE IF NOT EXISTS users (
 	salt CHAR(64) NOT NULL,
 	alive TINYINT(1), 
 	is_facebook TINYINT(1),
-	verified TINYINT(1),
 	PRIMARY KEY (username)
 );
 

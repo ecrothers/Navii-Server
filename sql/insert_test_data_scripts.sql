@@ -56,7 +56,7 @@ INSERT INTO itinerariestags (itineraryid, tag) VALUES (3, 'Gambling');
 INSERT INTO itinerariestags (itineraryid, tag) VALUES (4, 'Cheat');
 INSERT INTO itinerariestags (itineraryid, tag) VALUES (4, 'Girlsgirlsgirls');
 
-INSERT INTO users (username, saltedPassword, salt, isFacebook, verified) VALUES ('naviCreator', 'saltedpass', 'salt', 'n', 'n');
+INSERT INTO users (username, saltedPassword, salt, isFacebook) VALUES ('naviCreator', 'saltedpass', 'salt', 'n');
 
 
 
