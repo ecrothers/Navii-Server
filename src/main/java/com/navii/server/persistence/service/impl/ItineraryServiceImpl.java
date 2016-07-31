@@ -53,8 +53,8 @@ public class ItineraryServiceImpl implements ItineraryService {
     @Override
     public List<Itinerary> getItineraries(List<String> tagList) {
         //TODO: GET PREFERENCE LIST FROM DB
-        List<Preference> preferences = userPreferenceDAO.obtain("akhan");
-
+//        List<Preference> preferences = userPreferenceDAO.obtain("akhan");
+        List<Preference> preferences = new ArrayList<>();
         List<Venture> potentialAttractionStack = buildPotentialAttractionStack(preferences, tagList);
         YelpThread[] yelpThreads = new YelpThread[3];
 
@@ -169,7 +169,9 @@ public class ItineraryServiceImpl implements ItineraryService {
                 String category = categories.remove(new Random().nextInt(categories.size()));
                 potentialAttractionStack.get(i).addCategory(category);
             }
-            potentialAttractionStack.get(i).setTerm(terms.remove(new Random().nextInt(terms.size())));
+            if (terms.size() != 0) {
+                potentialAttractionStack.get(i).setTerm(terms.remove(new Random().nextInt(terms.size())));
+            }
         }
 
         return potentialAttractionStack;

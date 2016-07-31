@@ -163,7 +163,7 @@ public class YelpThread extends Thread {
         int index = new Random().nextInt(5);
 
         JSONObject businessObject = (JSONObject) businesses.remove(index);
-        extraPrefetch.add(businesses);
+//        extraPrefetch.add(businesses);
 
         String name = businessObject.getOrDefault(JSON_NAME, "N/A").toString();
 

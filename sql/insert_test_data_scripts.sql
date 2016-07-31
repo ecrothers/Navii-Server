@@ -40,7 +40,6 @@ INSERT INTO yelp_categories (yelp_category) VALUES
   ('arts'),
   ('active'),
   ('nightlife'),
-  ('localflavor'),
   ('adult'),
   ('beautysvc'),
   ('fooddeliveryservices'),
