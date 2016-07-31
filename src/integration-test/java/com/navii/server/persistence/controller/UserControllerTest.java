@@ -81,7 +81,6 @@ public class UserControllerTest {
                 .password("password-test_" + randomId)
                 .salt("salt-test_" + randomId)
                 .isFacebook(false)
-                .verified(true)
                 .build();
 
         sendCreateUserRequest(user)
@@ -253,7 +252,6 @@ public class UserControllerTest {
                 .password(password)
                 .salt("salt-test_" + randomId)
                 .isFacebook(false)
-                .verified(true)
                 .build();
     }
 
