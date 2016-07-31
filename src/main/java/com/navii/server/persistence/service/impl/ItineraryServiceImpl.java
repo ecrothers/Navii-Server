@@ -84,7 +84,6 @@ public class ItineraryServiceImpl implements ItineraryService {
     }
 
     private List<Venture> buildPotentialAttractionStack(List<Preference> preferences, List<String> tags) {
-        List<Venture> potentialAttractionStack = new ArrayList<>();
 
         List<String> preferenceList =
                 preferences.stream().map(preference -> preference.getPreference().toLowerCase()).collect(Collectors.toList());
@@ -97,27 +96,19 @@ public class ItineraryServiceImpl implements ItineraryService {
         Venture attraction2;
         Venture attraction3;
 
+        Map<String, Integer> uniqueMap = new HashMap<>();
+        List<String> categories = new ArrayList<>();
+        List<String> foodCategories = new ArrayList<>();
+        List<String> terms = new ArrayList<>();
+
         // Initialize venture objects
         breakfast = new Venture(Venture.Type.MEAL, "Breakfast");
         lunch = new Venture(Venture.Type.MEAL, "Lunch");
         dinner = new Venture(Venture.Type.MEAL, "Dinner");
 
-        attraction1 = new Venture(Venture.Type.ATTRACTION, "Landmark");
-        attraction2 = new Venture(Venture.Type.ATTRACTION, "Landmark");
-        attraction3 = new Venture(Venture.Type.ATTRACTION, "Landmark");
-
-        for (String tag : tags) {
-            breakfast.addCategory(tag);
-            lunch.addCategory(tag);
-            dinner.addCategory(tag);
-            attraction1.addCategory(tag);
-            attraction2.addCategory(tag);
-            attraction3.addCategory(tag);
-        }
-
-        Map<String, Integer> uniqueMap = new HashMap<>();
-        List<String> categories = new ArrayList<>();
-        List<String> foodCategories = new ArrayList<>();
+        attraction1 = new Venture(Venture.Type.ATTRACTION, "Attraction");
+        attraction2 = new Venture(Venture.Type.ATTRACTION, "Attraction");
+        attraction3 = new Venture(Venture.Type.ATTRACTION, "Attraction");
 
         //TODO: Move to database because relational
         //OR CHANGE TO static map
@@ -137,20 +128,10 @@ public class ItineraryServiceImpl implements ItineraryService {
         } if (preferenceList.contains("outdoor")) {
             categories.add("active");
         } if (preferenceList.contains("lazy")) {
-            breakfast.addCategory("fooddeliveryservices");
-            lunch.addCategory("fooddeliveryservices");
-            dinner.addCategory("fooddeliveryservices");
-            attraction1.addCategory("shopping");
-            attraction2.addCategory("shopping");
-            attraction3.addCategory("shopping");
-        } if (preferenceList.contains("foodie")) {
-//            attraction1.addCategory("food");
-//            attraction2.addCategory("food");
-//            attraction3.addCategory("food");
+            foodCategories.add("fooddeliveryservices");
+            categories.add("shopping");
         } if (preferenceList.contains("cultural")) {
-            attraction1.addCategory("localflavor");
-            attraction2.addCategory("localflavor");
-            attraction3.addCategory("localflavor");
+            categories.add("localflavor");
         } if (preferenceList.contains("halal")) {
             breakfast.addCategory("halal");
             lunch.addCategory("halal");
@@ -169,9 +150,27 @@ public class ItineraryServiceImpl implements ItineraryService {
             dinner.addCategory("vegetarian");
         }
 
+        for (String tag : tags) {
+            if (tag.equals("chinese") || tag.equals("japanese") || tag.equals("mexican")
+                    || tag.equals("greek") || tag.equals("italian")) {
+                breakfast.addCategory(tag);
+                lunch.addCategory(tag);
+                dinner.addCategory(tag);
+            } else if (!tag.equals("indoor") || !tag.equals("hiking")){
+                terms.add(tag);
+            }
+        }
 
-        potentialAttractionStack.addAll(
-                Arrays.asList(breakfast, attraction1, lunch, attraction2, attraction3, dinner));
+        List<Venture> potentialAttractionStack = Arrays.asList(breakfast, attraction1, lunch, attraction2, attraction3, dinner);
+
+        int size = (int) Math.ceil((double)categories.size()/3.0f);
+        for (int i = 1; i < potentialAttractionStack.size(); i+=2 ) {
+            for (int j = 0; j < size; j++) {
+                String category = categories.remove(new Random().nextInt(categories.size()));
+                potentialAttractionStack.get(i).addCategory(category);
+            }
+            potentialAttractionStack.get(i).setTerm(terms.remove(new Random().nextInt(terms.size())));
+        }
 
         return potentialAttractionStack;
     }

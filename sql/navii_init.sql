@@ -149,10 +149,3 @@ CREATE TABLE IF NOT EXISTS yelp_preference_category (
 	FOREIGN KEY (yelp_category) REFERENCES yelp_categories(yelp_category) ON DELETE CASCADE
 );
 
-CREATE TABLE IF NOT EXISTS yelp_tag_category (
-	yelp_category VARCHAR(64) NOT NULL, 
-	tag VARCHAR(64) NOT NULL,
-	FOREIGN KEY (tag) REFERENCES tags(tag) ON DELETE CASCADE,
-	FOREIGN KEY (yelp_category) REFERENCES yelp_categories(yelp_category) ON DELETE CASCADE
-);
-

@@ -1,6 +1,6 @@
-INSERT INTO preference_questions (preference_type, preference_question) VALUES (1, "What type of person are you?");
-INSERT INTO preference_questions (preference_type, preference_question) VALUES (2, "What is your personal vibe?");
-INSERT INTO preference_questions (preference_type, preference_question) VALUES (3, "What are your dining preferences?");
+INSERT INTO preference_questions (preference_type, preference_question) VALUES (1, 'What type of person are you?');
+INSERT INTO preference_questions (preference_type, preference_question) VALUES (2, 'What is your personal vibe?');
+INSERT INTO preference_questions (preference_type, preference_question) VALUES (3, 'What are your dining preferences?');
 
 INSERT INTO preferences (preference, preference_type) VALUES ('gluten-free', 1);
 INSERT INTO preferences (preference, preference_type) VALUES ('vegan', 1);
@@ -20,12 +20,11 @@ INSERT INTO preferences (preference, preference_type) VALUES ('sophisticated', 3
 INSERT INTO preferences (preference, preference_type) VALUES ('cheap', 3);
 
 INSERT INTO tags (tag) VALUES 
-('adventurous'),
 ('chinese'),
 ('greek'),
 ('hiking'),
 ('historical'),
-('Indoor'),
+('indoor'),
 ('italian'),
 ('japanese'),
 ('mexican'),
@@ -33,9 +32,43 @@ INSERT INTO tags (tag) VALUES
 ('museum'),
 ('musical theater'),
 ('night life'),
-('outdoor'),
 ('theater'),
 ('urban')
+;
+
+INSERT INTO yelp_categories (yelp_category) VALUES
+  ('arts'),
+  ('active'),
+  ('nightlife'),
+  ('localflavor'),
+  ('adult'),
+  ('beautysvc'),
+  ('fooddeliveryservices'),
+  ('shopping'),
+  ('localflavor'),
+  ('halal'),
+  ('gluten-free'),
+  ('vegan'),
+  ('vegetarian')
+;
+
+INSERT INTO yelp_preference_category (preference, yelp_category) VALUES
+  ('sophisticated', 'arts'),
+  ('adventure', 'active'),
+  ('adventure', 'nightlife'),
+  ('adventure', 'localflavor'),
+  ('sporty', 'active'),
+  ('adult', 'adult'),
+  ('adult', 'nightlife'),
+  ('adult', 'beautysvc'),
+  ('outdoor', 'active'),
+  ('lazy', 'fooddeliveryservices'),
+  ('lazy', 'shopping'),
+  ('cultural', 'localflavor'),
+  ('halal', 'halal'),
+  ('gluten-free', 'gluten-free'),
+  ('vegan', 'vegan'),
+  ('vegetarian', 'vegetarian')
 ;
 
 INSERT INTO users (username, password, salt, is_facebook, verified) VALUES ('naviCreator', 'saltedpass', 'salt', 'n', 'n');

@@ -60,6 +60,7 @@ public class YelpThread extends Thread {
     private List<Attraction> attractions;
     private Map<String, Integer> uniqueCheckHashMap = new HashMap<>();
     private List<Venture> potentialAttractionStack;
+    private List<JSONArray> extraPrefetch;
     private int sort;
     private String TAG;
 
@@ -157,19 +158,23 @@ public class YelpThread extends Thread {
             System.out.println(searchResponseJSON);
         }
 
-
         JSONArray businesses = (JSONArray) response.get(JSON_BUSINESSES);
         Attraction attraction;
         int index = new Random().nextInt(5);
 
-        JSONObject businessObject = (JSONObject) businesses.get(index);
+        JSONObject businessObject = (JSONObject) businesses.remove(index);
+        extraPrefetch.add(businesses);
+
         String name = businessObject.getOrDefault(JSON_NAME, "N/A").toString();
 
         JSONObject location = (JSONObject) businessObject.get(JSON_LOCATION);
 
-        if (uniqueCheckHashMap.containsKey(name)) {
-        } else {
+        while (uniqueCheckHashMap.containsKey(name)) {
+            index = new Random().nextInt(5);
+            businessObject = (JSONObject) businesses.get(index);
+            name = businessObject.getOrDefault(JSON_NAME, "N/A").toString();
         }
+
         double latitude = 43.644176, longitude = -79.387375;
 
         if (location.containsKey("coordinate")) {
@@ -189,7 +194,6 @@ public class YelpThread extends Thread {
 
         int price = 0;
 
-
         if (venture.getType().equals(Venture.Type.MEAL)) {
             JSONArray jsonArray = null;
 
@@ -208,10 +212,11 @@ public class YelpThread extends Thread {
         }
 
         String photoUri = businessObject.getOrDefault("image_url", "N/A").toString().replace("ms.jpg", "o.jpg");
-
+        String blurb = businessObject.getOrDefault("snippet_text", "N/A").toString();
         attraction = new Attraction.Builder()
                 .name(name)
                 .photoUri(photoUri)
+                .blurbUri(blurb)
                 .location(location1)
                 .duration(3)
                 .price(price)
@@ -246,5 +251,9 @@ public class YelpThread extends Thread {
 
     public List<Attraction> getAttractions() {
         return attractions;
+    }
+
+    public List<JSONArray> getExtraPrefetch() {
+        return extraPrefetch;
     }
 }

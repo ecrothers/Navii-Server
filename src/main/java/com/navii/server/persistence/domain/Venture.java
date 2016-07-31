@@ -25,20 +25,16 @@ public class Venture {
         }
     }
 
-    public Venture(Type type, String term, Set<String> categories) {
+    public Venture(Type type) {
         this.type = type;
-        this.term = term;
-        this.categories = categories;
-    }
-
-    public Venture(Type type, String term, String category) {
-        this.type = type;
-        this.term = term;
-        this.categories = new HashSet<>(Arrays.asList(category));
     }
 
     public Venture(Type type, String term) {
         this.type = type;
+        this.term = term;
+    }
+
+    public void setTerm(String term) {
         this.term = term;
     }
 
