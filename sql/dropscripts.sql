@@ -1,7 +1,7 @@
 Use naviDB;
 SET FOREIGN_KEY_CHECKS = 0;
 
-DROP TABLE IF EXISTS users;
+DROP TABLE IF EXISTS voyagers;
 DROP TABLE IF EXISTS attractions;
 DROP TABLE IF EXISTS itineraries;
 DROP TABLE IF EXISTS activities;

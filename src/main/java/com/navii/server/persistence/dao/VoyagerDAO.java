@@ -1,32 +1,39 @@
 package com.navii.server.persistence.dao;
 
-import com.navii.server.persistence.domain.User;
+import com.navii.server.persistence.domain.Voyager;
 
 import java.util.List;
 
 /**
  * Created by JMtorii on 2015-10-15.
  */
-public interface UserDAO {
+public interface VoyagerDAO {
     /**
      * Finds all user entries from the database.
      * @return  All existing users.
      */
-    List<User> findAll();
+    List<Voyager> findAll();
 
     /**
      * Finds the information of a single user entry.
      * @param username      The username of the requested user entry.
      * @return              The information of the found user entry.
      */
-    User findOne(String username);
+    Voyager findOne(String username);
+
+    /**
+     * Finds the a single Voyager.
+     * @param email     The email.
+     * @return          The found Voyager.
+     */
+    Voyager findByEmail(String email);
 
     /**
      * Creates a new user entry to the database.
-     * @param createdUser       The information of the new user entry.
+     * @param createdVoyager       The information of the new user entry.
      * @return                  The number of created users
      */
-    int create(User createdUser);
+    int create(Voyager createdVoyager);
 
     /**
      * Updates the password with a given new password
@@ -38,11 +45,11 @@ public interface UserDAO {
 
     /**
      * Updates an existing user in the database.
-     * @param updatedUser   The information of the updated user entry.
+     * @param updatedVoyager   The information of the updated user entry.
      * @param username       The new username
      * @return              The number of updated users.
      */
-    int update(User updatedUser, String username);
+    int update(Voyager updatedVoyager, String username);
 
     /**
      * Deletes a user from the database.

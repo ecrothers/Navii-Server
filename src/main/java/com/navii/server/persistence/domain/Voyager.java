@@ -10,10 +10,13 @@ import java.util.Collection;
 /**
  * Created by JMtorii on 2015-10-15.
  */
-public class User implements UserDetails {
+public class Voyager implements UserDetails {
 
     @JsonProperty(value = "username")
     private String username;
+
+    @JsonProperty(value = "email")
+    private String email;
 
     @JsonProperty(value = "password")
     private String password;
@@ -27,10 +30,11 @@ public class User implements UserDetails {
     @JsonProperty(value = "verified")
     private boolean verified;
 
-    public User() {}
+    public Voyager() {}
 
-    private User(Builder builder) {
+    private Voyager(Builder builder) {
         this.username = builder.username;
+        this.email = builder.email;
         this.password = builder.password;
         this.salt = builder.salt;
         this.isFacebook = builder.isFacebook;
@@ -79,12 +83,17 @@ public class User implements UserDetails {
         return username;
     }
 
+    public String getEmail() {
+        return email;
+    }
+
     public boolean isFacebook() {
         return isFacebook;
     }
 
     public static class Builder {
         private String username;
+        private String email;
         private String password;
         private String salt;
         private boolean isFacebook;
@@ -94,6 +103,11 @@ public class User implements UserDetails {
 
         public Builder username(String username) {
             this.username = username;
+            return this;
+        }
+
+        public Builder email(String email) {
+            this.email = email;
             return this;
         }
 
@@ -117,8 +131,8 @@ public class User implements UserDetails {
             return this;
         }
 
-        public User build() {
-            return new User(this);
+        public Voyager build() {
+            return new Voyager(this);
         }
     }
 }

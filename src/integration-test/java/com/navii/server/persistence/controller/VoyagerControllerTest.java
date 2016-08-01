@@ -3,7 +3,7 @@ package com.navii.server.persistence.controller;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.navii.server.Application;
-import com.navii.server.persistence.domain.User;
+import com.navii.server.persistence.domain.Voyager;
 import com.navii.server.util.ObjectMapperFactory;
 import org.junit.Assert;
 import org.junit.Before;
@@ -35,8 +35,8 @@ import java.util.Random;
 @SpringApplicationConfiguration(classes = Application.class)
 @WebIntegrationTest(randomPort = true)
 @TestPropertySource(properties = "spring.datasource.url=jdbc:mysql://naviappdbinstance.cmd4kpxqni0s.us-east-1.rds.amazonaws.com:3306/naviDB_test")
-public class UserControllerTest {
-    private static final Logger logger = LoggerFactory.getLogger(UserControllerTest.class);
+public class VoyagerControllerTest {
+    private static final Logger logger = LoggerFactory.getLogger(VoyagerControllerTest.class);
 
     private MockMvc mvc;
     private ObjectMapper objectMapper;
@@ -54,11 +54,11 @@ public class UserControllerTest {
 
     @Test
     public void createUserFailsDueToInsufficientData() throws Exception {
-        User user = new User.Builder()
+        Voyager voyager = new Voyager.Builder()
                 .username("userDoesNotExist")
                 .build();
 
-        sendCreateUserRequest(user)
+        sendCreateUserRequest(voyager)
                 .andExpect(MockMvcResultMatchers.status().isBadRequest());
     }
 
@@ -76,15 +76,15 @@ public class UserControllerTest {
 
         int randomId = random.nextInt(1000);
 
-        User user = new User.Builder()
-                .username("user-test_" + randomId)
+        Voyager voyager = new Voyager.Builder()
+                .username("voyager-test_" + randomId)
                 .password("password-test_" + randomId)
                 .salt("salt-test_" + randomId)
                 .isFacebook(false)
                 .verified(true)
                 .build();
 
-        sendCreateUserRequest(user)
+        sendCreateUserRequest(voyager)
                 .andExpect(MockMvcResultMatchers.status().isCreated());
     }
 
@@ -97,8 +97,8 @@ public class UserControllerTest {
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andReturn();
 
-        List<User> users = objectMapper.readValue(result.getResponse().getContentAsString(), new TypeReference<List<User>>(){});
-        Assert.assertEquals(0, users.size());
+        List<Voyager> voyagers = objectMapper.readValue(result.getResponse().getContentAsString(), new TypeReference<List<Voyager>>(){});
+        Assert.assertEquals(0, voyagers.size());
     }
 
     @Test
@@ -137,12 +137,12 @@ public class UserControllerTest {
 
     @Test
     public void signUpFailsSinceUserAlreadyExists() throws Exception {
-        User user = createGenericTestUser();
+        Voyager voyager = createGenericTestUser();
 
-        sendCreateUserRequest(user)
+        sendCreateUserRequest(voyager)
                 .andExpect(MockMvcResultMatchers.status().isCreated());
 
-        sendSignUpRequest(user.getUsername(), user.getPassword())
+        sendSignUpRequest(voyager.getUsername(), voyager.getPassword())
                 .andExpect(MockMvcResultMatchers.status().isConflict());
     }
 
@@ -153,7 +153,7 @@ public class UserControllerTest {
                 .andExpect(MockMvcResultMatchers.status().isOk());
 
         int randomId = random.nextInt(1000);
-        String username = "user-test" + randomId;
+        String username = "voyager-test" + randomId;
         String password = "password-test" + randomId;
 
         sendSignUpRequest(username, password)
@@ -163,10 +163,10 @@ public class UserControllerTest {
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andReturn();
 
-        User user = objectMapper.readValue(result.getResponse().getContentAsString(), User.class);
-        Assert.assertEquals(username, user.getUsername());
-        Assert.assertEquals(password, user.getPassword());
-        Assert.assertEquals(false, user.isFacebook());
+        Voyager voyager = objectMapper.readValue(result.getResponse().getContentAsString(), Voyager.class);
+        Assert.assertEquals(username, voyager.getUsername());
+        Assert.assertEquals(password, voyager.getPassword());
+        Assert.assertEquals(false, voyager.isFacebook());
     }
 
     @Test
@@ -205,12 +205,12 @@ public class UserControllerTest {
 
     @Test
     public void loginFailsSinceUsernameAndPasswordDoNotMatch() throws Exception {
-        User user = createGenericTestUser();
+        Voyager voyager = createGenericTestUser();
 
-        sendCreateUserRequest(user)
+        sendCreateUserRequest(voyager)
                 .andExpect(MockMvcResultMatchers.status().isCreated());
 
-        sendLoginRequest(user.getUsername(), "someWrongPassword")
+        sendLoginRequest(voyager.getUsername(), "someWrongPassword")
                 .andExpect(MockMvcResultMatchers.status().isUnauthorized());
     }
 
@@ -220,12 +220,12 @@ public class UserControllerTest {
         sendDeleteAllUserRequest()
                 .andExpect(MockMvcResultMatchers.status().isOk());
 
-        User user = createGenericTestUser();
+        Voyager voyager = createGenericTestUser();
 
-        sendCreateUserRequest(user)
+        sendCreateUserRequest(voyager)
                 .andExpect(MockMvcResultMatchers.status().isCreated());
 
-        sendLoginRequest(user.getUsername(), user.getPassword())
+        sendLoginRequest(voyager.getUsername(), voyager.getPassword())
                 .andExpect(MockMvcResultMatchers.status().isOk());
     }
 
@@ -234,21 +234,21 @@ public class UserControllerTest {
         sendDeleteAllUserRequest()
                 .andExpect(MockMvcResultMatchers.status().isOk());
 
-        User user = createGenericTestUser();
+        Voyager voyager = createGenericTestUser();
 
-        sendCreateUserRequest(user)
+        sendCreateUserRequest(voyager)
                 .andExpect(MockMvcResultMatchers.status().isCreated());
 
-        sendUpdatePasswordRequest(user.getUsername(), user.getPassword(), "thisWillSucceed")
+        sendUpdatePasswordRequest(voyager.getUsername(), voyager.getPassword(), "thisWillSucceed")
                 .andExpect(MockMvcResultMatchers.status().isOk());
     }
 
-    private User createGenericTestUser() {
+    private Voyager createGenericTestUser() {
         int randomId = random.nextInt(1000);
         String username = "user-test_" + randomId;
         String password = "password-test_" + randomId;
 
-        return new User.Builder()
+        return new Voyager.Builder()
                 .username(username)
                 .password(password)
                 .salt("salt-test_" + randomId)
@@ -265,10 +265,10 @@ public class UserControllerTest {
         return mvc.perform(MockMvcRequestBuilders.get("/user"));
     }
 
-    private ResultActions sendCreateUserRequest(User user) throws Exception {
-        return mvc.perform(MockMvcRequestBuilders.post("/user")
+    private ResultActions sendCreateUserRequest(Voyager voyager) throws Exception {
+        return mvc.perform(MockMvcRequestBuilders.post("/voyager")
             .contentType(MediaType.APPLICATION_JSON)
-            .content(objectMapper.writeValueAsString(user)));
+            .content(objectMapper.writeValueAsString(voyager)));
     }
 
     private ResultActions sendDeleteAllUserRequest() throws Exception {

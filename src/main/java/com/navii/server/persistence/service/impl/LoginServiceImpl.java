@@ -1,9 +1,9 @@
 package com.navii.server.persistence.service.impl;
 
 import com.navii.server.UserAuth;
-import com.navii.server.persistence.domain.User;
+import com.navii.server.persistence.domain.Voyager;
 import com.navii.server.persistence.service.TokenService;
-import com.navii.server.persistence.service.UserService;
+import com.navii.server.persistence.service.VoyagerService;
 import com.navii.server.persistence.service.LoginService;
 import com.navii.server.persistence.service.util.FacebookGraphResponse;
 import com.navii.server.persistence.service.util.HashingAlgorithm;
@@ -16,9 +16,6 @@ import org.springframework.web.client.RestTemplate;
 
 import javax.xml.bind.DatatypeConverter;
 import java.nio.ByteBuffer;
-import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 
 /**
@@ -33,8 +30,8 @@ public class LoginServiceImpl implements LoginService {
     private static final String FACEBOOK_GRAPH_API_ME = "https://graph.facebook.com/me?fields=name,email&access_token=";
 
     @Autowired
-    @Qualifier("userServiceImpl")
-    private UserService userService;
+    @Qualifier("voyagerServiceImpl")
+    private VoyagerService voyagerService;
 
     @Autowired
     private TokenService tokenService;
@@ -42,15 +39,15 @@ public class LoginServiceImpl implements LoginService {
     @Override
     public String Login(String email, String password) {
         // TODO : Tighten up authentication?
-        User user = userService.findOne(email);
+        Voyager voyager = voyagerService.findOne(email);
 
-        if (user == null) {
+        if (voyager == null) {
             return "";
         }
 
         String passwordAttempt = "";
         try {
-            byte[] saltBytes = DatatypeConverter.parseHexBinary(user.getSalt());
+            byte[] saltBytes = DatatypeConverter.parseHexBinary(voyager.getSalt());
             byte[] passwordBytes = password.getBytes("UTF-8"); // UTF-8 or 16?
             byte[] saltedPasswordBytes = ByteBuffer.allocate(saltBytes.length + passwordBytes.length).put(saltBytes).put(passwordBytes).array();
             passwordAttempt = HashingAlgorithm.sha256(saltedPasswordBytes);
@@ -58,9 +55,9 @@ public class LoginServiceImpl implements LoginService {
             e.printStackTrace();
         }
 
-        if (passwordAttempt.equals(user.getPassword())) {
-            logger.info("Authenticated password for " + user.getUsername());
-            UserAuth auth = new UserAuth(user);
+        if (passwordAttempt.equals(voyager.getPassword())) {
+            logger.info("Authenticated password for " + voyager.getUsername());
+            UserAuth auth = new UserAuth(voyager);
             return tokenService.getToken(auth);
         }
 
@@ -89,27 +86,27 @@ public class LoginServiceImpl implements LoginService {
                 return "";
             }
 
-            User user = userService.findOne(fbEmail);
+            Voyager voyager = voyagerService.findOne(fbEmail);
             //TODO: Instead of a random password, possibly use a flag for fb login only accounts
-            if (user == null) {
-                User.Builder newFBUser = new User.Builder().username(fbEmail).isFacebook(true).verified(true);
+            if (voyager == null) {
+                Voyager.Builder newFBUser = new Voyager.Builder().username(fbEmail).isFacebook(true).verified(true);
                 SecureRandom random = new SecureRandom();
                 byte randomBytes[] = new byte[32];
                 random.nextBytes(randomBytes);
                 String randomPassword = HashingAlgorithm.sha256(randomBytes);
                 newFBUser.password(randomPassword);
 
-                userService.create(newFBUser.build());
-                user = userService.findOne(fbEmail);
+                voyagerService.create(newFBUser.build());
+                voyager = voyagerService.findOne(fbEmail);
             }
 
-            //if user is still null something happened during account creation and didn't throw
-            if (user == null) {
-                throw new RuntimeException("user creation from FB failed");
+            //if voyager is still null something happened during account creation and didn't throw
+            if (voyager == null) {
+                throw new RuntimeException("voyager creation from FB failed");
             }
 
-            logger.info("Authenticated FB token for " + user.getUsername());
-            UserAuth auth = new UserAuth(user);
+            logger.info("Authenticated FB token for " + voyager.getUsername());
+            UserAuth auth = new UserAuth(voyager);
             return tokenService.getToken(auth);
 
         } catch (Throwable ex) {

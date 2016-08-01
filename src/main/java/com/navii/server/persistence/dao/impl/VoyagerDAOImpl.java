@@ -1,7 +1,7 @@
 package com.navii.server.persistence.dao.impl;
 
-import com.navii.server.persistence.dao.UserDAO;
-import com.navii.server.persistence.domain.User;
+import com.navii.server.persistence.dao.VoyagerDAO;
+import com.navii.server.persistence.domain.Voyager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,10 +23,11 @@ import java.util.Map;
  */
 @Repository
 @SuppressWarnings("unused")
-public class UserDAOImpl implements UserDAO {
+public class VoyagerDAOImpl implements VoyagerDAO {
 
-    private static final Logger logger = LoggerFactory.getLogger(UserDAOImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger(VoyagerDAOImpl.class);
     private static final String USERNAME_FIELD = "username";
+    private static final String EMAIL_FIELD = "email";
     private static final String PASSWORD_FIELD = "password";
     private static final String SALT_FIELD = "salt";
     private static final String IS_FACEBOOK_FIELD = "is_facebook";
@@ -36,44 +37,46 @@ public class UserDAOImpl implements UserDAO {
     protected JdbcTemplate jdbc;
 
     @Override
-    public List<User> findAll() {
+    public List<Voyager> findAll() {
         final String sqlString =
                 "SELECT * FROM users;";
 
-        List<User> users = new ArrayList<>();
+        List<Voyager> voyagers = new ArrayList<>();
         List<Map<String, Object>> rows = jdbc.queryForList(sqlString);
 
         for (Map row : rows) {
-            User user = new User.Builder()
+            Voyager voyager = new Voyager.Builder()
                     .username((String) row.get(USERNAME_FIELD))
+                    .email((String) row.get(EMAIL_FIELD))
                     .password((String) row.get(PASSWORD_FIELD))
                     .salt((String) row.get(SALT_FIELD))
                     .isFacebook((boolean) row.get(IS_FACEBOOK_FIELD))
                     .verified((boolean) row.get(VERIFIED_FIELD))
                     .build();
 
-            users.add(user);
+            voyagers.add(voyager);
         }
 
-        return users;
+        return voyagers;
     }
 
     @Override
-    public User findOne(String username) {
+    public Voyager findOne(String username) {
         final String sqlString =
                 "SELECT * FROM users " +
                         "WHERE username = ?;";
 
         try {
-            return jdbc.queryForObject(sqlString, new Object[]{username}, new RowMapper<User>() {
+            return jdbc.queryForObject(sqlString, new Object[]{username}, new RowMapper<Voyager>() {
                 @Override
-                public User mapRow(ResultSet rs, int rowNum) throws SQLException {
+                public Voyager mapRow(ResultSet rs, int rowNum) throws SQLException {
 
                     if (rs.getRow() < 1) {
                         return null;
                     } else {
-                        return new User.Builder()
+                        return new Voyager.Builder()
                             .username(rs.getString(USERNAME_FIELD))
+                            .email(rs.getString(EMAIL_FIELD))
                             .password(rs.getString(PASSWORD_FIELD))
                             .salt(rs.getString(SALT_FIELD))
                             .isFacebook(rs.getBoolean(IS_FACEBOOK_FIELD))
@@ -83,29 +86,61 @@ public class UserDAOImpl implements UserDAO {
                 }
             });
         } catch (EmptyResultDataAccessException e) {
-            logger.warn("User: findOne returns no rows");
+            logger.warn("Voyager: findOne returns no rows");
             return null;
         }
     }
 
     @Override
-    public int create(User createdUser) {
+    public Voyager findByEmail(final String email) {
+        String sqlString =
+                "SELECT * FROM users " +
+                        "WHERE email = ?;";
+
+        try {
+            return jdbc.queryForObject(sqlString, new Object[]{email}, new RowMapper<Voyager>() {
+                @Override
+                public Voyager mapRow(ResultSet rs, int rowNum) throws SQLException {
+
+                    if (rs.getRow() < 1) {
+                        return null;
+                    } else {
+                        return new Voyager.Builder()
+                                .username(rs.getString("username"))
+                                .email(rs.getString("email"))
+                                .password(rs.getString("password"))
+                                .isFacebook(rs.getBoolean("is_facebook"))
+                                .verified(rs.getBoolean("verified"))
+                                .salt(rs.getString("salt"))
+                                .build();
+                    }
+                }
+            });
+        } catch (EmptyResultDataAccessException e) {
+            logger.warn("Goose: findByEmail returns no rows");
+            return null;
+        }
+    }
+
+    @Override
+    public int create(Voyager createdVoyager) {
         final String sqlString =
-                "INSERT INTO users (username, password, salt, is_facebook, verified) " +
-                        "VALUES (?, ?, ?, ?, ?);";
+                "INSERT INTO users (username, email, password, salt, is_facebook, verified) " +
+                        "VALUES (?, ?, ?, ?, ?, ?);";
 
         try {
             return jdbc.update(
                     sqlString,
-                    createdUser.getUsername(),
-                    createdUser.getPassword(),
-                    createdUser.getSalt(),
-                    createdUser.isFacebook(),
-                    createdUser.getVerified()
+                    createdVoyager.getUsername(),
+                    createdVoyager.getEmail(),
+                    createdVoyager.getPassword(),
+                    createdVoyager.getSalt(),
+                    createdVoyager.isFacebook(),
+                    createdVoyager.getVerified()
             );
 
         } catch (DataAccessException e) {
-            logger.warn("User: createUser returns no rows or contains an error");
+            logger.warn("Voyager: createUser returns no rows or contains an error");
             return 0;
         }
     }
@@ -123,14 +158,14 @@ public class UserDAOImpl implements UserDAO {
                     username
             );
         } catch (DataAccessException e) {
-            logger.warn("User: updatePassword returns no rows or contains an error");
+            logger.warn("Voyager: updatePassword returns no rows or contains an error");
             return 0;
         }
 
     }
 
     @Override
-    public int update(User updatedUser, String newUsername) {
+    public int update(Voyager updatedVoyager, String newUsername) {
         final String sqlString =
                 "UPDATE users " +
                         "SET username = ? " +
@@ -139,7 +174,7 @@ public class UserDAOImpl implements UserDAO {
         return jdbc.update(
                 sqlString,
                 newUsername,
-                updatedUser.getUsername()
+                updatedVoyager.getUsername()
         );
     }
 
@@ -152,7 +187,7 @@ public class UserDAOImpl implements UserDAO {
             return jdbc.update(sqlString, username);
 
         } catch (DataAccessException e) {
-            logger.warn("User: deleteUser returns no rows or contains an error");
+            logger.warn("Voyager: deleteUser returns no rows or contains an error");
             return 0;
         }
 

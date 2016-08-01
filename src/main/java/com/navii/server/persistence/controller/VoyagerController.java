@@ -1,10 +1,12 @@
 package com.navii.server.persistence.controller;
 
-import com.navii.server.persistence.domain.User;
-import com.navii.server.persistence.service.UserService;
+import com.navii.server.persistence.domain.Voyager;
+import com.navii.server.persistence.service.VoyagerService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,11 +18,12 @@ import java.util.List;
  */
 @RestController
 @RequestMapping(value = "/user")
-public class UserController {
-    private static final Logger logger = LoggerFactory.getLogger(UserController.class);
+public class VoyagerController {
+    private static final Logger logger = LoggerFactory.getLogger(VoyagerController.class);
 
     @Autowired
-    private UserService userService;
+    @Qualifier("voyagerServiceImpl")
+    private VoyagerService voyagerService;
 
     /**
      * Gets a user by username
@@ -28,11 +31,11 @@ public class UserController {
      * @return              If user is found, return the user object and HTTP status 200; otherwise, 400
      */
     @RequestMapping(value = "/{username}", method = RequestMethod.GET)
-    public ResponseEntity<User> getUser(@PathVariable String username) {
-        User foundUser = userService.findOne(username);
+    public ResponseEntity<Voyager> getUser(@PathVariable String username) {
+        Voyager foundVoyager = voyagerService.findOne(username);
 
-        if (foundUser != null) {
-            return new ResponseEntity<>(foundUser, HttpStatus.OK);
+        if (foundVoyager != null) {
+            return new ResponseEntity<>(foundVoyager, HttpStatus.OK);
         }
 
         return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
@@ -43,18 +46,18 @@ public class UserController {
      * @return      A 200 with a list of users
      */
     @RequestMapping(value = "", method = RequestMethod.GET)
-    public ResponseEntity<List<User>> getAllUsers() {
-        return new ResponseEntity<>(userService.findAll(), HttpStatus.OK);
+    public ResponseEntity<List<Voyager>> getAllUsers() {
+        return new ResponseEntity<>(voyagerService.findAll(), HttpStatus.OK);
     }
 
     /**
-     * Creates a new user if the id and username do not exist
-     * @param user  User to persist in server
-     * @return      If user is successfully created, return HTTP status 201; otherwise, 400
+     * Creates a new voyager if the id and username do not exist
+     * @param voyager  Voyager to persist in server
+     * @return      If voyager is successfully created, return HTTP status 201; otherwise, 400
      */
     @RequestMapping(value = "", method = RequestMethod.POST)
-    public ResponseEntity<?> createUser(@RequestBody User user) {
-        int numCreatedUsers = userService.create(user);
+    public ResponseEntity<?> createUser(@RequestBody Voyager voyager) {
+        int numCreatedUsers = voyagerService.create(voyager);
 
         if (numCreatedUsers > 0) {
             return new ResponseEntity<>(HttpStatus.CREATED);
@@ -75,7 +78,7 @@ public class UserController {
     public ResponseEntity<?> updatePassword(@RequestParam String username,
                                             @RequestParam String oldPassword,
                                             @RequestParam String newPassword) {
-        int updatedUser = userService.updatePassword(username, oldPassword, newPassword);
+        int updatedUser = voyagerService.updatePassword(username, oldPassword, newPassword);
 
         if (updatedUser > 0) {
             return new ResponseEntity<>(HttpStatus.OK);
@@ -85,18 +88,18 @@ public class UserController {
     }
 
     /**
-     * Updates an existing user
+     * Updates an existing voyager
      *
      * NOTE: Currently, there is a foreign key constraint that needs to be modified/removed.
-     * @param user      User to persist in server
-     * @return          If the user exists and is changed, return HTTP status 200; otherwise 400.
+     * @param voyager      Voyager to persist in server
+     * @return          If the voyager exists and is changed, return HTTP status 200; otherwise 400.
      */
     // TODO: change to use exception
     // TODO: this won't make. Path variables and RequestBody don't match
     @RequestMapping(value = "/update", method = RequestMethod.PUT)
-    public ResponseEntity<?> updateUser(@RequestBody User user, @RequestParam(required = true) String newUsername) {
+    public ResponseEntity<?> updateUser(@RequestBody Voyager voyager, @RequestParam(required = true) String newUsername) {
 
-        int updatedUser = userService.update(user,newUsername);
+        int updatedUser = voyagerService.update(voyager,newUsername);
 
         if (updatedUser > 0) {
             return new ResponseEntity<>(HttpStatus.OK);
@@ -113,7 +116,7 @@ public class UserController {
     // TODO: change to use exceptions
     @RequestMapping(value = "/{username}", method = RequestMethod.DELETE)
     public ResponseEntity<?> deleteUser(@PathVariable String username) {
-        int deletedUser = userService.delete(username);
+        int deletedUser = voyagerService.delete(username);
 
         if (deletedUser > 0) {
             return new ResponseEntity<>(HttpStatus.OK);
@@ -128,7 +131,7 @@ public class UserController {
      */
     @RequestMapping(value = "/all", method = RequestMethod.DELETE)
     public ResponseEntity<?> deleteAll() {
-        userService.deleteAll();
+        voyagerService.deleteAll();
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
@@ -147,7 +150,7 @@ public class UserController {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
-        int numCreatedUsers = userService.signUp(username, password);
+        int numCreatedUsers = voyagerService.signUp(username, password);
         if (numCreatedUsers > 0) {
             return new ResponseEntity<>(HttpStatus.OK);
         }
@@ -169,7 +172,7 @@ public class UserController {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
-        boolean isValid = userService.login(username, password);
+        boolean isValid = voyagerService.login(username, password);
         if (isValid) {
             return new ResponseEntity<>(HttpStatus.OK);
         }

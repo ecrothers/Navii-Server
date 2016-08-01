@@ -1,33 +1,51 @@
 package com.navii.server.persistence.service;
 
-import com.navii.server.persistence.domain.User;
+import com.navii.server.persistence.domain.Voyager;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 import java.util.List;
 
 /**
  * Created by JMtorii on 2015-10-15.
  */
-public interface UserService {
+public interface VoyagerService extends UserDetailsService {
 
     /**
      * Finds all user entries from the database.
      * @return  All existing users.
      */
-    List<User> findAll();
+    List<Voyager> findAll();
 
     /**
      * Finds the a single user.
-     * @param username      The username of the requested User entry.
+     * @param username      The username of the requested Voyager entry.
      * @return              The found user.
      */
-    User findOne(String username);
+    Voyager findOne(String username);
+
+    /**
+     * Finds the a single Voyager.
+     * @param email     The email.
+     * @return          The found Voyager.
+     */
+    Voyager findByEmail(String email);
+
+    /**
+     * Loads user based on username
+     * @param username Voyager's username
+     * @return The found Voyager
+     * @throws UsernameNotFoundException
+     */
+    @Override
+    Voyager loadUserByUsername(String username) throws UsernameNotFoundException;
 
     /**
      * Creates a new user entry to the database.
-     * @param createdUser       The information of the new user entry.
+     * @param createdVoyager       The information of the new user entry.
      * @return                  The number of created users.
      */
-    int create(User createdUser);
+    int create(Voyager createdVoyager);
 
     /**
      * Updates the password with a given new password
@@ -40,10 +58,10 @@ public interface UserService {
 
     /**
      * Updates an existing user in the database.
-     * @param updatedUser   The information of the updated user entry.
+     * @param updatedVoyager   The information of the updated user entry.
      * @return              The number of updated users.
      */
-    int update(User updatedUser, String username);
+    int update(Voyager updatedVoyager, String username);
 
     /**
      * Deletes a user from the database.

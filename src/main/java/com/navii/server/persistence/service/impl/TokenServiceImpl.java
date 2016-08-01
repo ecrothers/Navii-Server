@@ -2,7 +2,7 @@ package com.navii.server.persistence.service.impl;
 
 import com.navii.server.UserAuth;
 import com.navii.server.TokenHandler;
-import com.navii.server.persistence.domain.User;
+import com.navii.server.persistence.domain.Voyager;
 import com.navii.server.persistence.service.TokenService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,23 +27,23 @@ public class TokenServiceImpl implements TokenService {
 
     @Override
     public void addAuthentication(HttpServletResponse response, UserAuth authentication) {
-        final User user = authentication.getDetails();
-        response.addHeader(AUTH_HEADER_NAME, tokenHandler.createTokenForUser(user));
+        final Voyager voyager = authentication.getDetails();
+        response.addHeader(AUTH_HEADER_NAME, tokenHandler.createTokenForUser(voyager));
     }
 
     @Override
     public String getToken(UserAuth authentication) {
-        final User user = authentication.getDetails();
-        return tokenHandler.createTokenForUser(user);
+        final Voyager voyager = authentication.getDetails();
+        return tokenHandler.createTokenForUser(voyager);
     }
 
     @Override
     public Authentication getAuthentication(HttpServletRequest request) {
         final String token = request.getHeader(AUTH_HEADER_NAME);
         if (token != null) {
-            final User user = tokenHandler.parseUserFromToken(token);
-            if (user != null) {
-                return new UserAuth(user);
+            final Voyager voyager = tokenHandler.parseUserFromToken(token);
+            if (voyager != null) {
+                return new UserAuth(voyager);
             }
         }
         return null;
