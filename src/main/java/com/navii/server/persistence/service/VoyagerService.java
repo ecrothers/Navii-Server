@@ -18,13 +18,6 @@ public interface VoyagerService extends UserDetailsService {
     List<Voyager> findAll();
 
     /**
-     * Finds the a single user.
-     * @param username      The username of the requested Voyager entry.
-     * @return              The found user.
-     */
-    Voyager findOne(String username);
-
-    /**
      * Finds the a single Voyager.
      * @param email     The email.
      * @return          The found Voyager.
@@ -77,17 +70,18 @@ public interface VoyagerService extends UserDetailsService {
 
     /**
      * Attempts to sign up a user
+     * @param email         Email of the user.
      * @param username      Username of the user.
      * @param password      Password of the user.
      * @return              The number of created users.
      */
-    int signUp(String username, String password);
+    int signUp(String email, String username, String password);
 
     /**
      * Attempts to login a user
-     * @param username      Username of the user.
+     * @param email         Email of the user.
      * @param password      Password of the user.
      * @return              Whether the username and password match in the database
      */
-    boolean login(String username, String password);
+    boolean login(String email, String password);
 }

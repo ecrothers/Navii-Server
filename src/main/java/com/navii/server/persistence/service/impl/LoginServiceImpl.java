@@ -39,7 +39,7 @@ public class LoginServiceImpl implements LoginService {
     @Override
     public String Login(String email, String password) {
         // TODO : Tighten up authentication?
-        Voyager voyager = voyagerService.findOne(email);
+        Voyager voyager = voyagerService.findByEmail(email);
 
         if (voyager == null) {
             return "";
@@ -86,7 +86,7 @@ public class LoginServiceImpl implements LoginService {
                 return "";
             }
 
-            Voyager voyager = voyagerService.findOne(fbEmail);
+            Voyager voyager = voyagerService.findByEmail(fbEmail);
             //TODO: Instead of a random password, possibly use a flag for fb login only accounts
             if (voyager == null) {
                 Voyager.Builder newFBUser = new Voyager.Builder().username(fbEmail).isFacebook(true).verified(true);
@@ -97,7 +97,7 @@ public class LoginServiceImpl implements LoginService {
                 newFBUser.password(randomPassword);
 
                 voyagerService.create(newFBUser.build());
-                voyager = voyagerService.findOne(fbEmail);
+                voyager = voyagerService.findByEmail(fbEmail);
             }
 
             //if voyager is still null something happened during account creation and didn't throw

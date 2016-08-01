@@ -19,7 +19,7 @@ public class LoginController {
 
     @RequestMapping(value = "", method = RequestMethod.POST)
     public ResponseEntity<String> getToken(@RequestBody Voyager voyager) {
-        String token = loginService.Login(voyager.getUsername(), voyager.getPassword());
+        String token = loginService.Login(voyager.getEmail(), voyager.getPassword());
 
         if (token != "") {
             return new ResponseEntity<>(token, HttpStatus.OK);

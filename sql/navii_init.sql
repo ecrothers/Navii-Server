@@ -1,14 +1,14 @@
 Use naviDB;
 
-CREATE TABLE IF NOT EXISTS voyagers (
-	username VARCHAR(16) NOT NULL,
+CREATE TABLE IF NOT EXISTS users (
 	email VARCHAR(90) NOT NULL,
+	username VARCHAR(40) NOT NULL,
 	password CHAR(64) NOT NULL,
 	salt CHAR(64) NOT NULL,
 	alive TINYINT(1), 
 	is_facebook TINYINT(1),
 	verified TINYINT(1),
-	PRIMARY KEY (username),
+	PRIMARY KEY (email),
 	CONSTRAINT User_Email_unique UNIQUE (email)
 );
 

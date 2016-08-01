@@ -61,37 +61,6 @@ public class VoyagerDAOImpl implements VoyagerDAO {
     }
 
     @Override
-    public Voyager findOne(String username) {
-        final String sqlString =
-                "SELECT * FROM users " +
-                        "WHERE username = ?;";
-
-        try {
-            return jdbc.queryForObject(sqlString, new Object[]{username}, new RowMapper<Voyager>() {
-                @Override
-                public Voyager mapRow(ResultSet rs, int rowNum) throws SQLException {
-
-                    if (rs.getRow() < 1) {
-                        return null;
-                    } else {
-                        return new Voyager.Builder()
-                            .username(rs.getString(USERNAME_FIELD))
-                            .email(rs.getString(EMAIL_FIELD))
-                            .password(rs.getString(PASSWORD_FIELD))
-                            .salt(rs.getString(SALT_FIELD))
-                            .isFacebook(rs.getBoolean(IS_FACEBOOK_FIELD))
-                            .verified(rs.getBoolean(VERIFIED_FIELD))
-                            .build();
-                    }
-                }
-            });
-        } catch (EmptyResultDataAccessException e) {
-            logger.warn("Voyager: findOne returns no rows");
-            return null;
-        }
-    }
-
-    @Override
     public Voyager findByEmail(final String email) {
         String sqlString =
                 "SELECT * FROM users " +
@@ -106,8 +75,8 @@ public class VoyagerDAOImpl implements VoyagerDAO {
                         return null;
                     } else {
                         return new Voyager.Builder()
-                                .username(rs.getString("username"))
                                 .email(rs.getString("email"))
+                                .username(rs.getString("username"))
                                 .password(rs.getString("password"))
                                 .isFacebook(rs.getBoolean("is_facebook"))
                                 .verified(rs.getBoolean("verified"))
@@ -117,7 +86,7 @@ public class VoyagerDAOImpl implements VoyagerDAO {
                 }
             });
         } catch (EmptyResultDataAccessException e) {
-            logger.warn("Goose: findByEmail returns no rows");
+            logger.warn("Navii: findByEmail returns no rows");
             return null;
         }
     }
@@ -146,16 +115,16 @@ public class VoyagerDAOImpl implements VoyagerDAO {
     }
 
     @Override
-    public int updatePassword(String username, String password) {
+    public int updatePassword(String email, String password) {
         final String sqlString =
                 "UPDATE users " +
                         "SET password = ? " +
-                        "WHERE username = ?";
+                        "WHERE email = ?";
         try {
             return jdbc.update(
                     sqlString,
                     password,
-                    username
+                    email
             );
         } catch (DataAccessException e) {
             logger.warn("Voyager: updatePassword returns no rows or contains an error");
@@ -165,26 +134,26 @@ public class VoyagerDAOImpl implements VoyagerDAO {
     }
 
     @Override
-    public int update(Voyager updatedVoyager, String newUsername) {
+    public int update(Voyager updatedVoyager, String newEmail) {
         final String sqlString =
                 "UPDATE users " +
-                        "SET username = ? " +
-                        "WHERE username = ?";
+                        "SET email = ? " +
+                        "WHERE email = ?";
 
         return jdbc.update(
                 sqlString,
-                newUsername,
-                updatedVoyager.getUsername()
+                newEmail,
+                updatedVoyager.getEmail()
         );
     }
 
     @Override
-    public int delete(String username) {
+    public int delete(String email) {
         final String sqlString =
                 "DELETE FROM users " +
-                        "WHERE username = ?";
+                        "WHERE email = ?";
         try {
-            return jdbc.update(sqlString, username);
+            return jdbc.update(sqlString, email);
 
         } catch (DataAccessException e) {
             logger.warn("Voyager: deleteUser returns no rows or contains an error");
@@ -201,22 +170,22 @@ public class VoyagerDAOImpl implements VoyagerDAO {
     }
 
     @Override
-    public boolean userExistsFromUsername(String username) {
+    public boolean userExistsFromEmail(String email) {
         final String sqlString =
                 "SELECT COUNT(*) FROM users " +
-                        "WHERE username = ?;";
+                        "WHERE email = ?;";
 
-        Integer numUsers = jdbc.queryForObject(sqlString, new Object[]{username}, Integer.class);
+        Integer numUsers = jdbc.queryForObject(sqlString, new Object[]{email}, Integer.class);
         return numUsers != 0;
     }
 
     @Override
-    public boolean usernameAndPasswordMatch(String username, String password) {
+    public boolean emailAndPasswordMatch(String email, String password) {
         final String sqlString =
                 "SELECT COUNT(*) FROM users " +
-                        "WHERE username = ? AND password = ?;";
+                        "WHERE email = ? AND password = ?;";
 
-        Integer numUsers = jdbc.queryForObject(sqlString, new Object[]{username, password}, Integer.class);
+        Integer numUsers = jdbc.queryForObject(sqlString, new Object[]{email, password}, Integer.class);
         return numUsers != 0;
     }
 }

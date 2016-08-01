@@ -26,13 +26,13 @@ public class VoyagerController {
     private VoyagerService voyagerService;
 
     /**
-     * Gets a user by username
-     * @param username      Identifier for user
+     * Gets a user by email
+     * @param email         Identifier for user
      * @return              If user is found, return the user object and HTTP status 200; otherwise, 400
      */
-    @RequestMapping(value = "/{username}", method = RequestMethod.GET)
-    public ResponseEntity<Voyager> getUser(@PathVariable String username) {
-        Voyager foundVoyager = voyagerService.findOne(username);
+    @RequestMapping(value = "/{email}", method = RequestMethod.GET)
+    public ResponseEntity<Voyager> getUser(@PathVariable String email) {
+        Voyager foundVoyager = voyagerService.findByEmail(email);
 
         if (foundVoyager != null) {
             return new ResponseEntity<>(foundVoyager, HttpStatus.OK);
@@ -51,7 +51,7 @@ public class VoyagerController {
     }
 
     /**
-     * Creates a new voyager if the id and username do not exist
+     * Creates a new voyager if the email does not exist
      * @param voyager  Voyager to persist in server
      * @return      If voyager is successfully created, return HTTP status 201; otherwise, 400
      */
@@ -69,16 +69,16 @@ public class VoyagerController {
     /**
      * Modify password
      *
-     * @param username          Username of the user
+     * @param email             Email of the user
      * @param oldPassword       Old password
      * @param newPassword       New password
      * @return          If the user exists and is modified, return HTTP status 200; otherwise 400.
      */
     @RequestMapping(value = "/changePassword", method = RequestMethod.PUT)
-    public ResponseEntity<?> updatePassword(@RequestParam String username,
+    public ResponseEntity<?> updatePassword(@RequestParam String email,
                                             @RequestParam String oldPassword,
                                             @RequestParam String newPassword) {
-        int updatedUser = voyagerService.updatePassword(username, oldPassword, newPassword);
+        int updatedUser = voyagerService.updatePassword(email, oldPassword, newPassword);
 
         if (updatedUser > 0) {
             return new ResponseEntity<>(HttpStatus.OK);
@@ -110,13 +110,13 @@ public class VoyagerController {
 
     /**
      * Deletes an existing user
-     * @param username      Username for the user
+     * @param email         Email for the user
      * @return              If the user exists and is deleted, return HTTP status 200; otherwise 400.
      */
     // TODO: change to use exceptions
-    @RequestMapping(value = "/{username}", method = RequestMethod.DELETE)
-    public ResponseEntity<?> deleteUser(@PathVariable String username) {
-        int deletedUser = voyagerService.delete(username);
+    @RequestMapping(value = "/{email}", method = RequestMethod.DELETE)
+    public ResponseEntity<?> deleteUser(@PathVariable String email) {
+        int deletedUser = voyagerService.delete(email);
 
         if (deletedUser > 0) {
             return new ResponseEntity<>(HttpStatus.OK);
@@ -136,21 +136,20 @@ public class VoyagerController {
     }
 
     /**
-     * This is a crappy implementation of the sign up endpoints. This will most likely be modified or removed
-     * in later implementations.
+     * TODO: Improve validation and overall handling
      *
-     * @param username Username to add to the user
+     * @param email Username to add to the user
      * @param password Password attached to the user
      * @return If the username already exists, return a 409. Otherwise, return a 200 to indicate that a user has been
      * created.
      */
     @RequestMapping(value = "/signUp", method = RequestMethod.POST)
-    public ResponseEntity<?> signUp(@RequestParam(required = true) String username, @RequestParam(required = true) String password) {
-        if (username.isEmpty() || password.isEmpty()) {
+    public ResponseEntity<?> signUp(@RequestParam(required = true) String email, @RequestParam(required = true) String username, @RequestParam(required = true) String password) {
+        if (email.isEmpty() || username.isEmpty() || password.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
-        int numCreatedUsers = voyagerService.signUp(username, password);
+        int numCreatedUsers = voyagerService.signUp(email, username, password);
         if (numCreatedUsers > 0) {
             return new ResponseEntity<>(HttpStatus.OK);
         }
@@ -162,17 +161,17 @@ public class VoyagerController {
      * This is a crappy implementation of the login endpoints. This will most likely be modified or removed
      * in later implementations.
      *
-     * @param username Username to add to the user
+     * @param email Username to add to the user
      * @param password Password attached to the user
      * @return If the username already exists, return a 401. Otherwise, return a 200 to indicate success.
      */
     @RequestMapping(value = "/login", method = RequestMethod.GET)
-    public ResponseEntity<?> login(@RequestParam(required = true) String username, @RequestParam(required = true) String password) {
-        if (username.isEmpty() || password.isEmpty()) {
+    public ResponseEntity<?> login(@RequestParam(required = true) String email, @RequestParam(required = true) String password) {
+        if (email.isEmpty() || password.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
-        boolean isValid = voyagerService.login(username, password);
+        boolean isValid = voyagerService.login(email, password);
         if (isValid) {
             return new ResponseEntity<>(HttpStatus.OK);
         }

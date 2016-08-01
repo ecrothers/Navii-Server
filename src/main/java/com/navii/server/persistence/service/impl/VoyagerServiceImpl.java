@@ -25,11 +25,6 @@ public class VoyagerServiceImpl implements VoyagerService {
     }
 
     @Override
-    public Voyager findOne(String username) {
-        return voyagerDAO.findOne(username);
-    }
-
-    @Override
     public Voyager findByEmail(String email) {
         return voyagerDAO.findByEmail(email);
     }
@@ -47,9 +42,9 @@ public class VoyagerServiceImpl implements VoyagerService {
     public int update(Voyager updatedVoyager, String newUsername) { return voyagerDAO.update(updatedVoyager, newUsername);}
 
     @Override
-    public int updatePassword(String username, String oldPassword, String newPassword) {
-        if (voyagerDAO.findOne(username).getPassword().equals(oldPassword)) {
-            return voyagerDAO.updatePassword(username, newPassword);
+    public int updatePassword(String email, String oldPassword, String newPassword) {
+        if (voyagerDAO.findByEmail(email).getPassword().equals(oldPassword)) {
+            return voyagerDAO.updatePassword(email, newPassword);
         }
 
         return 0;
@@ -66,24 +61,26 @@ public class VoyagerServiceImpl implements VoyagerService {
     }
 
     @Override
-    public int signUp(String username, String password) {
-        if (voyagerDAO.userExistsFromUsername(username)) {
+    public int signUp(String email, String username, String password) {
+        if (voyagerDAO.userExistsFromEmail(email)) {
             return 0;
         }
 
         // TODO: salt and set isFacebook properly
         Voyager voyager = new Voyager.Builder()
+                .email(email)
                 .username(username)
                 .password(password)
                 .salt("!@#$%^&*()_+")
                 .isFacebook(false)
+                .verified(false)
                 .build();
 
         return voyagerDAO.create(voyager);
     }
 
     @Override
-    public boolean login(String username, String password) {
-        return voyagerDAO.usernameAndPasswordMatch(username, password);
+    public boolean login(String email, String password) {
+        return voyagerDAO.emailAndPasswordMatch(email, password);
     }
 }

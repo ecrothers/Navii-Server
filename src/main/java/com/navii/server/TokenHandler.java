@@ -33,19 +33,19 @@ public final class TokenHandler {
     }
 
     public Voyager parseUserFromToken(String token) {
-        String username = Jwts.parser()
+        String email = Jwts.parser()
             .setSigningKey(secret)
             .parseClaimsJws(token)
             .getBody()
             .getSubject();
-        logger.info("Parsed user: " + username);
-        return voyagerService.findOne(username);
+        logger.info("Parsed user email: " + email);
+        return voyagerService.findByEmail(email);
     }
 
     public String createTokenForUser(Voyager voyager) {
-        logger.info("Created token for user: " + voyager.getUsername());
+        logger.info("Created token for user: " + voyager.getEmail());
         return Jwts.builder()
-        .setSubject(voyager.getUsername())
+        .setSubject(voyager.getEmail())
         .signWith(SignatureAlgorithm.HS512, secret)
         .compact();
     }

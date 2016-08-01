@@ -19,7 +19,7 @@ public interface VoyagerDAO {
      * @param username      The username of the requested user entry.
      * @return              The information of the found user entry.
      */
-    Voyager findOne(String username);
+    //Voyager findOne(String username);
 
     /**
      * Finds the a single Voyager.
@@ -37,19 +37,19 @@ public interface VoyagerDAO {
 
     /**
      * Updates the password with a given new password
-     * @param username          Username of the user
+     * @param email          Email of the user
      * @param password       New password
      * @return              The number of updated users.
      */
-    int updatePassword(String username, String password);
+    int updatePassword(String email, String password);
 
     /**
      * Updates an existing user in the database.
      * @param updatedVoyager   The information of the updated user entry.
-     * @param username       The new username
+     * @param email         The new email
      * @return              The number of updated users.
      */
-    int update(Voyager updatedVoyager, String username);
+    int update(Voyager updatedVoyager, String email);
 
     /**
      * Deletes a user from the database.
@@ -64,17 +64,17 @@ public interface VoyagerDAO {
     void deleteAll();
 
     /**
-     * Checks if username exists
-     * @param username      Username of the user.
+     * Checks if email exists
+     * @param email         Email of the user.
      * @return              Whether a user exists
      */
-    boolean userExistsFromUsername(String username);
+    boolean userExistsFromEmail(String email);
 
     /**
-     * Checks if username and password math
-     * @param username      Username of the user.
+     * Checks if email and password math
+     * @param email         Email of the user.
      * @param password      Password of the user.
      * @return              Whether username and password match
      */
-    boolean usernameAndPasswordMatch(String username, String password);
+    boolean emailAndPasswordMatch(String email, String password);
 }
