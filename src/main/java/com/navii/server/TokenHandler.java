@@ -28,6 +28,7 @@ public final class TokenHandler {
 
     public TokenHandler() {
         super();
+        //TODO: Assess best way to extract this from code.
         this.secret = "someSecret";
     }
 
@@ -42,7 +43,7 @@ public final class TokenHandler {
     }
 
     public String createTokenForUser(Voyager voyager) {
-        logger.info("Created token for voyager: " + voyager.getUsername());
+        logger.info("Created token for user: " + voyager.getUsername());
         return Jwts.builder()
         .setSubject(voyager.getUsername())
         .signWith(SignatureAlgorithm.HS512, secret)
