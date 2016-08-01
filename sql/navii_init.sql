@@ -2,11 +2,14 @@ Use naviDB;
 
 CREATE TABLE IF NOT EXISTS users (
 	username VARCHAR(16) NOT NULL,
+	email VARCHAR(90) NOT NULL,
 	password CHAR(64) NOT NULL,
 	salt CHAR(64) NOT NULL,
 	alive TINYINT(1), 
 	is_facebook TINYINT(1),
-	PRIMARY KEY (username)
+	verified TINYINT(1),
+	PRIMARY KEY (username),
+	CONSTRAINT User_Email_unique UNIQUE (email)
 );
 
 CREATE TABLE IF NOT EXISTS attractions (

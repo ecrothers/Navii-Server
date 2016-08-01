@@ -70,7 +70,7 @@ INSERT INTO yelp_preference_category (preference, yelp_category) VALUES
   ('vegetarian', 'vegetarian')
 ;
 
-INSERT INTO users (username, password, salt, is_facebook) VALUES ('naviCreator', 'saltedpass', 'salt', 'n');
+INSERT INTO users (username, email, password, salt, is_facebook, verified) VALUES ('naviCreator', 'dummyemail@fake.com', 'saltedpass', 'salt', false, false);
 
 
 
