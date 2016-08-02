@@ -84,4 +84,10 @@ public interface VoyagerService extends UserDetailsService {
      * @return              Whether the username and password match in the database
      */
     boolean login(String email, String password);
+
+    /**
+     * Gets the currently authenticated user.
+     * @return      The user object of the currently authenticated user from auth token
+     */
+    Voyager whoAmI();
 }
