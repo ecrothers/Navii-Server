@@ -31,7 +31,7 @@ CREATE TABLE IF NOT EXISTS itineraries (
 	description VARCHAR(256),
 	authorid VARCHAR(16),
 	PRIMARY KEY (itineraryid),
-	FOREIGN KEY (authorid) REFERENCES voyagers(username) ON DELETE SET NULL
+	FOREIGN KEY (authorid) REFERENCES users(email) ON DELETE SET NULL
 );
 
 
@@ -112,13 +112,13 @@ CREATE TABLE IF NOT EXISTS preferences (
 );
 
 CREATE TABLE IF NOT EXISTS userspreferences (
-	username VARCHAR(16) NOT NULL,
+	email VARCHAR(40) NOT NULL,
 	preference VARCHAR(10) NOT NULL,
 	preference_type INT NOT NULL,
-	FOREIGN KEY (username) REFERENCES voyagers(username) ON DELETE CASCADE,
+	FOREIGN KEY (email) REFERENCES users(email) ON DELETE CASCADE,
 	FOREIGN KEY (preference) REFERENCES preferences(preference) ON DELETE CASCADE,
 	FOREIGN KEY (preference_type) REFERENCES preferences(preference_type) ON DELETE CASCADE,
-	CONSTRAINT pk_userpreference PRIMARY KEY (username,preference,preference_type)
+	CONSTRAINT pk_userpreference PRIMARY KEY (email,preference,preference_type)
 );
 
 CREATE TABLE IF NOT EXISTS attractionspreferences (
