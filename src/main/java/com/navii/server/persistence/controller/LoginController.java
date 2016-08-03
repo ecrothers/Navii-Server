@@ -1,4 +1,4 @@
-package com.navii.server.controller;
+package com.navii.server.persistence.controller;
 
 import com.navii.server.persistence.domain.Voyager;
 import com.navii.server.persistence.service.LoginService;
