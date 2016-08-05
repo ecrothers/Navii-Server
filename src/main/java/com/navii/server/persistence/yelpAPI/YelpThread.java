@@ -58,9 +58,10 @@ public class YelpThread extends Thread {
     private final static String JSON_NAME = "name";
 
     private List<Attraction> attractions;
-    private Map<String, Integer> uniqueCheckHashMap = new HashMap<>();
+    private Set<String> uniqueCheckHashSet;
     private List<Venture> potentialAttractionStack;
-    private List<JSONArray> extraPrefetch;
+    private Set<JSONObject> attractionsPrefetch;
+    private Set<JSONObject> mealPrefetch;
     private int sort;
     private String TAG;
 
@@ -86,6 +87,9 @@ public class YelpThread extends Thread {
         this.potentialAttractionStack = potentialAttractionStack;
         this.sort = sort;
         this.TAG = tag;
+        this.uniqueCheckHashSet = new HashSet<>();
+        this.attractionsPrefetch = new HashSet<>();
+        this.mealPrefetch = new HashSet<>();
     }
 
     /**
@@ -159,23 +163,27 @@ public class YelpThread extends Thread {
         }
 
         JSONArray businesses = (JSONArray) response.get(JSON_BUSINESSES);
+
+        if (businesses.size() < 0) {
+            return getAttraction(venture, cll, sort);
+        }
         Attraction attraction;
-        int index = new Random().nextInt(5);
+        int index = new Random().nextInt(businesses.size());
 
         JSONObject businessObject = (JSONObject) businesses.remove(index);
-//        extraPrefetch.add(businesses);
 
         String name = businessObject.getOrDefault(JSON_NAME, "N/A").toString();
 
-        JSONObject location = (JSONObject) businessObject.get(JSON_LOCATION);
-
-        while (uniqueCheckHashMap.containsKey(name)) {
-            index = new Random().nextInt(5);
-            businessObject = (JSONObject) businesses.get(index);
+        while (uniqueCheckHashSet.contains(name)) {
+            index = new Random().nextInt(businesses.size());
+            businessObject = (JSONObject) businesses.remove(index);
             name = businessObject.getOrDefault(JSON_NAME, "N/A").toString();
         }
+        uniqueCheckHashSet.add(name);
 
         double latitude = 43.644176, longitude = -79.387375;
+
+        JSONObject location = (JSONObject) businessObject.get(JSON_LOCATION);
 
         if (location.containsKey("coordinate")) {
             JSONObject coordinate = (JSONObject) location.get("coordinate");
@@ -222,6 +230,17 @@ public class YelpThread extends Thread {
                 .price(price)
                 .build();
 
+        for (int i = 0; i < businesses.size(); i++) {
+            JSONObject object = (JSONObject) businesses.get(i);
+            if (!object.isEmpty()) {
+                if (venture.getType() == Venture.Type.ATTRACTION) {
+                    attractionsPrefetch.add(object);
+                } else {
+                    mealPrefetch.add(object);
+                }
+            }
+        }
+
         return attraction;
     }
 
@@ -253,7 +272,11 @@ public class YelpThread extends Thread {
         return attractions;
     }
 
-    public List<JSONArray> getExtraPrefetch() {
-        return extraPrefetch;
+    public Set<JSONObject> getAttractionsPrefetch() {
+        return attractionsPrefetch;
+    }
+
+    public Set<JSONObject> getMealPrefetch() {
+        return mealPrefetch;
     }
 }

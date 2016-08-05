@@ -113,11 +113,11 @@ CREATE TABLE IF NOT EXISTS preferences (
 
 CREATE TABLE IF NOT EXISTS userspreferences (
 	email VARCHAR(40) NOT NULL,
-	preference VARCHAR(10) NOT NULL,
+	preference VARCHAR(32) NOT NULL,
 	preference_type INT NOT NULL,
-	FOREIGN KEY (email) REFERENCES users(email) ON DELETE CASCADE,
-	FOREIGN KEY (preference) REFERENCES preferences(preference) ON DELETE CASCADE,
-	FOREIGN KEY (preference_type) REFERENCES preferences(preference_type) ON DELETE CASCADE,
+	FOREIGN KEY (email) REFERENCES users(email) ON DELETE CASCADE ON UPDATE CASCADE,
+	FOREIGN KEY (preference) REFERENCES preferences(preference) ON DELETE CASCADE ON UPDATE CASCADE,
+	FOREIGN KEY (preference_type) REFERENCES preferences(preference_type) ON DELETE CASCADE ON UPDATE CASCADE,
 	CONSTRAINT pk_userpreference PRIMARY KEY (email,preference,preference_type)
 );
 
@@ -147,7 +147,7 @@ CREATE TABLE IF NOT EXISTS yelp_categories (
 CREATE TABLE IF NOT EXISTS yelp_preference_category (
 	yelp_category VARCHAR(64) NOT NULL, 
 	preference VARCHAR(32) NOT NULL,
-	FOREIGN KEY (preference) REFERENCES preferences(preference) ON DELETE CASCADE,
-	FOREIGN KEY (yelp_category) REFERENCES yelp_categories(yelp_category) ON DELETE CASCADE
+	FOREIGN KEY (preference) REFERENCES preferences(preference) ON DELETE CASCADE ON UPDATE CASCADE ,
+	FOREIGN KEY (yelp_category) REFERENCES yelp_categories(yelp_category) ON DELETE CASCADE ON UPDATE CASCADE
 );
 

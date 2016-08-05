@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -106,14 +107,23 @@ public class ItineraryController {
      * @param tagList   List of tags
      * @return  List of itineraries
      */
-    @RequestMapping(value="/tags/{tag_list}" , method= RequestMethod.GET)
-    public ResponseEntity<List<Itinerary>> getItinerariesFromTags(@PathVariable("tag_list") String[] tagList) {
-        List<Itinerary> itinerary = itineraryService.getItineraries(Arrays.asList(tagList));
+    @RequestMapping(value="/tags/{tag_list}/{num_days}" , method= RequestMethod.GET)
+    public ResponseEntity<List<Itinerary>> getItinerariesFromTags(@PathVariable("tag_list") String[] tagList, @PathVariable("num_days") int days) {
+        List<String> tags = new ArrayList<>();
+        if (tagList != null) {
+            tags = Arrays.asList(tagList);
+        }
+        List<Itinerary> itinerary = itineraryService.getItineraries(tags, days);
 
         if (itinerary.size() > 0) {
             return new ResponseEntity<>(itinerary, HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
+    }
+
+    @RequestMapping(value="/tags//{num_days}" , method= RequestMethod.GET)
+    public ResponseEntity<List<Itinerary>> getItinerariesFromTags(@PathVariable("num_days") int days) {
+        return getItinerariesFromTags(null, days);
     }
 }

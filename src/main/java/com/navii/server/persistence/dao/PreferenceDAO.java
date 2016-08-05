@@ -24,4 +24,14 @@ public interface PreferenceDAO {
      * @return existing question found based on the preference type
      */
     String getQuestion(int preferenceType);
+
+    /**
+     * Returns the yelp categories based on user preferences
+     *
+     * @param userEmail email of the user
+     *
+     * @retun list of yelp categories corresponding to preferences
+     */
+    List<String> getYelpCategories(String userEmail);
+
 }
