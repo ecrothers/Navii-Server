@@ -1,17 +1,19 @@
 package com.navii.server.persistence.service.impl;
 
+import com.navii.server.UserAuth;
 import com.navii.server.persistence.dao.ItineraryDAO;
-import com.navii.server.persistence.dao.UserPreferenceDAO;
+import com.navii.server.persistence.dao.PreferenceDAO;
+import com.navii.server.persistence.domain.Attraction;
+import com.navii.server.persistence.domain.HeartAndSoulPackage;
 import com.navii.server.persistence.domain.Itinerary;
-import com.navii.server.persistence.domain.Preference;
 import com.navii.server.persistence.domain.Venture;
 import com.navii.server.persistence.service.ItineraryService;
 import com.navii.server.persistence.yelpAPI.YelpThread;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * Created by ecrothers on 2015-10-08.
@@ -23,7 +25,7 @@ public class ItineraryServiceImpl implements ItineraryService {
     private ItineraryDAO itineraryDAO;
 
     @Autowired
-    private UserPreferenceDAO userPreferenceDAO;
+    private PreferenceDAO preferenceDAO;
 
     @Override
     public int delete(String itineraryId) {
@@ -51,122 +53,117 @@ public class ItineraryServiceImpl implements ItineraryService {
     }
 
     @Override
-    public List<Itinerary> getItineraries(List<String> tagList) {
+    public HeartAndSoulPackage getItineraries(List<String> tagList, int days) {
         //TODO: GET PREFERENCE LIST FROM DB
-//        List<Preference> preferences = userPreferenceDAO.obtain("akhan");
-        List<Preference> preferences = new ArrayList<>();
-        List<Venture> potentialAttractionStack = buildPotentialAttractionStack(preferences, tagList);
+        UserAuth auth = (UserAuth) SecurityContextHolder.getContext().getAuthentication();
+        String email = auth.getDetails().getEmail();
+        List<String> yelpCategories = preferenceDAO.getYelpCategories(email);
+        List<Venture> potentialAttractionStack = buildPotentialAttractionStack(yelpCategories, tagList);
         YelpThread[] yelpThreads = new YelpThread[3];
 
-        //Start and store the threads
-        for (int i = 0; i < 3; i++) {
-            yelpThreads[i] = new YelpThread(potentialAttractionStack, i, "Yelp " + i);
-            yelpThreads[i].setName(YelpThread.getYelpName(i));
-            yelpThreads[i].start();
+            //Start and store the threads
+        Set<Attraction> attractionsPrefetch = new HashSet<>();
+        Set<Attraction> restaurantPrefetch = new HashSet<>();
+
+        List<Set<String>> uniqueCheckHashMap = new ArrayList<>();
+        for (int i = 0; i < yelpThreads.length; i++) {
+            uniqueCheckHashMap.add(new HashSet<>());
         }
 
-        List<Itinerary> itineraryList = new ArrayList<>();
-        try {
-            for (YelpThread thread : yelpThreads){
-                thread.join();
-                Itinerary itinerary = new Itinerary.Builder()
-                        .description(thread.getName())
-                        .authorId("Yelp")
-                        .attractions(thread.getAttractions())
-                        .build();
-                itineraryList.add(itinerary);
+        Itinerary[][] itineraries= new Itinerary[yelpThreads.length][days];
+        for (int n = 0; n < days; n++) {
+            try {
+                for (int i = 0; i < yelpThreads.length; i++) {
+                    yelpThreads[i] = new YelpThread(potentialAttractionStack, i, "Yelp " + i, attractionsPrefetch, restaurantPrefetch, uniqueCheckHashMap.get(i));
+                    yelpThreads[i].setName(YelpThread.getYelpName(i));
+                    yelpThreads[i].start();
+                }
+                Thread.sleep(100);
+                for (int i = 0; i < yelpThreads.length; i++) {
+                    YelpThread thread = yelpThreads[i];
+                    thread.join();
+
+                    itineraries[i][n] = new Itinerary.Builder()
+                            .description(thread.getName())
+                            .authorId("Yelp")
+                            .attractions(thread.getAttractions())
+                            .build();
+
+                    uniqueCheckHashMap.get(i).addAll(thread.getUniqueCheckHashSet());
+                    attractionsPrefetch.addAll(thread.getAttractionsPrefetch());
+                    restaurantPrefetch.addAll(thread.getRestaurantPrefetch());
+                }
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
-        } catch (InterruptedException e) {
-            e.printStackTrace();
         }
+        HeartAndSoulPackage heartAndSoulPackage = new HeartAndSoulPackage.Builder()
+                .itineraries(itineraries)
+                .extraAttractions(new ArrayList<>(attractionsPrefetch))
+                .extraRestaurants(new ArrayList<>(restaurantPrefetch))
+                .build();
 
-        return itineraryList;
+        return heartAndSoulPackage;
     }
 
-    private List<Venture> buildPotentialAttractionStack(List<Preference> preferences, List<String> tags) {
-
-        List<String> preferenceList =
-                preferences.stream().map(preference -> preference.getPreference().toLowerCase()).collect(Collectors.toList());
-        preferenceList.addAll(tags);
-        // Initialize all possible venture variables
-        Venture breakfast;
-        Venture lunch;
-        Venture dinner;
-        Venture attraction1;
-        Venture attraction2;
-        Venture attraction3;
-
-        Map<String, Integer> uniqueMap = new HashMap<>();
-        List<String> categories = new ArrayList<>();
-        List<String> foodCategories = new ArrayList<>();
-        List<String> terms = new ArrayList<>();
-
+    private List<Venture> buildPotentialAttractionStack(List<String> categories, List<String> tags) {
         // Initialize venture objects
-        breakfast = new Venture(Venture.Type.MEAL, "Breakfast");
-        lunch = new Venture(Venture.Type.MEAL, "Lunch");
-        dinner = new Venture(Venture.Type.MEAL, "Dinner");
+        Venture breakfast = new Venture(Venture.Type.RESTAURANT, "Restaurant");
+        Venture lunch = new Venture(Venture.Type.RESTAURANT, "Restaurant");
+        Venture dinner = new Venture(Venture.Type.RESTAURANT, "Restaurant");
 
-        attraction1 = new Venture(Venture.Type.ATTRACTION, "Attraction");
-        attraction2 = new Venture(Venture.Type.ATTRACTION, "Attraction");
-        attraction3 = new Venture(Venture.Type.ATTRACTION, "Attraction");
+        Venture attraction1 = new Venture(Venture.Type.ATTRACTION, "Attraction");
+        Venture attraction2 = new Venture(Venture.Type.ATTRACTION, "Attraction");
+        Venture attraction3 = new Venture(Venture.Type.ATTRACTION, "Attraction");
 
-        //TODO: Move to database because relational
-        //OR CHANGE TO static map
-        // Modify venture objects based on preferences and tags
-        if (preferenceList.contains("sophisticated") || preferenceList.contains("hipster")) {
-            categories.add("arts");
-        } if (preferenceList.contains("adventure")) {
-            categories.add("active");
-            categories.add("nightlife");
-            categories.add("localflavor");
-        } if (preferenceList.contains("sporty")) {
-            categories.add("active");
-        } if (preferenceList.contains("adult")) {
-            categories.add("adult");
-            categories.add("nightlife");
-            categories.add("beautysvc");
-        } if (preferenceList.contains("outdoor")) {
-            categories.add("active");
-        } if (preferenceList.contains("lazy")) {
-            foodCategories.add("fooddeliveryservices");
-            categories.add("shopping");
-        } if (preferenceList.contains("cultural")) {
-            categories.add("localflavor");
-        } if (preferenceList.contains("halal")) {
-            breakfast.addCategory("halal");
-            lunch.addCategory("halal");
-            dinner.addCategory("halal");
-        } if (preferenceList.contains("gluten-free")) {
-            breakfast.addCategory("gluten-free");
-            lunch.addCategory("gluten-free");
-            dinner.addCategory("gluten-free");
-        } if (preferenceList.contains("vegan")) {
-            breakfast.addCategory("vegan");
-            lunch.addCategory("vegan");
-            dinner.addCategory("vegan");
-        } if (preferenceList.contains("vegetarian")) {
-            breakfast.addCategory("vegetarian");
-            lunch.addCategory("vegetarian");
-            dinner.addCategory("vegetarian");
-        }
-
+        // Set up List of search terms
+        List<String> terms = new ArrayList<>();
         for (String tag : tags) {
             if (tag.equals("chinese") || tag.equals("japanese") || tag.equals("mexican")
                     || tag.equals("greek") || tag.equals("italian")) {
                 breakfast.addCategory(tag);
                 lunch.addCategory(tag);
                 dinner.addCategory(tag);
-            } else if (!tag.equals("indoor") || !tag.equals("hiking")){
+            } else {
                 terms.add(tag);
             }
+        }
+        if (categories.contains("halal")) {
+            breakfast.addCategory("halal");
+            lunch.addCategory("halal");
+            dinner.addCategory("halal");
+            categories.remove("halal");
+        }
+        if (categories.contains("gluten-free")) {
+            breakfast.addCategory("gluten-free");
+            lunch.addCategory("gluten-free");
+            dinner.addCategory("gluten-free");
+            categories.remove("gluten-free");
+        }
+        if (categories.contains("vegan")) {
+            breakfast.addCategory("vegan");
+            lunch.addCategory("vegan");
+            dinner.addCategory("vegan");
+            categories.remove("vegan");
+        }
+        if (categories.contains("vegetarian")) {
+            breakfast.addCategory("vegetarian");
+            lunch.addCategory("vegetarian");
+            dinner.addCategory("vegetarian");
+            categories.remove("vegetarian");
         }
 
         List<Venture> potentialAttractionStack = Arrays.asList(breakfast, attraction1, lunch, attraction2, attraction3, dinner);
 
-        int size = (int) Math.ceil((double)categories.size()/3.0f);
-        for (int i = 1; i < potentialAttractionStack.size(); i+=2 ) {
+        int size = (int) Math.ceil((double) categories.size() / 3.0f);
+        for (int i = 1; i < potentialAttractionStack.size(); i += 2) {
             for (int j = 0; j < size; j++) {
-                String category = categories.remove(new Random().nextInt(categories.size()));
+                String category;
+                if (categories.size() > 1) {
+                    category = categories.remove(new Random().nextInt(categories.size()));
+                } else {
+                    category = categories.get(0);
+                }
                 potentialAttractionStack.get(i).addCategory(category);
             }
             if (terms.size() != 0) {

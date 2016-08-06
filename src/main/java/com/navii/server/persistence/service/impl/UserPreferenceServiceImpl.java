@@ -2,7 +2,6 @@ package com.navii.server.persistence.service.impl;
 
 import com.navii.server.persistence.dao.UserPreferenceDAO;
 import com.navii.server.persistence.domain.Preference;
-import com.navii.server.persistence.domain.UserPreference;
 import com.navii.server.persistence.service.UserPreferenceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,7 +20,7 @@ public class UserPreferenceServiceImpl implements UserPreferenceService {
     UserPreferenceDAO userPreferenceDAO;
 
     @Override
-    public boolean create(UserPreference saved) {
+    public boolean create(List<Preference> saved) {
         return userPreferenceDAO.create(saved);
     }
 
@@ -31,7 +30,7 @@ public class UserPreferenceServiceImpl implements UserPreferenceService {
     }
 
     @Override
-    public int deleteAllPreference(String username, int preferenceType) {
-        return userPreferenceDAO.deleteAllPreference(username, preferenceType);
+    public int deleteAllPreference(int preferenceType) {
+        return userPreferenceDAO.deleteAllPreference(preferenceType);
     }
 }

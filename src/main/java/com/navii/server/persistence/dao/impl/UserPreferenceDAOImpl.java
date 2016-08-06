@@ -1,14 +1,15 @@
 package com.navii.server.persistence.dao.impl;
 
+import com.navii.server.UserAuth;
 import com.navii.server.persistence.dao.UserPreferenceDAO;
 import com.navii.server.persistence.domain.Preference;
-import com.navii.server.persistence.domain.UserPreference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Repository;
 
 import java.sql.ResultSet;
@@ -28,14 +29,16 @@ public class UserPreferenceDAOImpl implements UserPreferenceDAO {
     protected JdbcTemplate jdbc;
 
     @Override
-    public boolean create(final UserPreference saved) {
+    public boolean create(final List<Preference> saved) {
         String insertString =
-                "INSERT INTO userspreferences (username, preference, preference_type) VALUES (?, ?, ?)";
+                "INSERT INTO userspreferences (email, preference, preference_type) VALUES (?, ?, ?)";
         List<Object[]> input = new ArrayList<>();
+        UserAuth auth = (UserAuth) SecurityContextHolder.getContext().getAuthentication();
+        String userEmail = auth.getDetails().getEmail();
 
-        for (Preference preference : saved.getPreferences()) {
+        for (Preference preference : saved) {
             input.add(new Object[] {
-                    saved.getUsername(),
+                    userEmail,
                     preference.getPreference(),
                     preference.getPreferenceType()
             });
@@ -55,7 +58,7 @@ public class UserPreferenceDAOImpl implements UserPreferenceDAO {
     @Override
     public List<Preference> obtain(final String username) {
         String selectString =
-                "SELECT preference FROM userspreferences WHERE username = ?";
+                "SELECT preference FROM userspreferences WHERE email = ?";
         try {
             List<Preference> retrieved = jdbc.queryForObject(selectString,
                     new String[]{username},
@@ -82,11 +85,14 @@ public class UserPreferenceDAOImpl implements UserPreferenceDAO {
     }
 
     @Override
-    public int deleteAllPreference(String username, int preferenceType) {
+    public int deleteAllPreference(int preferenceType) {
         String sqlString =
                 "DELETE FROM userspreferences " +
-                        "WHERE username = ? AND preference_type = ?";
+                        "WHERE email = ? AND preference_type = ?";
 
-        return jdbc.update(sqlString, username, preferenceType);
+        UserAuth auth = (UserAuth) SecurityContextHolder.getContext().getAuthentication();
+        String userEmail = auth.getDetails().getEmail();
+
+        return jdbc.update(sqlString, userEmail, preferenceType);
     }
 }

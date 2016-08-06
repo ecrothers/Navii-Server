@@ -46,7 +46,7 @@ INSERT INTO yelp_categories (yelp_category) VALUES
   ('shopping'),
   ('localflavor'),
   ('halal'),
-  ('gluten-free'),
+  ('gluten_free'),
   ('vegan'),
   ('vegetarian')
 ;
@@ -65,7 +65,7 @@ INSERT INTO yelp_preference_category (preference, yelp_category) VALUES
   ('lazy', 'shopping'),
   ('cultural', 'localflavor'),
   ('halal', 'halal'),
-  ('gluten-free', 'gluten-free'),
+  ('gluten-free', 'gluten_free'),
   ('vegan', 'vegan'),
   ('vegetarian', 'vegetarian')
 ;

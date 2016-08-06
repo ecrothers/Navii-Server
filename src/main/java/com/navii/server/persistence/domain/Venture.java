@@ -13,12 +13,12 @@ public class Venture {
     private String term;
 
     public enum Type {
-        MEAL, ATTRACTION;
+        RESTAURANT, ATTRACTION;
 
         @Override
         public String toString() {
-            if (this.equals(MEAL)) {
-                return "meal";
+            if (this.equals(RESTAURANT)) {
+                return "Restaurant";
             } else {
                 return "attraction";
             }
