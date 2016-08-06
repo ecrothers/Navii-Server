@@ -3,7 +3,6 @@ package com.navii.server.persistence.dao.impl;
 import com.navii.server.UserAuth;
 import com.navii.server.persistence.dao.UserPreferenceDAO;
 import com.navii.server.persistence.domain.Preference;
-import com.navii.server.persistence.domain.UserPreference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

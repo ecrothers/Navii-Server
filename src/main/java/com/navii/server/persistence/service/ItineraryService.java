@@ -1,5 +1,6 @@
 package com.navii.server.persistence.service;
 
+import com.navii.server.persistence.domain.HeartAndSoulPackage;
 import com.navii.server.persistence.domain.Itinerary;
 
 import java.util.List;
@@ -49,6 +50,6 @@ public interface ItineraryService {
      * @param days number of days
      * @return          The list of Itineraries
      */
-    List<Itinerary> getItineraries(List<String> tagList, int days);
+    HeartAndSoulPackage getItineraries(List<String> tagList, int days);
 }
 

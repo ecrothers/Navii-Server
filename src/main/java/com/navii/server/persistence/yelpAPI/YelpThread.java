@@ -17,7 +17,7 @@ import org.scribe.oauth.OAuthService;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static com.navii.server.persistence.yelpAPI.ZomatoAPI.getZomatoPrice;
+import static com.navii.server.persistence.yelpAPI.ZomatoAPI.fetchZomatoPrice;
 
 /**
  * Code sample for accessing the Yelp API V2.
@@ -34,9 +34,9 @@ public class YelpThread extends Thread {
 
     private static final String API_HOST = "api.yelp.com";
     private static final String DEFAULT_LOCATION = "Toronto, ON";
-    private static final String DEFAULT_RADIUS_FILTER = "2000";
+    private static final String DEFAULT_RADIUS_FILTER = "3300";
     //TODO: CHANGE TO ACTUAL LIMIT
-    private static final int SEARCH_LIMIT = 5;
+    private static final int SEARCH_LIMIT = 8;
 
     private static final String SEARCH_PATH = "/v2/search";
 
@@ -56,12 +56,15 @@ public class YelpThread extends Thread {
     private final static String JSON_BUSINESSES = "businesses";
     private final static String JSON_LOCATION = "location";
     private final static String JSON_NAME = "name";
+    private final static String JSON_CATEGORIES = "categories";
+    private static final String JSON_IMAGE_URL = "image_url";
+    private static final String JSON_SNIPPET_TEXT = "snippet_text";
 
     private List<Attraction> attractions;
     private Set<String> uniqueCheckHashSet;
     private List<Venture> potentialAttractionStack;
-    private Set<JSONObject> attractionsPrefetch;
-    private Set<JSONObject> mealPrefetch;
+    private Set<Attraction> attractionsPrefetch;
+    private Set<Attraction> restaurantPrefetch;
     private int sort;
     private String TAG;
 
@@ -80,16 +83,17 @@ public class YelpThread extends Thread {
     OAuthService service;
     Token accessToken;
 
-    public YelpThread(List<Venture> potentialAttractionStack, int sort, String tag) {
+    public YelpThread(List<Venture> potentialAttractionStack, int sort, String tag, Set<Attraction> attractionsPrefetch, Set<Attraction> restaurantPrefetch, Set<String> uniqueCheckHashSet) {
         this.service = new ServiceBuilder().provider(TwoStepOAuth.class).apiKey(CONSUMER_KEY)
                 .apiSecret(CONSUMER_SECRET).build();
         this.accessToken = new Token(TOKEN, TOKEN_SECRET);
         this.potentialAttractionStack = potentialAttractionStack;
         this.sort = sort;
         this.TAG = tag;
-        this.uniqueCheckHashSet = new HashSet<>();
-        this.attractionsPrefetch = new HashSet<>();
-        this.mealPrefetch = new HashSet<>();
+
+        this.uniqueCheckHashSet = uniqueCheckHashSet;
+        this.attractionsPrefetch = attractionsPrefetch;
+        this.restaurantPrefetch = restaurantPrefetch;
     }
 
     /**
@@ -104,7 +108,9 @@ public class YelpThread extends Thread {
     public String searchForBusinessesByLocation(Venture venture, String cll, int sort) {
         OAuthRequest request = createOAuthRequest(SEARCH_PATH);
         //TODO: PUT INTO OBJECTS
-        request.addQuerystringParameter(REQUEST_TERM, venture.getTerm());
+        if (venture.getTerm() != "") {
+            request.addQuerystringParameter(REQUEST_TERM, venture.getTerm());
+        }
         request.addQuerystringParameter(REQUEST_LOCATION, DEFAULT_LOCATION);
         request.addQuerystringParameter(REQUEST_CLL, cll);
         request.addQuerystringParameter(REQUEST_LIMIT, String.valueOf(SEARCH_LIMIT));
@@ -150,8 +156,7 @@ public class YelpThread extends Thread {
      * @return an Attraction object
      */
     private Attraction getAttraction(Venture venture, String cll, int sort) {
-        String searchResponseJSON =
-                searchForBusinessesByLocation(venture, cll, sort);
+        String searchResponseJSON = searchForBusinessesByLocation(venture, cll, sort);
 
         JSONParser parser = new JSONParser();
         JSONObject response = null;
@@ -164,84 +169,119 @@ public class YelpThread extends Thread {
 
         JSONArray businesses = (JSONArray) response.get(JSON_BUSINESSES);
 
-        if (businesses.size() < 0) {
-            return getAttraction(venture, cll, sort);
+        if (businesses.size() < 1) {
+            Venture newVenture = new Venture(venture.getType(), venture.getTerm());
+            return getAttraction(newVenture, cll, sort);
         }
-        Attraction attraction;
         int index = new Random().nextInt(businesses.size());
 
         JSONObject businessObject = (JSONObject) businesses.remove(index);
 
         String name = businessObject.getOrDefault(JSON_NAME, "N/A").toString();
 
+        //Check if the business is unique
         while (uniqueCheckHashSet.contains(name)) {
+            if (businesses.size() < 1) {
+                Venture newVenture = new Venture(venture.getType(), venture.getTerm());
+                return getAttraction(newVenture, cll, sort);
+            }
             index = new Random().nextInt(businesses.size());
             businessObject = (JSONObject) businesses.remove(index);
             name = businessObject.getOrDefault(JSON_NAME, "N/A").toString();
         }
         uniqueCheckHashSet.add(name);
 
+        //create location
+        JSONObject locationObject = (JSONObject) businessObject.get(JSON_LOCATION);
+        Location location = retreiveLocation(locationObject);
+
+        int price = 0;
+
+        if (venture.getType().equals(Venture.Type.RESTAURANT)) {
+            if (businessObject.containsKey(JSON_CATEGORIES)) {
+                JSONArray jsonArray = (JSONArray) businessObject.get(JSON_CATEGORIES);
+                String zomatoCategories = convertCategories(jsonArray);
+                price = fetchZomatoPrice(name, zomatoCategories, location.getLatitude(), location.getLongitude());
+            }
+        }
+
+        String photoUri = businessObject.getOrDefault(JSON_IMAGE_URL, "N/A").toString().replace("ms.jpg", "o.jpg");
+        String blurb = businessObject.getOrDefault(JSON_SNIPPET_TEXT, "N/A").toString();
+        Attraction attraction = new Attraction.Builder()
+                .name(name)
+                .photoUri(photoUri)
+                .blurbUri(blurb)
+                .location(location)
+                .duration(3)
+                .price(price)
+                .build();
+
+        createPrefetchData(businesses, venture);
+        return attraction;
+    }
+
+    private String convertCategories(JSONArray jsonArray) {
+        List<String> categories = new ArrayList<>();
+        for (Object object : jsonArray.toArray()) {
+            JSONArray array = (JSONArray) object;
+            categories.add(array.get(1).toString());
+        }
+        return categories.stream().collect(Collectors.joining(","));
+    }
+
+    private Location retreiveLocation(JSONObject locationObject) {
         double latitude = 43.644176, longitude = -79.387375;
-
-        JSONObject location = (JSONObject) businessObject.get(JSON_LOCATION);
-
-        if (location.containsKey("coordinate")) {
-            JSONObject coordinate = (JSONObject) location.get("coordinate");
+        if (locationObject.containsKey("coordinate")) {
+            JSONObject coordinate = (JSONObject) locationObject.get("coordinate");
             latitude = (double) coordinate.get("latitude");
             longitude = (double) coordinate.get("longitude");
         }
 
-        Location location1 = new Location.Builder()
-                .countryCode(location.getOrDefault("country_code", "N/A").toString())
-                .address(location.getOrDefault("display_address", "No Location Found").toString())
+        Location location = new Location.Builder()
+                .countryCode(locationObject.getOrDefault("country_code", "N/A").toString())
+                .address(locationObject.getOrDefault("display_address", "No Location Found").toString())
                 .latitude(latitude)
                 .longitude(longitude)
                 .city("Toronto")
                 .neighborhoods("")
                 .build();
 
-        int price = 0;
+        return location;
+    }
 
-        if (venture.getType().equals(Venture.Type.MEAL)) {
-            JSONArray jsonArray = null;
-
-            if (businessObject.containsKey("categories")) {
-                jsonArray = (JSONArray) businessObject.get("categories");
-            }
-
-            List<String> categories = new ArrayList<>();
-            for (Object object : jsonArray.toArray()) {
-                JSONArray array = (JSONArray) object;
-                categories.add(array.get(1).toString());
-            }
-            String zomatoCategories = categories.stream().collect(Collectors.joining(","));
-
-            price = getZomatoPrice(name, zomatoCategories, latitude, longitude);
-        }
-
-        String photoUri = businessObject.getOrDefault("image_url", "N/A").toString().replace("ms.jpg", "o.jpg");
-        String blurb = businessObject.getOrDefault("snippet_text", "N/A").toString();
-        attraction = new Attraction.Builder()
-                .name(name)
-                .photoUri(photoUri)
-                .blurbUri(blurb)
-                .location(location1)
-                .duration(3)
-                .price(price)
-                .build();
-
+    private void createPrefetchData(JSONArray businesses, Venture venture) {
         for (int i = 0; i < businesses.size(); i++) {
-            JSONObject object = (JSONObject) businesses.get(i);
-            if (!object.isEmpty()) {
+            JSONObject businessObject = (JSONObject) businesses.get(i);
+            if (!businessObject.isEmpty()) {
+                String name = businessObject.getOrDefault(JSON_NAME, "N/A").toString();
+                JSONObject locationObject = (JSONObject) businessObject.get(JSON_LOCATION);
+                Location location = retreiveLocation(locationObject);
+                String photoUri = businessObject.getOrDefault(JSON_IMAGE_URL, "N/A").toString().replace("ms.jpg", "o.jpg");
+                String blurb = businessObject.getOrDefault(JSON_SNIPPET_TEXT, "N/A").toString();
+
+                int price = 0;
+//                if (businessObject.containsKey(JSON_CATEGORIES) && venture.getType() == Venture.Type.RESTAURANT) {
+//                    JSONArray jsonArray = (JSONArray) businessObject.get(JSON_CATEGORIES);
+//                    String zomatoCategories = convertCategories(jsonArray);
+//                    price = fetchZomatoPrice(name, zomatoCategories, location.getLatitude(), location.getLongitude());
+//                }
+
+                Attraction attraction = new Attraction.Builder()
+                        .name(name)
+                        .photoUri(photoUri)
+                        .blurbUri(blurb)
+                        .location(location)
+                        .duration(3)
+                        .price(price)
+                        .build();
+
                 if (venture.getType() == Venture.Type.ATTRACTION) {
-                    attractionsPrefetch.add(object);
+                    attractionsPrefetch.add(attraction);
                 } else {
-                    mealPrefetch.add(object);
+                    restaurantPrefetch.add(attraction);
                 }
             }
         }
-
-        return attraction;
     }
 
     public List<Attraction> buildItinerary(List<Venture> potentialAttractionStack, int sort) {
@@ -251,8 +291,8 @@ public class YelpThread extends Thread {
         for (Venture potentialAttraction : potentialAttractionStack) {
             Attraction attraction = getAttraction(potentialAttraction, cll, sort);
             attractionList.add(attraction);
-            double latitude = attraction.getLocation().getLongitude() + 0.00001;
-            double longitude = attraction.getLocation().getLongitude() - 0.00001;
+            double latitude = attraction.getLocation().getLongitude();
+            double longitude = attraction.getLocation().getLongitude();
             cll = latitude + "," + longitude;
         }
 
@@ -261,6 +301,7 @@ public class YelpThread extends Thread {
 
     @Override
     public void run() {
+        attractions = new ArrayList<>();
         setAttractions(buildItinerary(potentialAttractionStack, sort));
     }
 
@@ -272,11 +313,15 @@ public class YelpThread extends Thread {
         return attractions;
     }
 
-    public Set<JSONObject> getAttractionsPrefetch() {
+    public Set<Attraction> getAttractionsPrefetch() {
         return attractionsPrefetch;
     }
 
-    public Set<JSONObject> getMealPrefetch() {
-        return mealPrefetch;
+    public Set<Attraction> getRestaurantPrefetch() {
+        return restaurantPrefetch;
+    }
+
+    public Set<String> getUniqueCheckHashSet() {
+        return uniqueCheckHashSet;
     }
 }

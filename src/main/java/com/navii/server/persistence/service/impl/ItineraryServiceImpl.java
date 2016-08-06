@@ -3,12 +3,12 @@ package com.navii.server.persistence.service.impl;
 import com.navii.server.UserAuth;
 import com.navii.server.persistence.dao.ItineraryDAO;
 import com.navii.server.persistence.dao.PreferenceDAO;
-import com.navii.server.persistence.dao.impl.PreferenceDAOImpl;
+import com.navii.server.persistence.domain.Attraction;
+import com.navii.server.persistence.domain.HeartAndSoulPackage;
 import com.navii.server.persistence.domain.Itinerary;
 import com.navii.server.persistence.domain.Venture;
 import com.navii.server.persistence.service.ItineraryService;
 import com.navii.server.persistence.yelpAPI.YelpThread;
-import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -53,7 +53,7 @@ public class ItineraryServiceImpl implements ItineraryService {
     }
 
     @Override
-    public List<Itinerary> getItineraries(List<String> tagList, int days) {
+    public HeartAndSoulPackage getItineraries(List<String> tagList, int days) {
         //TODO: GET PREFERENCE LIST FROM DB
         UserAuth auth = (UserAuth) SecurityContextHolder.getContext().getAuthentication();
         String email = auth.getDetails().getEmail();
@@ -61,46 +61,56 @@ public class ItineraryServiceImpl implements ItineraryService {
         List<Venture> potentialAttractionStack = buildPotentialAttractionStack(yelpCategories, tagList);
         YelpThread[] yelpThreads = new YelpThread[3];
 
-        //Start and store the threads
-        for (int i = 0; i < 3; i++) {
-            yelpThreads[i] = new YelpThread(potentialAttractionStack, i, "Yelp " + i);
-            yelpThreads[i].setName(YelpThread.getYelpName(i));
-            yelpThreads[i].start();
+            //Start and store the threads
+        Set<Attraction> attractionsPrefetch = new HashSet<>();
+        Set<Attraction> restaurantPrefetch = new HashSet<>();
+
+        List<Set<String>> uniqueCheckHashMap = new ArrayList<>();
+        for (int i = 0; i < yelpThreads.length; i++) {
+            uniqueCheckHashMap.add(new HashSet<>());
         }
 
-        List<Itinerary> itineraryList = new ArrayList<>();
-        Set<JSONObject> jsonObjectSet = new HashSet<>();
-        try {
-            for (YelpThread thread : yelpThreads) {
-                thread.join();
-                Itinerary itinerary = new Itinerary.Builder()
-                        .description(thread.getName())
-                        .authorId("Yelp")
-                        .attractions(thread.getAttractions())
-                        .build();
-                itineraryList.add(itinerary);
-                jsonObjectSet.addAll(thread.getAttractionsPrefetch());
-                jsonObjectSet.addAll(thread.getMealPrefetch());
+        Itinerary[][] itineraries= new Itinerary[yelpThreads.length][days];
+        for (int n = 0; n < days; n++) {
+            try {
+                for (int i = 0; i < yelpThreads.length; i++) {
+                    yelpThreads[i] = new YelpThread(potentialAttractionStack, i, "Yelp " + i, attractionsPrefetch, restaurantPrefetch, uniqueCheckHashMap.get(i));
+                    yelpThreads[i].setName(YelpThread.getYelpName(i));
+                    yelpThreads[i].start();
+                }
+                Thread.sleep(100);
+                for (int i = 0; i < yelpThreads.length; i++) {
+                    YelpThread thread = yelpThreads[i];
+                    thread.join();
+
+                    itineraries[i][n] = new Itinerary.Builder()
+                            .description(thread.getName())
+                            .authorId("Yelp")
+                            .attractions(thread.getAttractions())
+                            .build();
+
+                    uniqueCheckHashMap.get(i).addAll(thread.getUniqueCheckHashSet());
+                    attractionsPrefetch.addAll(thread.getAttractionsPrefetch());
+                    restaurantPrefetch.addAll(thread.getRestaurantPrefetch());
+                }
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
-        } catch (InterruptedException e) {
-            e.printStackTrace();
         }
+        HeartAndSoulPackage heartAndSoulPackage = new HeartAndSoulPackage.Builder()
+                .itineraries(itineraries)
+                .extraAttractions(new ArrayList<>(attractionsPrefetch))
+                .extraRestaurants(new ArrayList<>(restaurantPrefetch))
+                .build();
 
-        for (JSONObject jsonObject : jsonObjectSet) {
-            String name = jsonObject.getOrDefault("name", "N/A").toString();
-            System.out.println(name);
-        }
-
-        return itineraryList;
+        return heartAndSoulPackage;
     }
 
     private List<Venture> buildPotentialAttractionStack(List<String> categories, List<String> tags) {
-
-
         // Initialize venture objects
-        Venture breakfast = new Venture(Venture.Type.MEAL, "Restaurant");
-        Venture lunch = new Venture(Venture.Type.MEAL, "Restaurant");
-        Venture dinner = new Venture(Venture.Type.MEAL, "Restaurant");
+        Venture breakfast = new Venture(Venture.Type.RESTAURANT, "Restaurant");
+        Venture lunch = new Venture(Venture.Type.RESTAURANT, "Restaurant");
+        Venture dinner = new Venture(Venture.Type.RESTAURANT, "Restaurant");
 
         Venture attraction1 = new Venture(Venture.Type.ATTRACTION, "Attraction");
         Venture attraction2 = new Venture(Venture.Type.ATTRACTION, "Attraction");
@@ -114,7 +124,7 @@ public class ItineraryServiceImpl implements ItineraryService {
                 breakfast.addCategory(tag);
                 lunch.addCategory(tag);
                 dinner.addCategory(tag);
-            } else if (!tag.equals("indoor") && !tag.equals("hiking")) {
+            } else {
                 terms.add(tag);
             }
         }
@@ -142,7 +152,6 @@ public class ItineraryServiceImpl implements ItineraryService {
             dinner.addCategory("vegetarian");
             categories.remove("vegetarian");
         }
-
 
         List<Venture> potentialAttractionStack = Arrays.asList(breakfast, attraction1, lunch, attraction2, attraction3, dinner);
 

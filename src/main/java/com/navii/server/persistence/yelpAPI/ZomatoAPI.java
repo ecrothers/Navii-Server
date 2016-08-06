@@ -32,7 +32,8 @@ public class ZomatoAPI {
         return response.getBody();
     }
 
-    public static int getZomatoPrice(String name, String category, double latitude, double longitude) {
+    public static int fetchZomatoPrice(String name, String category, double latitude, double longitude) {
+
         String zomatoResponseJSON = zomatoSearchQuery(name, category, latitude, longitude);
         JSONParser parser = new JSONParser();
         JSONObject response = null;

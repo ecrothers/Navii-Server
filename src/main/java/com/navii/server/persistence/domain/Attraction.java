@@ -16,7 +16,7 @@ public class Attraction {
     private Type type;
 
     public enum Type {
-        BREAKFAST, LUNCH, DINNER, ATTRACTION
+        RESTAURANT, ATTRACTION
     }
 
     public Attraction() {

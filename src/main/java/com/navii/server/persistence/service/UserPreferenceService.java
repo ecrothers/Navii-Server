@@ -1,7 +1,6 @@
 package com.navii.server.persistence.service;
 
 import com.navii.server.persistence.domain.Preference;
-import com.navii.server.persistence.domain.UserPreference;
 
 import java.util.List;
 
@@ -11,9 +10,9 @@ import java.util.List;
 public interface UserPreferenceService {
 
     /**
-     * Saves a new UserPreference entry to the database.
+     * Saves a new Preference entry to the database.
      *
-     * @param saved The information of the saved UserPreference entry.
+     * @param saved The information of the saved Preference entry.
      * @return true if successful, false otherwise
      */
     boolean create(List<Preference> saved);

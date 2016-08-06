@@ -1,7 +1,6 @@
 package com.navii.server.persistence.controller;
 
 import com.navii.server.persistence.domain.Preference;
-import com.navii.server.persistence.domain.UserPreference;
 import com.navii.server.persistence.service.UserPreferenceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -39,9 +38,8 @@ public class UserPreferenceController {
 
     /**
      * Deletes all userspreference that are of a given preference Type
-     * @param username    Identifier for the user
      * @param preferenceType Identifier for the preferenceType
-     * @return          Deletes all UserPreference return HTTP status 202; otherwise 404.
+     * @return          Deletes all Preferences return HTTP status 202; otherwise 404.
      *
      * TODO: change path variables to request parameters
      */
