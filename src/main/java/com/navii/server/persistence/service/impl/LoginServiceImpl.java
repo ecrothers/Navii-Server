@@ -89,7 +89,7 @@ public class LoginServiceImpl implements LoginService {
             Voyager voyager = voyagerService.findByEmail(fbEmail);
             //TODO: Instead of a random password, possibly use a flag for fb login only accounts
             if (voyager == null) {
-                Voyager.Builder newFBUser = new Voyager.Builder().username(fbEmail).isFacebook(true).verified(true);
+                Voyager.Builder newFBUser = new Voyager.Builder().username(fbName).email(fbEmail).isFacebook(true).verified(true);
                 SecureRandom random = new SecureRandom();
                 byte randomBytes[] = new byte[32];
                 random.nextBytes(randomBytes);
