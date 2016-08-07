@@ -32,7 +32,7 @@ CREATE TABLE IF NOT EXISTS itineraries (
 	itineraryid INT NOT NULL AUTO_INCREMENT,
 	totalcost DECIMAL(10,2),
 	duration INT,
-	description VARCHAR(256),
+	title VARCHAR(256),
 	authorid VARCHAR(90),
 	PRIMARY KEY (itineraryid),
 	FOREIGN KEY (authorid) REFERENCES users(email) ON DELETE SET NULL

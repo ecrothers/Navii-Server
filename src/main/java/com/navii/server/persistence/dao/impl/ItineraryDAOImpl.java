@@ -42,7 +42,7 @@ public class ItineraryDAOImpl implements ItineraryDAO {
     private static final String SQL_DURATION = "duration";
     private static final String SQL_PHONENUMBER = "phone_number";
     private static final String SQL_RATING = "rating";
-    private static final String SQL_DESCRIPTION = "description";
+    private static final String SQL_TITLE = "title";
     private static final String SQL_LONGITUDE = "longitude";
     private static final String SQL_LATITUDE = "latitude";
     private static final String SQL_ADDRESS = "address";
@@ -70,7 +70,7 @@ public class ItineraryDAOImpl implements ItineraryDAO {
                 Itinerary itinerary = new Itinerary.Builder()
                         .itineraryId((int) row.get(SQL_ID))
                         .price((int) row.get(SQL_COST))
-                        .description((String) row.get(SQL_DESCRIPTION))
+                        .description((String) row.get(SQL_TITLE))
                         .authorId((String) row.get(SQL_AUTHOR))
                         .duration((int) row.get(SQL_DURATION))
                         .build();
@@ -102,7 +102,7 @@ public class ItineraryDAOImpl implements ItineraryDAO {
                         return new Itinerary.Builder()
                                 .itineraryId(rs.getInt(SQL_ID))
                                 .price(rs.getInt(SQL_COST))
-                                .description(rs.getString(SQL_DESCRIPTION))
+                                .description(rs.getString(SQL_TITLE))
                                 .authorId(rs.getString(SQL_AUTHOR))
                                 .duration(rs.getInt(SQL_DURATION))
                                 .build();
@@ -121,7 +121,7 @@ public class ItineraryDAOImpl implements ItineraryDAO {
                 "UPDATE " + TABLE_NAME + " " +
                         "SET " +
                         SQL_COST + "= ?, " +
-                        SQL_DESCRIPTION + "= ?, " +
+                        SQL_TITLE + "= ?, " +
                         SQL_AUTHOR + "= ?, " +
                         SQL_DURATION + "= ?, " +
                         "WHERE " + SQL_ID + " = ?";
@@ -152,7 +152,7 @@ public class ItineraryDAOImpl implements ItineraryDAO {
                 Itinerary itinerary = new Itinerary.Builder()
                         .itineraryId((int)row.get(SQL_ID))
                         .authorId((String)row.get(SQL_AUTHOR))
-                        .description((String)row.get(SQL_DESCRIPTION))
+                        .description((String)row.get(SQL_TITLE))
                         .duration((int)row.get(SQL_DURATION))
                         .build();
                 itineraries.add(itinerary);
@@ -169,7 +169,7 @@ public class ItineraryDAOImpl implements ItineraryDAO {
     public int createList(List<Itinerary> itineraries, String title) {
         String itineraryQuery = "INSERT INTO " + TABLE_NAME + " (" +
                 SQL_AUTHOR + ", " +
-                SQL_DESCRIPTION +" " +
+                SQL_TITLE +" " +
                 ") VALUES (?, ?)";
         String mapQuery = "INSERT INTO itineraries_days_attraction_positions (itineraryid, _day, _position, attractionid) VALUES (?, ?, ?, ?)";
         UserAuth auth = (UserAuth) SecurityContextHolder.getContext().getAuthentication();
@@ -208,7 +208,7 @@ public class ItineraryDAOImpl implements ItineraryDAO {
         List<Attraction> dayAttractions = new ArrayList<>();
         int currentId = -1;
         int currentDay = 0;
-        String query = "SELECT itin.itineraryid, itin.description as title, map._day, map._position, a.name, a.address," +
+        String query = "SELECT itin.itineraryid, itin.title, map._day, map._position, a.name, a.address," +
                 " a.photoURI, a.latitude, a.longitude, a.description, a.rating, a.phone_number, a.price " +
                 "FROM itineraries itin INNER JOIN itineraries_days_attraction_positions map ON map.itineraryid = itin.itineraryid " +
                 "INNER JOIN attractions a ON map.attractionid = a.attractionid WHERE itin.authorid = ? ORDER BY itineraryid, _day, _position";
@@ -237,7 +237,7 @@ public class ItineraryDAOImpl implements ItineraryDAO {
                 Attraction attraction = new Attraction.Builder()
                         .name(row.get(SQL_NAME).toString())
                         .photoUri(row.get(SQL_PHOTOURI).toString())
-                        .description(row.get(SQL_DESCRIPTION).toString())
+                        .description(row.get(SQL_TITLE).toString())
                         .location(location)
                         .phoneNumber(row.get(SQL_PHONENUMBER).toString())
                         .price(Integer.parseInt(row.get(SQL_PRICE).toString()))
@@ -271,7 +271,7 @@ public class ItineraryDAOImpl implements ItineraryDAO {
         String query = "INSERT INTO " + TABLE_NAME + " (" +
                 SQL_COST + ", " +
                 SQL_DURATION + ", " +
-                SQL_DESCRIPTION + ", " +
+                SQL_TITLE + ", " +
                 SQL_AUTHOR + " " +
                 ") VALUES (?, ?, ?, ?)";
 
