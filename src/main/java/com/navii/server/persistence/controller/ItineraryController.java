@@ -138,8 +138,8 @@ public class ItineraryController {
     }
 
     @RequestMapping(value="/retreiveList", method=RequestMethod.GET)
-    public ResponseEntity<List<Itinerary>> getSavedItineraries() {
-        List<Itinerary> itineraries = itineraryService.retrieveSavedItineraries();
+    public ResponseEntity<List<List<Itinerary>>> getSavedItineraries() {
+        List<List<Itinerary>> itineraries = itineraryService.retrieveSavedItineraries();
         if (itineraries != null) {
             return new ResponseEntity<>(itineraries, HttpStatus.OK);
         } else {

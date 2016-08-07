@@ -59,5 +59,5 @@ public interface ItineraryDAO {
      * retrieves itineraries from the database
      * @return list of itineraries
      */
-    List<Itinerary> retrieveSavedItineraries();
+    List<List<Itinerary>> retrieveSavedItineraries();
 }

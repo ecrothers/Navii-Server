@@ -64,6 +64,6 @@ public interface ItineraryService {
      * Retreived saved List
      * @return sitinerary list
      */
-    List<Itinerary> retrieveSavedItineraries();
+    List<List<Itinerary>> retrieveSavedItineraries();
 }
 

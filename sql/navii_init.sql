@@ -15,12 +15,16 @@ CREATE TABLE IF NOT EXISTS users (
 CREATE TABLE IF NOT EXISTS attractions (
 	attractionid INT NOT NULL AUTO_INCREMENT,
 	name VARCHAR(256),
-	location VARCHAR(256),
+	address VARCHAR(256),
 	photoURI VARCHAR(256),
 	blurbURI VARCHAR(256),
 	price INT,
 	purchase CHAR(1),
 	duration INT,
+	latitude DECIMAL(11),
+	longitude DECIMAL(11),
+	description VARCHAR(128),
+	phone_number VARCHAR(45),
 	PRIMARY KEY (attractionid)
 );
 

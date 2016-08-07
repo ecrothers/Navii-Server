@@ -112,7 +112,7 @@ public class ItineraryServiceImpl implements ItineraryService {
     }
 
     @Override
-    public List<Itinerary> retrieveSavedItineraries() {
+    public List<List<Itinerary>> retrieveSavedItineraries() {
         return itineraryDAO.retrieveSavedItineraries();
     }
 

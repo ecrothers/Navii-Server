@@ -14,6 +14,7 @@ import com.navii.server.persistence.dao.AttractionDAO;
 import com.navii.server.persistence.dao.ItineraryDAO;
 import com.navii.server.persistence.domain.Attraction;
 import com.navii.server.persistence.domain.Itinerary;
+import com.navii.server.persistence.domain.Location;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,9 +38,17 @@ public class ItineraryDAOImpl implements ItineraryDAO {
     // SQL column names
     private static final String SQL_ID = "itineraryid";
     private static final String SQL_COST = "totalcost";
-    private static final String SQL_DESCRIPTION = "description";
     private static final String SQL_AUTHOR = "authorid";
     private static final String SQL_DURATION = "duration";
+    private static final String SQL_PHONENUMBER = "phone_number";
+    private static final String SQL_RATING = "rating";
+    private static final String SQL_DESCRIPTION = "description";
+    private static final String SQL_LONGITUDE = "longitude";
+    private static final String SQL_LATITUDE = "latitude";
+    private static final String SQL_ADDRESS = "address";
+    private static final String SQL_NAME = "name";
+    private static final String SQL_PHOTOURI = "photoURI";
+    private static final String SQL_PRICE = "price";
 
     @Autowired
     protected JdbcTemplate jdbc;
@@ -187,26 +196,63 @@ public class ItineraryDAOImpl implements ItineraryDAO {
     }
 
     @Override
-    public List<Itinerary> retrieveSavedItineraries() {
+    public List<List<Itinerary>> retrieveSavedItineraries() {
         UserAuth auth = (UserAuth) SecurityContextHolder.getContext().getAuthentication();
         String userEmail = auth.getDetails().getEmail();
 
-        List<Itinerary> itineraries = new ArrayList<>();
-
-        String query = "SELECT itin.itineraryid, map._day, map._position, a.name, a.location, a.photoURI, a.price FROM itineraries itin INNER JOIN itineraries_days_attraction_positions map ON map.itineraryid = itin.itineraryid \n" +
-                "INNER JOIN attractions a ON map.attractionid = a.attractionid WHERE itin.authorid = "+userEmail+" ORDER BY _day, _position";
+        List<List<Itinerary>> itineraries = new ArrayList<>();
+        List<Itinerary> fullItinerary = new ArrayList<>();
+        Itinerary dayItinerary;
+        List<Attraction> dayAttractions = new ArrayList<>();
+        int currentId = -1;
+        int currentDay = 0;
+        String query = "SELECT itin.itineraryid, map._day, map._position, a.name, a.address," +
+                " a.photoURI, a.latitude, a.longitude, a.description, a.rating, a.phone_number, a.price " +
+                "FROM itineraries itin INNER JOIN itineraries_days_attraction_positions map ON map.itineraryid = itin.itineraryid " +
+                "INNER JOIN attractions a ON map.attractionid = a.attractionid WHERE itin.authorid = ? ORDER BY itineraryid, _day, _position";
         try {
-            List<Map<String, Object>> rows = jdbc.queryForList(query);
+            List<Map<String, Object>> rows = jdbc.queryForList(query, userEmail);
 
             for (Map row : rows) {
+                if (currentId != Integer.parseInt(row.get("itineraryid").toString()) && currentId != -1) {
+                    itineraries.add(fullItinerary);
+                    fullItinerary = new ArrayList<>();
+                } else if (currentDay != Integer.parseInt(row.get("_day").toString())) {
+                    dayItinerary = new Itinerary.Builder()
+                            .attractions(dayAttractions)
+                            .build();
+                    fullItinerary.add(dayItinerary);
+                    dayAttractions = new ArrayList<>();
 
+                }
+                currentId = Integer.parseInt(row.get("itineraryid").toString());
+                currentDay = Integer.parseInt(row.get("_day").toString());
+                Location location = new Location.Builder()
+                        .address(row.get(SQL_ADDRESS).toString())
+                        .latitude(Double.parseDouble(row.get(SQL_LATITUDE).toString()))
+                        .longitude(Double.parseDouble(row.get(SQL_LONGITUDE).toString()))
+                        .build();
+                Attraction attraction = new Attraction.Builder()
+                        .name(row.get(SQL_NAME).toString())
+                        .photoUri(row.get(SQL_PHOTOURI).toString())
+                        .description(row.get(SQL_DESCRIPTION).toString())
+                        .location(location)
+                        .phoneNumber(row.get(SQL_PHONENUMBER).toString())
+                        .price(Integer.parseInt(row.get(SQL_PRICE).toString()))
+                        .rating(Double.parseDouble(row.get(SQL_RATING).toString()))
+                        .build();
+                dayAttractions.add(attraction);
             }
 
         } catch (EmptyResultDataAccessException e) {
             logger.warn("None found.");
         }
-
-        return null;
+        dayItinerary = new Itinerary.Builder()
+                .attractions(dayAttractions)
+                .build();
+        fullItinerary.add(dayItinerary);
+        itineraries.add(fullItinerary);
+        return itineraries;
     }
 
     @Override

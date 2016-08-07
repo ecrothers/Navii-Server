@@ -39,6 +39,12 @@ public class AttractionDAOImpl implements AttractionDAO {
     private static final String SQL_PRICE = "price";
     private static final String SQL_PURCHASE = "purchase";
     private static final String SQL_DURATION = "duration";
+    private static final String SQL_PHONENUMBER = "phone_number";
+    private static final String SQL_RATING = "rating";
+    private static final String SQL_DESCRIPTION = "description";
+    private static final String SQL_LONGITUDE = "longitude";
+    private static final String SQL_LATITUDE = "latitude";
+    private static final String SQL_ADDRESS = "address";
 
     @Autowired
     protected JdbcTemplate jdbc;
@@ -169,19 +175,29 @@ public class AttractionDAOImpl implements AttractionDAO {
         KeyHolder attractionKeyHolder = new GeneratedKeyHolder();
         String attractionQuery = "INSERT INTO " + TABLE_NAME + " (" +
                 SQL_NAME + ", " +
-                SQL_LOCATION + ", " +
+                SQL_ADDRESS+ ", " +
+                SQL_LATITUDE+ ", "+
+                SQL_LONGITUDE+ ", "+
+                SQL_DESCRIPTION+", "+
+                SQL_RATING+", "+
+                SQL_PHONENUMBER+", "+
                 SQL_PHOTO_URI + ", " +
                 SQL_PRICE + " " +
-                ") VALUES (?, ?, ?, ?)";
+                ") VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         jdbc.update(new PreparedStatementCreator() {
             @Override
             public PreparedStatement createPreparedStatement(Connection con) throws SQLException {
                 PreparedStatement ps = con.prepareStatement(attractionQuery, Statement.RETURN_GENERATED_KEYS);
                 ps.setString(1, create.getName());
-                ps.setString(2, create.getLocation().toString());
-                ps.setString(3, create.getPhotoUri());
-                ps.setInt(4, create.getPrice());
+                ps.setString(2, create.getLocation().getAddress().toString());
+                ps.setDouble(3, create.getLocation().getLatitude());
+                ps.setDouble(4, create.getLocation().getLongitude());
+                ps.setString(5, create.getDescription());
+                ps.setDouble(6, create.getRating());
+                ps.setString(7, create.getPhoneNumber());
+                ps.setString(8, create.getPhotoUri());
+                ps.setInt(9, create.getPrice());
                 return ps;
             }
         }, attractionKeyHolder);
