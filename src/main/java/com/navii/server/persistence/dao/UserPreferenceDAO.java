@@ -26,10 +26,10 @@ public interface UserPreferenceDAO {
     List<Preference> obtain(String username);
 
     /**
-     * Deletes all preferences from the database based on the email and the type of preference
+     * Deletes all preferences from the database based on the email
      *
-     * @param preferenceType Identifier for preferences to be deleted
      * @return Number of rows effected
      */
-    int deleteAllPreference(int preferenceType);
+    int deleteAllPreference();
+
 }

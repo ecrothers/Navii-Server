@@ -37,15 +37,14 @@ public class UserPreferenceController {
     }
 
     /**
-     * Deletes all userspreference that are of a given preference Type
-     * @param preferenceType Identifier for the preferenceType
+     * Deletes all userspreference that are of a given email
      * @return          Deletes all Preferences return HTTP status 202; otherwise 404.
      *
      * TODO: change path variables to request parameters
      */
-    @RequestMapping(value = "/delete/{preferenceType}", method = RequestMethod.DELETE)
-    public ResponseEntity<?> deleteAllUserPreference(@PathVariable("preferenceType") int preferenceType) {
-        int deletedUsersPreferences = userPreferenceService.deleteAllPreference(preferenceType);
+    @RequestMapping(value = "/delete/", method = RequestMethod.DELETE)
+    public ResponseEntity<?> deleteAllUserPreference() {
+        int deletedUsersPreferences = userPreferenceService.deleteAllPreference();
 
         if (deletedUsersPreferences > 0) {
             return new ResponseEntity<>(HttpStatus.ACCEPTED);

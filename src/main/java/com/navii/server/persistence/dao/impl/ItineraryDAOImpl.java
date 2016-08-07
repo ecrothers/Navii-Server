@@ -171,7 +171,7 @@ public class ItineraryDAOImpl implements ItineraryDAO {
             @Override
             public PreparedStatement createPreparedStatement(Connection con) throws SQLException {
                 PreparedStatement ps = con.prepareStatement(itineraryQuery, Statement.RETURN_GENERATED_KEYS);
-                ps.setString(1,userEmail);
+                ps.setString(1, userEmail);
                 return ps;
             }
         }, holder);
@@ -184,6 +184,29 @@ public class ItineraryDAOImpl implements ItineraryDAO {
             }
         }
         return 1;
+    }
+
+    @Override
+    public List<Itinerary> retrieveSavedItineraries() {
+        UserAuth auth = (UserAuth) SecurityContextHolder.getContext().getAuthentication();
+        String userEmail = auth.getDetails().getEmail();
+
+        List<Itinerary> itineraries = new ArrayList<>();
+
+        String query = "SELECT itin.itineraryid, map._day, map._position, a.name, a.location, a.photoURI, a.price FROM itineraries itin INNER JOIN itineraries_days_attraction_positions map ON map.itineraryid = itin.itineraryid \n" +
+                "INNER JOIN attractions a ON map.attractionid = a.attractionid WHERE itin.authorid = "+userEmail+" ORDER BY _day, _position";
+        try {
+            List<Map<String, Object>> rows = jdbc.queryForList(query);
+
+            for (Map row : rows) {
+
+            }
+
+        } catch (EmptyResultDataAccessException e) {
+            logger.warn("None found.");
+        }
+
+        return null;
     }
 
     @Override

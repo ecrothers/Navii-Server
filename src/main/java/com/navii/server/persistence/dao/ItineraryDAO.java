@@ -54,4 +54,10 @@ public interface ItineraryDAO {
      * @return          number of rows created
      */
     int createList(List<Itinerary> itineraries);
+
+    /**
+     * retrieves itineraries from the database
+     * @return list of itineraries
+     */
+    List<Itinerary> retrieveSavedItineraries();
 }

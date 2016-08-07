@@ -130,8 +130,20 @@ public class ItineraryController {
 
     @RequestMapping(value="/saveList", method = RequestMethod.POST)
     public ResponseEntity<Void> saveItineraries(@RequestBody List<Itinerary> itineraries) {
-        itineraryService.createList(itineraries);
-        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        if (itineraryService.createList(itineraries) > 0) {
+            return new ResponseEntity<>(HttpStatus.CREATED);
+        } else {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
     }
 
+    @RequestMapping(value="/retreiveList", method=RequestMethod.GET)
+    public ResponseEntity<List<Itinerary>> getSavedItineraries() {
+        List<Itinerary> itineraries = itineraryService.retrieveSavedItineraries();
+        if (itineraries != null) {
+            return new ResponseEntity<>(itineraries, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
 }

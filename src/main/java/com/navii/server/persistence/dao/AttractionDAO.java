@@ -42,5 +42,10 @@ public interface AttractionDAO {
      */
     int update(final Attraction updated);
 
+    /**
+     * Insert attraction into database and return generated id
+     * @param create
+     * @return
+     */
     int createAttraction(Attraction create);
 }

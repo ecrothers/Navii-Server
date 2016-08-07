@@ -26,10 +26,9 @@ public interface UserPreferenceService {
     List<Preference> obtain(String username);
 
     /**
-     * Deletes all userspreferences from the database based on the email and the type of preference
+     * Deletes all userspreferences from the database based on the email
      *
-     * @param preferenceType Identifier for userpreference to be deleted
      * @return Number of rows effected
      */
-    int deleteAllPreference(int preferenceType);
+    int deleteAllPreference();
 }

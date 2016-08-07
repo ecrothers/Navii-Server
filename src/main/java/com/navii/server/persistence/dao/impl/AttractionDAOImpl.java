@@ -171,17 +171,17 @@ public class AttractionDAOImpl implements AttractionDAO {
                 SQL_NAME + ", " +
                 SQL_LOCATION + ", " +
                 SQL_PHOTO_URI + ", " +
-                SQL_BLURB_URI + ", " +
-                SQL_PRICE + ", " +
-                SQL_PURCHASE + ", " +
-                SQL_DURATION +
-                ") VALUES (?, ?, ?, ?, ?, ?, ?)";
+                SQL_PRICE + " " +
+                ") VALUES (?, ?, ?, ?)";
+
         jdbc.update(new PreparedStatementCreator() {
             @Override
             public PreparedStatement createPreparedStatement(Connection con) throws SQLException {
                 PreparedStatement ps = con.prepareStatement(attractionQuery, Statement.RETURN_GENERATED_KEYS);
                 ps.setString(1, create.getName());
                 ps.setString(2, create.getLocation().toString());
+                ps.setString(3, create.getPhotoUri());
+                ps.setInt(4, create.getPrice());
                 return ps;
             }
         }, attractionKeyHolder);

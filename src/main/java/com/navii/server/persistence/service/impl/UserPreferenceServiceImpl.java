@@ -30,7 +30,7 @@ public class UserPreferenceServiceImpl implements UserPreferenceService {
     }
 
     @Override
-    public int deleteAllPreference(int preferenceType) {
-        return userPreferenceDAO.deleteAllPreference(preferenceType);
+    public int deleteAllPreference() {
+        return userPreferenceDAO.deleteAllPreference();
     }
 }

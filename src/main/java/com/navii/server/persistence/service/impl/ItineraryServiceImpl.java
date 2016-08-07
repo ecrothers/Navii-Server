@@ -111,6 +111,11 @@ public class ItineraryServiceImpl implements ItineraryService {
         return itineraryDAO.createList(itineraries);
     }
 
+    @Override
+    public List<Itinerary> retrieveSavedItineraries() {
+        return itineraryDAO.retrieveSavedItineraries();
+    }
+
     private List<Venture> buildPotentialAttractionStack(List<String> categories, List<String> tags) {
         // Initialize venture objects
         Venture breakfast = new Venture(Venture.Type.RESTAURANT, "Restaurant");

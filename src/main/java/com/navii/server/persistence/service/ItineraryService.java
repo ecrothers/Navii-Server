@@ -58,5 +58,12 @@ public interface ItineraryService {
      * @return number of itineraries created
      */
     int createList(List<Itinerary> itineraries);
+
+
+    /**
+     * Retreived saved List
+     * @return sitinerary list
+     */
+    List<Itinerary> retrieveSavedItineraries();
 }
 

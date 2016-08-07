@@ -29,7 +29,7 @@ CREATE TABLE IF NOT EXISTS itineraries (
 	totalcost DECIMAL(10,2),
 	duration INT,
 	description VARCHAR(256),
-	authorid VARCHAR(16),
+	authorid VARCHAR(90),
 	PRIMARY KEY (itineraryid),
 	FOREIGN KEY (authorid) REFERENCES users(email) ON DELETE SET NULL
 );

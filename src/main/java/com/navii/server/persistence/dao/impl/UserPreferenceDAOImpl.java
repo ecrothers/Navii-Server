@@ -85,14 +85,14 @@ public class UserPreferenceDAOImpl implements UserPreferenceDAO {
     }
 
     @Override
-    public int deleteAllPreference(int preferenceType) {
+    public int deleteAllPreference() {
         String sqlString =
                 "DELETE FROM userspreferences " +
-                        "WHERE email = ? AND preference_type = ?";
+                        "WHERE email = ? ";
 
         UserAuth auth = (UserAuth) SecurityContextHolder.getContext().getAuthentication();
         String userEmail = auth.getDetails().getEmail();
 
-        return jdbc.update(sqlString, userEmail, preferenceType);
+        return jdbc.update(sqlString, userEmail);
     }
 }
