@@ -93,5 +93,5 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
     @Bean
     public TokenService tokenService() {
         return tokenService;
-        }
     }
+}

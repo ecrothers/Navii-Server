@@ -35,6 +35,7 @@ public class LoginServiceImpl implements LoginService {
     private VoyagerService voyagerService;
 
     @Autowired
+    @Qualifier("tokenServiceImpl")
     private TokenService tokenService;
 
     @Override

@@ -1,6 +1,7 @@
 package com.navii.server.persistence.controller;
 
 import com.navii.server.persistence.domain.Voyager;
+import com.navii.server.persistence.domain.VoyagerResponse;
 import com.navii.server.persistence.service.VoyagerService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,11 +57,11 @@ public class VoyagerController {
      * @return      If voyager is successfully created, return HTTP status 201; otherwise, 400
      */
     @RequestMapping(value = "", method = RequestMethod.POST)
-    public ResponseEntity<?> createUser(@RequestBody Voyager voyager) {
-        int numCreatedUsers = voyagerService.create(voyager);
+    public ResponseEntity<VoyagerResponse> createUser(@RequestBody Voyager voyager) {
+        VoyagerResponse response = voyagerService.create(voyager);
 
-        if (numCreatedUsers > 0) {
-            return new ResponseEntity<>(HttpStatus.CREATED);
+        if (response != null) {
+            return new ResponseEntity<>(response, HttpStatus.CREATED);
         }
 
         return new ResponseEntity<>(HttpStatus.BAD_REQUEST);

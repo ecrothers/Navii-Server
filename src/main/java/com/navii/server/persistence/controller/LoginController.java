@@ -4,6 +4,7 @@ import com.navii.server.persistence.domain.Voyager;
 import com.navii.server.persistence.domain.VoyagerResponse;
 import com.navii.server.persistence.service.LoginService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 public class LoginController {
 
     @Autowired
+    @Qualifier("loginServiceImpl")
     private LoginService loginService;
 
     @RequestMapping(value = "", method = RequestMethod.POST)

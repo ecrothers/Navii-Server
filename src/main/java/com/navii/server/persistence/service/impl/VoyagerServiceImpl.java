@@ -3,10 +3,13 @@ package com.navii.server.persistence.service.impl;
 import com.navii.server.UserAuth;
 import com.navii.server.persistence.dao.VoyagerDAO;
 import com.navii.server.persistence.domain.Voyager;
+import com.navii.server.persistence.domain.VoyagerResponse;
+import com.navii.server.persistence.service.LoginService;
+import com.navii.server.persistence.service.TokenService;
 import com.navii.server.persistence.service.VoyagerService;
 import com.navii.server.persistence.service.util.HashingAlgorithm;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.retry.policy.ExceptionClassifierRetryPolicy;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
@@ -24,7 +27,11 @@ import java.util.List;
 public class VoyagerServiceImpl implements VoyagerService {
 
     @Autowired
-    VoyagerDAO voyagerDAO;
+    private VoyagerDAO voyagerDAO;
+
+    @Autowired
+    @Qualifier("loginServiceImpl")
+    private LoginService loginService;
 
     @Override
     public List<Voyager> findAll() {
@@ -42,7 +49,7 @@ public class VoyagerServiceImpl implements VoyagerService {
     }
 
     @Override
-    public int create(Voyager createdVoyager) {
+    public VoyagerResponse create(Voyager createdVoyager) {
         SecureRandom random = new SecureRandom();
         byte randomBytes[] = new byte[64];
         random.nextBytes(randomBytes);
@@ -59,11 +66,16 @@ public class VoyagerServiceImpl implements VoyagerService {
             String password = HashingAlgorithm.sha256(saltedPasswordBytes);
             newVoyager.password(password);
             newVoyager.salt(salt);
-            return voyagerDAO.create(newVoyager.build());
+            Voyager voyager = newVoyager.build();
+            voyagerDAO.create(voyager);
+
         } catch(Exception e) {
             // TODO: Better handling than this
-            return -1;
+            return null;
         }
+
+        return loginService.Login(createdVoyager.getEmail(), createdVoyager.getPassword());
+
     }
 
     @Override
