@@ -206,7 +206,7 @@ public class YelpThread extends Thread {
         int price = 0;
         if (venture.getType().equals(Venture.Type.RESTAURANT)) {
             if (businessObject.containsKey(JSON_CATEGORIES)) {
-//                price = fetchZomatoPrice(name, categories, location.getLatitude(), location.getLongitude());
+                price = fetchZomatoPrice(name, categories, location.getLatitude(), location.getLongitude());
             }
         }
 

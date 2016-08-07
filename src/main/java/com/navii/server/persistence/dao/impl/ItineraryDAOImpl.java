@@ -169,6 +169,7 @@ public class ItineraryDAOImpl implements ItineraryDAO {
     public int createList(List<Itinerary> itineraries) {
         String itineraryQuery = "INSERT INTO " + TABLE_NAME + " (" +
                 SQL_AUTHOR + " " +
+
                 ") VALUES (?)";
         String mapQuery = "INSERT INTO itineraries_days_attraction_positions (itineraryid, _day, _position, attractionid) VALUES (?, ?, ?, ?)";
         UserAuth auth = (UserAuth) SecurityContextHolder.getContext().getAuthentication();
@@ -223,7 +224,6 @@ public class ItineraryDAOImpl implements ItineraryDAO {
                             .build();
                     fullItinerary.add(dayItinerary);
                     dayAttractions = new ArrayList<>();
-
                 }
                 currentId = Integer.parseInt(row.get("itineraryid").toString());
                 currentDay = Integer.parseInt(row.get("_day").toString());
