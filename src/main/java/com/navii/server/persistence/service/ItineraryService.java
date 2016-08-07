@@ -51,5 +51,12 @@ public interface ItineraryService {
      * @return          The list of Itineraries
      */
     HeartAndSoulPackage getItineraries(List<String> tagList, int days);
+
+    /**
+     * Save a list of itineraries
+     * @param itineraries List of Itineraries
+     * @return number of itineraries created
+     */
+    int createList(List<Itinerary> itineraries);
 }
 

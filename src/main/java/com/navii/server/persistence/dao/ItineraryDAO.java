@@ -47,4 +47,11 @@ public interface ItineraryDAO {
      * @return          The list of itineraries
      */
     List<Itinerary> getItineraries(List<String> tagList);
+
+    /**
+     * Creates a persistent list in the database
+     * @param itineraries   The list of itineraries
+     * @return          number of rows created
+     */
+    int createList(List<Itinerary> itineraries);
 }

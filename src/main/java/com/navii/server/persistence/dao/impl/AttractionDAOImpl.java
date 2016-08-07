@@ -1,11 +1,14 @@
 package com.navii.server.persistence.dao.impl;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import com.mysql.jdbc.Statement;
 import com.navii.server.persistence.dao.AttractionDAO;
 import com.navii.server.persistence.domain.Attraction;
 import org.slf4j.Logger;
@@ -13,7 +16,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -156,5 +162,29 @@ public class AttractionDAOImpl implements AttractionDAO {
                 created.getPrice(),
                 created.getPurchase(),
                 created.getDuration());
+    }
+
+    @Override
+    public int createAttraction(Attraction create) {
+        KeyHolder attractionKeyHolder = new GeneratedKeyHolder();
+        String attractionQuery = "INSERT INTO " + TABLE_NAME + " (" +
+                SQL_NAME + ", " +
+                SQL_LOCATION + ", " +
+                SQL_PHOTO_URI + ", " +
+                SQL_BLURB_URI + ", " +
+                SQL_PRICE + ", " +
+                SQL_PURCHASE + ", " +
+                SQL_DURATION +
+                ") VALUES (?, ?, ?, ?, ?, ?, ?)";
+        jdbc.update(new PreparedStatementCreator() {
+            @Override
+            public PreparedStatement createPreparedStatement(Connection con) throws SQLException {
+                PreparedStatement ps = con.prepareStatement(attractionQuery, Statement.RETURN_GENERATED_KEYS);
+                ps.setString(1, create.getName());
+                ps.setString(2, create.getLocation().toString());
+                return ps;
+            }
+        }, attractionKeyHolder);
+        return attractionKeyHolder.getKey().intValue();
     }
 }

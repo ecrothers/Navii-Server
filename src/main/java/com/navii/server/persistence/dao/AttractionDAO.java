@@ -41,4 +41,6 @@ public interface AttractionDAO {
      * @return          The number of updated entries
      */
     int update(final Attraction updated);
+
+    int createAttraction(Attraction create);
 }

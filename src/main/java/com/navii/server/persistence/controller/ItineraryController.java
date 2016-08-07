@@ -123,8 +123,15 @@ public class ItineraryController {
         }
     }
 
-    @RequestMapping(value="/tags//{num_days}" , method= RequestMethod.GET)
+    @RequestMapping(value="/tags/{num_days}" , method= RequestMethod.GET)
     public ResponseEntity<HeartAndSoulPackage> getItinerariesFromTags(@PathVariable("num_days") int days) {
         return getItinerariesFromTags(null, days);
     }
+
+    @RequestMapping(value="/saveList", method = RequestMethod.POST)
+    public ResponseEntity<Void> saveItineraries(@RequestBody List<Itinerary> itineraries) {
+        itineraryService.createList(itineraries);
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
+
 }

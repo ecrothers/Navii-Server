@@ -106,6 +106,11 @@ public class ItineraryServiceImpl implements ItineraryService {
         return heartAndSoulPackage;
     }
 
+    @Override
+    public int createList(List<Itinerary> itineraries) {
+        return itineraryDAO.createList(itineraries);
+    }
+
     private List<Venture> buildPotentialAttractionStack(List<String> categories, List<String> tags) {
         // Initialize venture objects
         Venture breakfast = new Venture(Venture.Type.RESTAURANT, "Restaurant");

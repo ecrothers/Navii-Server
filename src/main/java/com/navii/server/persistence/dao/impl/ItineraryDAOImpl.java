@@ -1,19 +1,29 @@
 package com.navii.server.persistence.dao.impl;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import com.mysql.jdbc.Statement;
+import com.navii.server.UserAuth;
+import com.navii.server.persistence.dao.AttractionDAO;
 import com.navii.server.persistence.dao.ItineraryDAO;
+import com.navii.server.persistence.domain.Attraction;
 import com.navii.server.persistence.domain.Itinerary;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -33,6 +43,9 @@ public class ItineraryDAOImpl implements ItineraryDAO {
 
     @Autowired
     protected JdbcTemplate jdbc;
+
+    @Autowired
+    protected AttractionDAO attractionDAO;
 
     @Override
     public List<Itinerary> findAll() {
@@ -141,6 +154,36 @@ public class ItineraryDAOImpl implements ItineraryDAO {
         }
 
         return itineraries;
+    }
+
+    @Override
+    public int createList(List<Itinerary> itineraries) {
+        String itineraryQuery = "INSERT INTO " + TABLE_NAME + " (" +
+                SQL_AUTHOR + " " +
+                ") VALUES (?)";
+        String mapQuery = "INSERT INTO itineraries_days_attraction_positions (itineraryid, _day, _position, attractionid) VALUES (?, ?, ?, ?)";
+        UserAuth auth = (UserAuth) SecurityContextHolder.getContext().getAuthentication();
+        String userEmail = auth.getDetails().getEmail();
+
+        KeyHolder holder = new GeneratedKeyHolder();
+
+        jdbc.update(new PreparedStatementCreator() {
+            @Override
+            public PreparedStatement createPreparedStatement(Connection con) throws SQLException {
+                PreparedStatement ps = con.prepareStatement(itineraryQuery, Statement.RETURN_GENERATED_KEYS);
+                ps.setString(1,userEmail);
+                return ps;
+            }
+        }, holder);
+
+        int itineraryId = holder.getKey().intValue();
+        for (int day = 0; day < itineraries.size(); day++) {
+            for (int position = 0; position < itineraries.get(day).getAttractions().size(); position++) {
+                int attractionId = attractionDAO.createAttraction(itineraries.get(day).getAttractions().get(position));
+                jdbc.update(mapQuery, itineraryId, day, position, attractionId);
+            }
+        }
+        return 1;
     }
 
     @Override

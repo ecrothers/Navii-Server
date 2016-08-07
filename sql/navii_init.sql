@@ -151,3 +151,13 @@ CREATE TABLE IF NOT EXISTS yelp_preference_category (
 	FOREIGN KEY (yelp_category) REFERENCES yelp_categories(yelp_category) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
+CREATE TABLE IF NOT EXISTS itineraries_days_attraction_positions(
+	itineraryid INT,
+	_day INT,
+	_position INT,
+	attractionid INT,
+	FOREIGN KEY (attractionid) REFERENCES attractions(attractionid) ON DELETE SET NULL,
+	FOREIGN KEY (itineraryid) REFERENCES itineraries(itineraryid) ON DELETE SET NULL
+);
+
+
