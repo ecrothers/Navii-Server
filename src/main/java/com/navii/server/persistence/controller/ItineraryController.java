@@ -130,7 +130,7 @@ public class ItineraryController {
     }
 
     @RequestMapping(value="/saveList/{title}", method = RequestMethod.POST)
-    public ResponseEntity<Void> saveItineraries(@RequestBody List<Itinerary> itineraries, @PathVariable("title") String title) {
+    public ResponseEntity<Void> saveItineraries(@RequestBody List<Itinerary> itineraries, @PathVariable String title) {
         if (itineraryService.createList(itineraries, title) > 0) {
             return new ResponseEntity<>(HttpStatus.CREATED);
         } else {
