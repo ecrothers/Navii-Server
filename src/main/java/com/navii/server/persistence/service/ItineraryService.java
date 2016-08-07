@@ -55,9 +55,10 @@ public interface ItineraryService {
     /**
      * Save a list of itineraries
      * @param itineraries List of Itineraries
+     * @param title Itinerary title
      * @return number of itineraries created
      */
-    int createList(List<Itinerary> itineraries);
+    int createList(List<Itinerary> itineraries, String title);
 
 
     /**

@@ -166,11 +166,11 @@ public class ItineraryDAOImpl implements ItineraryDAO {
     }
 
     @Override
-    public int createList(List<Itinerary> itineraries) {
+    public int createList(List<Itinerary> itineraries, String title) {
         String itineraryQuery = "INSERT INTO " + TABLE_NAME + " (" +
-                SQL_AUTHOR + " " +
-
-                ") VALUES (?)";
+                SQL_AUTHOR + ", " +
+                SQL_DESCRIPTION +" " +
+                ") VALUES (?, ?)";
         String mapQuery = "INSERT INTO itineraries_days_attraction_positions (itineraryid, _day, _position, attractionid) VALUES (?, ?, ?, ?)";
         UserAuth auth = (UserAuth) SecurityContextHolder.getContext().getAuthentication();
         String userEmail = auth.getDetails().getEmail();
@@ -182,6 +182,7 @@ public class ItineraryDAOImpl implements ItineraryDAO {
             public PreparedStatement createPreparedStatement(Connection con) throws SQLException {
                 PreparedStatement ps = con.prepareStatement(itineraryQuery, Statement.RETURN_GENERATED_KEYS);
                 ps.setString(1, userEmail);
+                ps.setString(2, title);
                 return ps;
             }
         }, holder);
@@ -207,7 +208,7 @@ public class ItineraryDAOImpl implements ItineraryDAO {
         List<Attraction> dayAttractions = new ArrayList<>();
         int currentId = -1;
         int currentDay = 0;
-        String query = "SELECT itin.itineraryid, map._day, map._position, a.name, a.address," +
+        String query = "SELECT itin.itineraryid, itin.description as title, map._day, map._position, a.name, a.address," +
                 " a.photoURI, a.latitude, a.longitude, a.description, a.rating, a.phone_number, a.price " +
                 "FROM itineraries itin INNER JOIN itineraries_days_attraction_positions map ON map.itineraryid = itin.itineraryid " +
                 "INNER JOIN attractions a ON map.attractionid = a.attractionid WHERE itin.authorid = ? ORDER BY itineraryid, _day, _position";
@@ -221,6 +222,7 @@ public class ItineraryDAOImpl implements ItineraryDAO {
                 } else if (currentDay != Integer.parseInt(row.get("_day").toString())) {
                     dayItinerary = new Itinerary.Builder()
                             .attractions(dayAttractions)
+                            .description(row.get("title").toString())
                             .build();
                     fullItinerary.add(dayItinerary);
                     dayAttractions = new ArrayList<>();

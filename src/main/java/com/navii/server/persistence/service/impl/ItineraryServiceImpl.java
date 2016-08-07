@@ -107,8 +107,8 @@ public class ItineraryServiceImpl implements ItineraryService {
     }
 
     @Override
-    public int createList(List<Itinerary> itineraries) {
-        return itineraryDAO.createList(itineraries);
+    public int createList(List<Itinerary> itineraries, String title) {
+        return itineraryDAO.createList(itineraries, title);
     }
 
     @Override
