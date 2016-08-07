@@ -2,6 +2,7 @@ package com.navii.server.persistence.service.impl;
 
 import com.navii.server.UserAuth;
 import com.navii.server.persistence.domain.Voyager;
+import com.navii.server.persistence.domain.VoyagerResponse;
 import com.navii.server.persistence.service.TokenService;
 import com.navii.server.persistence.service.VoyagerService;
 import com.navii.server.persistence.service.LoginService;
@@ -37,12 +38,12 @@ public class LoginServiceImpl implements LoginService {
     private TokenService tokenService;
 
     @Override
-    public String Login(String email, String password) {
+    public VoyagerResponse Login(String email, String password) {
         // TODO : Tighten up authentication?
         Voyager voyager = voyagerService.findByEmail(email);
 
         if (voyager == null) {
-            return "";
+            return null;
         }
 
         String passwordAttempt = "";
@@ -58,10 +59,16 @@ public class LoginServiceImpl implements LoginService {
         if (passwordAttempt.equals(voyager.getPassword())) {
             logger.info("Authenticated password for " + voyager.getUsername());
             UserAuth auth = new UserAuth(voyager);
-            return tokenService.getToken(auth);
+            String token = tokenService.getToken(auth);
+            VoyagerResponse voyagerResponse = new VoyagerResponse.Builder()
+                    .voyager(voyager)
+                    .token(token)
+                    .build();
+
+            return voyagerResponse;
         }
 
-        return "";
+        return null;
 
     }
 
