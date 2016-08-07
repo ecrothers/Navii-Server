@@ -59,6 +59,8 @@ public class YelpThread extends Thread {
     private final static String JSON_CATEGORIES = "categories";
     private static final String JSON_IMAGE_URL = "image_url";
     private static final String JSON_SNIPPET_TEXT = "snippet_text";
+    private static final String JSON_RATING = "rating";
+    private static final String JSON_PHONE_NUMBER = "display_phone";
 
     private List<Attraction> attractions;
     private Set<String> uniqueCheckHashSet;
@@ -195,18 +197,31 @@ public class YelpThread extends Thread {
         JSONObject locationObject = (JSONObject) businessObject.get(JSON_LOCATION);
         Location location = retreiveLocation(locationObject);
 
-        int price = 0;
+        String categories = "";
+        if (businessObject.containsKey(JSON_CATEGORIES)) {
+            JSONArray jsonArray = (JSONArray) businessObject.get(JSON_CATEGORIES);
+            categories = convertCategories(jsonArray);
+        }
 
+        int price = 0;
         if (venture.getType().equals(Venture.Type.RESTAURANT)) {
             if (businessObject.containsKey(JSON_CATEGORIES)) {
-                JSONArray jsonArray = (JSONArray) businessObject.get(JSON_CATEGORIES);
-                String zomatoCategories = convertCategories(jsonArray);
-                price = fetchZomatoPrice(name, zomatoCategories, location.getLatitude(), location.getLongitude());
+                price = fetchZomatoPrice(name, categories, location.getLatitude(), location.getLongitude());
             }
         }
 
         String photoUri = businessObject.getOrDefault(JSON_IMAGE_URL, "N/A").toString().replace("ms.jpg", "o.jpg");
         String blurb = businessObject.getOrDefault(JSON_SNIPPET_TEXT, "N/A").toString();
+        double rating = 0;
+        if (businessObject.containsKey(JSON_RATING)) {
+            rating = Double.parseDouble(businessObject.get(JSON_RATING).toString());
+        }
+
+        String phoneNumber = "";
+        if (businessObject.containsKey(JSON_PHONE_NUMBER)) {
+            phoneNumber = businessObject.get(JSON_PHONE_NUMBER).toString();
+        }
+
         Attraction attraction = new Attraction.Builder()
                 .name(name)
                 .photoUri(photoUri)
@@ -214,6 +229,9 @@ public class YelpThread extends Thread {
                 .location(location)
                 .duration(3)
                 .price(price)
+                .rating(rating)
+                .description(categories)
+                .phoneNumber(phoneNumber)
                 .build();
 
         createPrefetchData(businesses, venture);
@@ -258,6 +276,10 @@ public class YelpThread extends Thread {
                 Location location = retreiveLocation(locationObject);
                 String photoUri = businessObject.getOrDefault(JSON_IMAGE_URL, "N/A").toString().replace("ms.jpg", "o.jpg");
                 String blurb = businessObject.getOrDefault(JSON_SNIPPET_TEXT, "N/A").toString();
+                String phoneNumber = "";
+                if (businessObject.containsKey(JSON_PHONE_NUMBER)) {
+                    phoneNumber = businessObject.get(JSON_PHONE_NUMBER).toString();
+                }
 
                 int price = 0;
 //                if (businessObject.containsKey(JSON_CATEGORIES) && venture.getType() == Venture.Type.RESTAURANT) {
@@ -265,15 +287,28 @@ public class YelpThread extends Thread {
 //                    String zomatoCategories = convertCategories(jsonArray);
 //                    price = fetchZomatoPrice(name, zomatoCategories, location.getLatitude(), location.getLongitude());
 //                }
+                String categories = "";
+                if (businessObject.containsKey(JSON_CATEGORIES)) {
+                    JSONArray jsonArray = (JSONArray) businessObject.get(JSON_CATEGORIES);
+                    categories = convertCategories(jsonArray);
+                }
 
+                double rating = 0;
+                if (businessObject.containsKey(JSON_RATING)) {
+                    rating = Double.parseDouble(businessObject.get(JSON_RATING).toString());
+                }
                 Attraction attraction = new Attraction.Builder()
                         .name(name)
+                        .rating(rating)
+                        .description(categories)
+                        .phoneNumber(phoneNumber)
                         .photoUri(photoUri)
-                        .blurbUri(blurb)
                         .location(location)
                         .duration(3)
                         .price(price)
                         .build();
+
+
 
                 if (venture.getType() == Venture.Type.ATTRACTION) {
                     attractionsPrefetch.add(attraction);

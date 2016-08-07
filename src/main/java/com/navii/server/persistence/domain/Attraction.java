@@ -13,11 +13,9 @@ public class Attraction {
     private int price;
     private int duration;
     private String purchase;
-    private Type type;
-
-    public enum Type {
-        RESTAURANT, ATTRACTION
-    }
+    private String description;
+    private double rating;
+    private String phoneNumber;
 
     public Attraction() {
     }
@@ -25,12 +23,13 @@ public class Attraction {
     private Attraction(Builder builder) {
         this.attractionId = builder.attractionId;
         this.name = builder.name;
+        this.description = builder.description;
         this.location = builder.location;
         this.photoUri = builder.photoUri;
         this.blurbUri = builder.blurbUri;
         this.price = builder.price;
         this.duration = builder.duration;
-        this.type = builder.type;
+        this.phoneNumber = builder.phoneNumber;
     }
 
     public int getAttractionId() {
@@ -65,6 +64,18 @@ public class Attraction {
         return purchase;
     }
 
+    public double getRating() {
+        return rating;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
+
     public static class Builder {
         private int attractionId;
         private String name;
@@ -72,9 +83,11 @@ public class Attraction {
         private String photoUri;
         private String blurbUri;
         private int price;
+        private String description;
         private int duration;
         private String purchase;
-        private Type type;
+        private double rating;
+        private String phoneNumber;
 
         public Builder() {
         }
@@ -123,8 +136,18 @@ public class Attraction {
             return this;
         }
 
-        public Builder type(Type type) {
-            this.type = type;
+        public Builder rating(double rating) {
+            this.rating = rating;
+            return this;
+        }
+
+        public Builder description(String description) {
+            this.description = description;
+            return this;
+        }
+
+        public Builder phoneNumber(String phoneNumber) {
+            this.phoneNumber = phoneNumber;
             return this;
         }
 

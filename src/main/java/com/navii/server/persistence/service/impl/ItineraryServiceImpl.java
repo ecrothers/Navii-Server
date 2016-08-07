@@ -61,7 +61,7 @@ public class ItineraryServiceImpl implements ItineraryService {
         List<Venture> potentialAttractionStack = buildPotentialAttractionStack(yelpCategories, tagList);
         YelpThread[] yelpThreads = new YelpThread[3];
 
-            //Start and store the threads
+        //Start and store the threads
         Set<Attraction> attractionsPrefetch = new HashSet<>();
         Set<Attraction> restaurantPrefetch = new HashSet<>();
 
@@ -70,7 +70,7 @@ public class ItineraryServiceImpl implements ItineraryService {
             uniqueCheckHashMap.add(new HashSet<>());
         }
 
-        Itinerary[][] itineraries= new Itinerary[yelpThreads.length][days];
+        Itinerary[][] itineraries = new Itinerary[yelpThreads.length][days];
         for (int n = 0; n < days; n++) {
             try {
                 for (int i = 0; i < yelpThreads.length; i++) {
