@@ -1,7 +1,7 @@
 package com.navii.server.persistence.service.impl;
 
-import com.navii.server.UserAuth;
 import com.navii.server.TokenHandler;
+import com.navii.server.UserAuth;
 import com.navii.server.persistence.domain.Voyager;
 import com.navii.server.persistence.service.TokenService;
 import org.slf4j.Logger;

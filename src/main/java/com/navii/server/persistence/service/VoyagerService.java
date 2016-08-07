@@ -1,6 +1,7 @@
 package com.navii.server.persistence.service;
 
 import com.navii.server.persistence.domain.Voyager;
+import com.navii.server.persistence.domain.VoyagerResponse;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
@@ -36,9 +37,9 @@ public interface VoyagerService extends UserDetailsService {
     /**
      * Creates a new user entry to the database.
      * @param createdVoyager       The information of the new user entry.
-     * @return                  The number of created users.
+     * @return                  The voyager object with token
      */
-    int create(Voyager createdVoyager);
+    VoyagerResponse create(Voyager createdVoyager);
 
     /**
      * Updates the password with a given new password

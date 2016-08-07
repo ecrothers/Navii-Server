@@ -1,8 +1,10 @@
 package com.navii.server.persistence.controller;
 
 import com.navii.server.persistence.domain.Voyager;
+import com.navii.server.persistence.domain.VoyagerResponse;
 import com.navii.server.persistence.service.LoginService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,14 +17,15 @@ import org.springframework.web.bind.annotation.*;
 public class LoginController {
 
     @Autowired
+    @Qualifier("loginServiceImpl")
     private LoginService loginService;
 
     @RequestMapping(value = "", method = RequestMethod.POST)
-    public ResponseEntity<String> getToken(@RequestBody Voyager voyager) {
-        String token = loginService.Login(voyager.getEmail(), voyager.getPassword());
+    public ResponseEntity<VoyagerResponse> getVoyagerResponse(@RequestBody Voyager voyager) {
+        VoyagerResponse response = loginService.Login(voyager.getEmail(), voyager.getPassword());
 
-        if (token != "") {
-            return new ResponseEntity<>(token, HttpStatus.OK);
+        if (response != null) {
+            return new ResponseEntity<>(response, HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
