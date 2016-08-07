@@ -42,7 +42,7 @@ public class UserPreferenceController {
      *
      * TODO: change path variables to request parameters
      */
-    @RequestMapping(value = "/delete/", method = RequestMethod.DELETE)
+    @RequestMapping(value = "/delete", method = RequestMethod.DELETE)
     public ResponseEntity<?> deleteAllUserPreference() {
         int deletedUsersPreferences = userPreferenceService.deleteAllPreference();
 
