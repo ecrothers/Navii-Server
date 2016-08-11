@@ -10,10 +10,13 @@ import com.navii.server.persistence.domain.Venture;
 import com.navii.server.persistence.service.ItineraryService;
 import com.navii.server.persistence.yelpAPI.YelpThread;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.dao.SystemWideSaltSource;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.io.UnsupportedEncodingException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Created by ecrothers on 2015-10-08.
@@ -58,7 +61,17 @@ public class ItineraryServiceImpl implements ItineraryService {
         UserAuth auth = (UserAuth) SecurityContextHolder.getContext().getAuthentication();
         String email = auth.getDetails().getEmail();
         List<String> yelpCategories = preferenceDAO.getYelpCategories(email);
-        List<Venture> potentialAttractionStack = buildPotentialAttractionStack(yelpCategories, tagList);
+        List<String> foodCategories = new ArrayList<>();
+
+        for (int i = tagList.size() - 1; i >= 0; i--) {
+            String tag = tagList.get(i);
+            if (tag.equals("chinese") || tag.equals("japanese") || tag.equals("mexican")
+                    || tag.equals("greek") || tag.equals("italian")) {
+                foodCategories.add(tag);
+                tagList.remove(tag);
+            }
+        }
+        List<Venture> potentialAttractionStack = buildPotentialAttractionStack(yelpCategories, foodCategories);
         YelpThread[] yelpThreads = new YelpThread[3];
 
         //Start and store the threads
@@ -70,33 +83,28 @@ public class ItineraryServiceImpl implements ItineraryService {
             uniqueCheckHashMap.add(new HashSet<>());
         }
 
-        Itinerary[][] itineraries = new Itinerary[yelpThreads.length][days];
-        for (int n = 0; n < days; n++) {
-            try {
-                for (int i = 0; i < yelpThreads.length; i++) {
-                    yelpThreads[i] = new YelpThread(potentialAttractionStack, i, "Yelp " + i, attractionsPrefetch, restaurantPrefetch, uniqueCheckHashMap.get(i));
-                    yelpThreads[i].setName(YelpThread.getYelpName(i));
-                    yelpThreads[i].start();
-                }
-                Thread.sleep(100);
-                for (int i = 0; i < yelpThreads.length; i++) {
-                    YelpThread thread = yelpThreads[i];
-                    thread.join();
-
-                    itineraries[i][n] = new Itinerary.Builder()
-                            .description(thread.getName())
-                            .authorId("Yelp")
-                            .attractions(thread.getAttractions())
-                            .build();
-
-                    uniqueCheckHashMap.get(i).addAll(thread.getUniqueCheckHashSet());
-                    attractionsPrefetch.addAll(thread.getAttractionsPrefetch());
-                    restaurantPrefetch.addAll(thread.getRestaurantPrefetch());
-                }
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+        List<List<Itinerary>> itineraries = new ArrayList<>();
+        try {
+            for (int i = 0; i < yelpThreads.length; i++) {
+                System.out.println(tagList);
+                String tag = "Yelp " + i;
+                yelpThreads[i] = new YelpThread(potentialAttractionStack, days, tagList, i, tag, uniqueCheckHashMap.get(i));
+                yelpThreads[i].setName(YelpThread.getYelpName(i));
+                yelpThreads[i].start();
             }
+            Thread.sleep(100);
+            for (int i = 0; i < yelpThreads.length; i++) {
+                YelpThread thread = yelpThreads[i];
+                thread.join();
+
+                itineraries.add(thread.getItineraries());
+                attractionsPrefetch.addAll(thread.getAttractionsPrefetch());
+                restaurantPrefetch.addAll(thread.getRestaurantPrefetch());
+            }
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
+
         HeartAndSoulPackage heartAndSoulPackage = new HeartAndSoulPackage.Builder()
                 .itineraries(itineraries)
                 .extraAttractions(new ArrayList<>(attractionsPrefetch))
@@ -116,71 +124,24 @@ public class ItineraryServiceImpl implements ItineraryService {
         return itineraryDAO.retrieveSavedItineraries();
     }
 
-    private List<Venture> buildPotentialAttractionStack(List<String> categories, List<String> tags) {
+    private List<Venture> buildPotentialAttractionStack(List<String> categories, List<String> foodCategories) {
         // Initialize venture objects
-        Venture breakfast = new Venture(Venture.Type.RESTAURANT, "Restaurant");
-        Venture lunch = new Venture(Venture.Type.RESTAURANT, "Restaurant");
-        Venture dinner = new Venture(Venture.Type.RESTAURANT, "Restaurant");
-
-        Venture attraction1 = new Venture(Venture.Type.ATTRACTION, "Attraction");
-        Venture attraction2 = new Venture(Venture.Type.ATTRACTION, "Attraction");
-        Venture attraction3 = new Venture(Venture.Type.ATTRACTION, "Attraction");
-
+        Venture restaurant = new Venture(Venture.Type.RESTAURANT, "Restaurant");
         // Set up List of search terms
-        List<String> terms = new ArrayList<>();
-        for (String tag : tags) {
-            if (tag.equals("chinese") || tag.equals("japanese") || tag.equals("mexican")
-                    || tag.equals("greek") || tag.equals("italian")) {
-                breakfast.addCategory(tag);
-                lunch.addCategory(tag);
-                dinner.addCategory(tag);
+        System.out.println("Food:" +foodCategories);
+        for (String category : foodCategories) {
+            restaurant.addCategory(category);
+        }
+
+        Venture attraction = new Venture(Venture.Type.ATTRACTION);
+        for (String category : categories) {
+            if (category.equals("halal") || category.equals("gluten_free") || category.equals("vegan") || category.equals("vegetarian")) {
+                restaurant.addCategory(category);
             } else {
-                terms.add(tag);
-            }
-        }
-        if (categories.contains("halal")) {
-            breakfast.addCategory("halal");
-            lunch.addCategory("halal");
-            dinner.addCategory("halal");
-            categories.remove("halal");
-        }
-        if (categories.contains("gluten-free")) {
-            breakfast.addCategory("gluten-free");
-            lunch.addCategory("gluten-free");
-            dinner.addCategory("gluten-free");
-            categories.remove("gluten-free");
-        }
-        if (categories.contains("vegan")) {
-            breakfast.addCategory("vegan");
-            lunch.addCategory("vegan");
-            dinner.addCategory("vegan");
-            categories.remove("vegan");
-        }
-        if (categories.contains("vegetarian")) {
-            breakfast.addCategory("vegetarian");
-            lunch.addCategory("vegetarian");
-            dinner.addCategory("vegetarian");
-            categories.remove("vegetarian");
-        }
-
-        List<Venture> potentialAttractionStack = Arrays.asList(breakfast, attraction1, lunch, attraction2, attraction3, dinner);
-
-        int size = (int) Math.ceil((double) categories.size() / 3.0f);
-        for (int i = 1; i < potentialAttractionStack.size(); i += 2) {
-            for (int j = 0; j < size; j++) {
-                String category;
-                if (categories.size() > 1) {
-                    category = categories.remove(new Random().nextInt(categories.size()));
-                } else {
-                    category = categories.get(0);
-                }
-                potentialAttractionStack.get(i).addCategory(category);
-            }
-            if (terms.size() != 0) {
-                potentialAttractionStack.get(i).setTerm(terms.remove(new Random().nextInt(terms.size())));
+                attraction.addCategory(category);
             }
         }
 
-        return potentialAttractionStack;
+        return Arrays.asList(restaurant, attraction);
     }
 }

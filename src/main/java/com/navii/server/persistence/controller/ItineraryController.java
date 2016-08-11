@@ -111,13 +111,13 @@ public class ItineraryController {
      */
     @RequestMapping(value="/tags/{tag_list}/{num_days}" , method= RequestMethod.GET)
     public ResponseEntity<HeartAndSoulPackage> getItinerariesFromTags(@PathVariable("tag_list") String[] tagList, @PathVariable("num_days") int days) {
-        List<String> tags = new ArrayList<>();
+        ArrayList<String> tags = new ArrayList<>();
         if (tagList != null) {
-            tags = Arrays.asList(tagList);
+            tags = new ArrayList<>(Arrays.asList(tagList));
         }
         HeartAndSoulPackage packages = itineraryService.getItineraries(tags, days);
 
-        if (packages.getItineraries().length > 0) {
+        if (packages.getItineraries().size() > 0) {
             return new ResponseEntity<>(packages, HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);

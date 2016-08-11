@@ -28,6 +28,7 @@ public class Attraction {
         this.photoUri = builder.photoUri;
         this.blurbUri = builder.blurbUri;
         this.price = builder.price;
+        this.rating = builder.rating;
         this.duration = builder.duration;
         this.phoneNumber = builder.phoneNumber;
     }

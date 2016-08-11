@@ -208,7 +208,7 @@ public class ItineraryDAOImpl implements ItineraryDAO {
         List<Attraction> dayAttractions = new ArrayList<>();
         int currentId = -1;
         int currentDay = 0;
-        String query = "SELECT itin.itineraryid, itin.title, map._day, map._position, a.name, a.address," +
+        String query = "SELECT itin.itineraryid, itin.title, map._day, a.name, a.address," +
                 " a.photoURI, a.latitude, a.longitude, a.description, a.rating, a.phone_number, a.price " +
                 "FROM itineraries itin INNER JOIN itineraries_days_attraction_positions map ON map.itineraryid = itin.itineraryid " +
                 "INNER JOIN attractions a ON map.attractionid = a.attractionid WHERE itin.authorid = ? ORDER BY itineraryid, _day, _position";
@@ -216,16 +216,18 @@ public class ItineraryDAOImpl implements ItineraryDAO {
             List<Map<String, Object>> rows = jdbc.queryForList(query, userEmail);
 
             for (Map row : rows) {
-                if (currentId != Integer.parseInt(row.get("itineraryid").toString()) && currentId != -1) {
-                    itineraries.add(fullItinerary);
-                    fullItinerary = new ArrayList<>();
-                } else if (currentDay != Integer.parseInt(row.get("_day").toString())) {
+                if (currentDay != Integer.parseInt(row.get("_day").toString())) {
                     dayItinerary = new Itinerary.Builder()
                             .attractions(dayAttractions)
                             .description(row.get("title").toString())
                             .build();
                     fullItinerary.add(dayItinerary);
                     dayAttractions = new ArrayList<>();
+                }
+
+                if (currentId != Integer.parseInt(row.get("itineraryid").toString()) && currentId != -1) {
+                    itineraries.add(fullItinerary);
+                    fullItinerary = new ArrayList<>();
                 }
                 currentId = Integer.parseInt(row.get("itineraryid").toString());
                 currentDay = Integer.parseInt(row.get("_day").toString());
