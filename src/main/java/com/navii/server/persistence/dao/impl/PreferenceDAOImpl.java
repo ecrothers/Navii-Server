@@ -12,7 +12,9 @@ import org.springframework.stereotype.Repository;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created by sjung on 08/12/15.
@@ -65,7 +67,6 @@ public class PreferenceDAOImpl implements PreferenceDAO {
 
     @Override
     public List<String> getYelpCategories(String userEmail) {
-
         String fetchQuery = "SELECT DISTINCT yelp_category FROM yelp_preference_category WHERE preference IN " +
                 "(SELECT preference from userspreferences where email = ?)";
         List<String> list;
@@ -79,6 +80,19 @@ public class PreferenceDAOImpl implements PreferenceDAO {
             e.printStackTrace();
         }
         return list;
+    }
+
+    @Override
+    public Set<String> getYelpFilters() {
+        String query = "SELECT * FROM yelp_filters";
+        List<String> list;
+        try {
+            list = jdbc.queryForList(query, String.class);
+        } catch (DataAccessException e) {
+            list = new ArrayList<>();
+            e.printStackTrace();
+        }
+        return new HashSet<>(list);
     }
 
 }

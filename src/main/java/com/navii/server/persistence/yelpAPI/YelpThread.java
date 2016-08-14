@@ -33,9 +33,9 @@ public class YelpThread extends Thread {
 
     private static final String API_HOST = "api.yelp.com";
     private static final String DEFAULT_LOCATION = "Toronto, ON";
-    private static final String DEFAULT_RADIUS_FILTER = "10000";
+    private int radius = 3000;
     //TODO: CHANGE TO ACTUAL LIMIT
-    private static final int SEARCH_LIMIT = 10;
+    private static final int SEARCH_LIMIT = 20;
 
     private static final String SEARCH_PATH = "/v2/search";
 
@@ -75,6 +75,8 @@ public class YelpThread extends Thread {
     private List<Venture> potentialAttractionStack;
     private List<Attraction> attractionsPrefetch;
     private List<Attraction> restaurantPrefetch;
+    private Set<String> filterCategories = new HashSet<>();
+
     List<String> terms = new ArrayList<>();
     private int sort;
     private int days;
@@ -95,7 +97,7 @@ public class YelpThread extends Thread {
     OAuthService service;
     Token accessToken;
 
-    public YelpThread(List<Venture> potentialAttractionStack, int days, List<String> terms, int sort, String tag, Set<String> uniqueCheckHashSet) {
+    public YelpThread(List<Venture> potentialAttractionStack, int days, List<String> terms, int sort, String tag, Set<String> filterCategories) {
         this.service = new ServiceBuilder().provider(TwoStepOAuth.class).apiKey(CONSUMER_KEY).apiSecret(CONSUMER_SECRET).build();
         this.accessToken = new Token(TOKEN, TOKEN_SECRET);
         this.potentialAttractionStack = potentialAttractionStack;
@@ -103,7 +105,8 @@ public class YelpThread extends Thread {
         this.terms = terms;
         this.sort = sort;
         this.TAG = tag;
-        this.uniqueCheckHashSet = uniqueCheckHashSet;
+        this.uniqueCheckHashSet = new HashSet<>();
+        this.filterCategories = filterCategories;
     }
 
     /**
@@ -124,7 +127,7 @@ public class YelpThread extends Thread {
         request.addQuerystringParameter(REQUEST_LOCATION, DEFAULT_LOCATION);
         request.addQuerystringParameter(REQUEST_CLL, cll);
         request.addQuerystringParameter(REQUEST_LIMIT, String.valueOf(SEARCH_LIMIT));
-        request.addQuerystringParameter(REQUEST_RADIUS_FILTER, DEFAULT_RADIUS_FILTER);
+        request.addQuerystringParameter(REQUEST_RADIUS_FILTER, String.valueOf(radius));
         request.addQuerystringParameter(REQUEST_SORT, String.valueOf(sort));
         if (!venture.getCategories().isEmpty()) {
             request.addQuerystringParameter(REQUEST_CATEGORY_FILTER, venture.getCategories());
@@ -151,8 +154,7 @@ public class YelpThread extends Thread {
      * @return <tt>String</tt> body of API response
      */
     private String sendRequestAndGetResponse(OAuthRequest request) {
-        if (sort == 0)
-            System.out.println(TAG + ":Querying " + request.getCompleteUrl() + " ...");
+        System.out.println(TAG + ":Querying " + request.getCompleteUrl() + " ...");
         this.service.signRequest(this.accessToken, request);
         Response response = request.send();
         return response.getBody();
@@ -174,24 +176,29 @@ public class YelpThread extends Thread {
         if (businesses == null) {
             return attractions;
         }
-        for (Object object: businesses) {
+        for (Object object : businesses) {
+
             JSONObject businessObject = (JSONObject) object;
             String name = businessObject.getOrDefault(JSON_NAME, DEFAULT_NA).toString();
-            JSONObject locationObject = (JSONObject) businessObject.get(JSON_LOCATION);
-            Location location = retreiveLocation(locationObject);
 
-            String categories = "";
+            if (uniqueCheckHashSet.contains(name)) {
+                continue;
+            }
+            uniqueCheckHashSet.add(name);
+
+            List<String> categories = new ArrayList<>();
             if (businessObject.containsKey(JSON_CATEGORIES)) {
                 JSONArray jsonArray = (JSONArray) businessObject.get(JSON_CATEGORIES);
                 categories = convertJSONStringArray(jsonArray);
             }
+            if (!Collections.disjoint(filterCategories, categories)) {
+                continue;
+            }
+
+            JSONObject locationObject = (JSONObject) businessObject.get(JSON_LOCATION);
+            Location location = retreiveLocation(locationObject);
 
             int price = 0;
-//            if (venture.getType().equals(Venture.Type.RESTAURANT)) {
-//                if (businessObject.containsKey(JSON_CATEGORIES)) {
-//                    price = ZomatoAPI.fetchZomatoPrice(name, categories, location.getLatitude(), location.getLongitude());
-//                }
-//            }
 
             String photoUri = businessObject.getOrDefault(JSON_IMAGE_URL, DEFAULT_NA).toString().replace("ms.jpg", "o.jpg");
             String blurb = businessObject.getOrDefault(JSON_SNIPPET_TEXT, DEFAULT_NA).toString();
@@ -204,7 +211,6 @@ public class YelpThread extends Thread {
             if (businessObject.containsKey(JSON_PHONE_NUMBER)) {
                 phoneNumber = businessObject.get(JSON_PHONE_NUMBER).toString();
             }
-
             Attraction attraction = new Attraction.Builder()
                     .name(name)
                     .photoUri(photoUri)
@@ -213,7 +219,7 @@ public class YelpThread extends Thread {
                     .duration(3)
                     .price(price)
                     .rating(rating)
-                    .description(categories)
+                    .description(categories.stream().collect(Collectors.joining(", ")))
                     .phoneNumber(phoneNumber)
                     .build();
             attractions.add(attraction);
@@ -223,7 +229,7 @@ public class YelpThread extends Thread {
 
     private JSONArray parseYelpToJSON(String searchResponseJSON) {
         JSONParser parser = new JSONParser();
-        JSONObject response = null;
+        JSONObject response;
         try {
             response = (JSONObject) parser.parse(searchResponseJSON);
         } catch (ParseException pe) {
@@ -239,13 +245,13 @@ public class YelpThread extends Thread {
 
     }
 
-    private String convertJSONStringArray(JSONArray jsonArray) {
+    private List<String> convertJSONStringArray(JSONArray jsonArray) {
         List<String> categories = new ArrayList<>();
         for (Object object : jsonArray.toArray()) {
             JSONArray array = (JSONArray) object;
             categories.add(array.get(1).toString());
         }
-        return categories.stream().collect(Collectors.joining(", "));
+        return categories;
     }
 
     private Location retreiveLocation(JSONObject locationObject) {
@@ -279,20 +285,54 @@ public class YelpThread extends Thread {
     public List<Itinerary> buildItinerary() {
         Venture restaurantVenture = potentialAttractionStack.get(0);
         Venture sightVenture = potentialAttractionStack.get(1);
-        List<Attraction> restaurants = fetchAttractions(restaurantVenture);
-        List<Attraction> sights = new ArrayList<>();
-        for (String term : terms) {
-            sightVenture.setTerm(term);
-            sights.addAll(fetchAttractions(sightVenture));
+
+        List<Attraction> restaurants = new ArrayList<>();
+        while (restaurants.size() < (days * 3)) {
+            radius += 1000;
+            restaurants.addAll(fetchAttractions(restaurantVenture));
         }
+        radius = 3000;
 
+        List<Attraction> sights = new ArrayList<>();
+        while (sights.size() < (days * 3)) {
+            for (String term : terms) {
+                sightVenture.setTerm(term);
+                sights.addAll(fetchAttractions(sightVenture));
+            }
+            //if caught in loop
+            if (radius >= 7000) {
+                sightVenture.setTerm("Attraction");
+                sights.addAll(fetchAttractions(sightVenture));
+            }
+            radius += 1000;
+        }
         List<Itinerary> itineraries = new ArrayList<>();
-        for (int day = 0; day < days; day++){
-
+        for (int day = 0; day < days; day++) {
             List<Attraction> attractions = new ArrayList<>();
             for (int i = 0; i < 3; i++) {
-                attractions.add(restaurants.remove(new Random().nextInt(restaurants.size())));
-                attractions.add(sights.remove(new Random().nextInt(sights.size())));
+                Attraction restaurant = restaurants.remove(0);
+                int price = ZomatoAPI.fetchZomatoPrice(restaurant.getName(), restaurant.getDescription(),
+                        restaurant.getLocation().getLatitude(), restaurant.getLocation().getLongitude());
+
+                restaurant = new Attraction.Builder()
+                        .name(restaurant.getName())
+                        .photoUri(restaurant.getPhotoUri())
+                        .blurbUri(restaurant.getBlurbUri())
+                        .location(restaurant.getLocation())
+                        .duration(restaurant.getDuration())
+                        .price(price)
+                        .rating(restaurant.getRating())
+                        .description(restaurant.getDescription())
+                        .phoneNumber(restaurant.getPhoneNumber())
+                        .build();
+                Attraction sight = sights.remove(0);
+                if (i < 2) {
+                    attractions.add(restaurant);
+                    attractions.add(sight);
+                } else {
+                    attractions.add(sight);
+                    attractions.add(restaurant);
+                }
             }
             Itinerary itinerary = new Itinerary.Builder()
                     .attractions(attractions)

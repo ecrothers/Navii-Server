@@ -61,8 +61,8 @@ public class ItineraryServiceImpl implements ItineraryService {
         UserAuth auth = (UserAuth) SecurityContextHolder.getContext().getAuthentication();
         String email = auth.getDetails().getEmail();
         List<String> yelpCategories = preferenceDAO.getYelpCategories(email);
+        Set<String> filterCategories = preferenceDAO.getYelpFilters();
         List<String> foodCategories = new ArrayList<>();
-
         for (int i = tagList.size() - 1; i >= 0; i--) {
             String tag = tagList.get(i);
             if (tag.equals("chinese") || tag.equals("japanese") || tag.equals("mexican")
@@ -81,13 +81,11 @@ public class ItineraryServiceImpl implements ItineraryService {
         List<List<Itinerary>> itineraries = new ArrayList<>();
         try {
             for (int i = 0; i < yelpThreads.length; i++) {
-                System.out.println(tagList);
                 String tag = "Yelp " + i;
-                yelpThreads[i] = new YelpThread(potentialAttractionStack, days, tagList, i, tag);
+                yelpThreads[i] = new YelpThread(potentialAttractionStack, days, tagList, i, tag, filterCategories);
                 yelpThreads[i].setName(YelpThread.getYelpName(i));
                 yelpThreads[i].start();
             }
-            Thread.sleep(100);
             for (int i = 0; i < yelpThreads.length; i++) {
                 YelpThread thread = yelpThreads[i];
                 thread.join();
@@ -112,7 +110,6 @@ public class ItineraryServiceImpl implements ItineraryService {
         }
 
 
-        System.out.println(restaurantPrefetch);
         HeartAndSoulPackage heartAndSoulPackage = new HeartAndSoulPackage.Builder()
                 .itineraries(itineraries)
                 .extraAttractions(new ArrayList<>(attractionsPrefetch))
@@ -136,7 +133,6 @@ public class ItineraryServiceImpl implements ItineraryService {
         // Initialize venture objects
         Venture restaurant = new Venture(Venture.Type.RESTAURANT, "Restaurant");
         // Set up List of search terms
-        System.out.println("Food:" +foodCategories);
         for (String category : foodCategories) {
             restaurant.addCategory(category);
         }
