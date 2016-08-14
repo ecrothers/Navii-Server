@@ -310,8 +310,17 @@ public class YelpThread extends Thread {
         for (int day = 0; day < days; day++) {
             List<Attraction> attractions = new ArrayList<>();
             for (int i = 0; i < 3; i++) {
-                Attraction restaurant = restaurants.remove(0);
-                Attraction sight = sights.remove(0);
+
+                Attraction restaurant;
+                Attraction sight;
+                if (sort == 1) {
+                    restaurant = restaurants.remove(0);
+                    sight = sights.remove(0);
+                } else {
+                    restaurant = restaurants.remove(new Random().nextInt(restaurants.size()));
+                    sight = sights.remove(new Random().nextInt(sights.size()));
+                }
+
                 if (i < 2) {
                     attractions.add(restaurant);
                     attractions.add(sight);
