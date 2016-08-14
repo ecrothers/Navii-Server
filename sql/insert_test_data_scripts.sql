@@ -70,6 +70,18 @@ INSERT INTO yelp_preference_category (preference, yelp_category) VALUES
   ('vegetarian', 'vegetarian')
 ;
 
+INSERT INTO yelp_filters (category) VALUES
+('healthtrainers'),
+('gyms'),
+('martialarts'),
+('fitness'),
+('pilates'),
+('yoga'),
+('dancestudio'),
+('dance_schools'),
+('psychic_astrology');
+  
+
 INSERT INTO voyagers (username, email, password, salt, is_facebook, verified) VALUES ('naviCreator', 'dummyemail@fake.com', 'saltedpass', 'salt', false, false);
 
 

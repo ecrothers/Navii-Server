@@ -77,18 +77,13 @@ public class ItineraryServiceImpl implements ItineraryService {
         //Start and store the threads
         Set<Attraction> attractionsPrefetch = new HashSet<>();
         Set<Attraction> restaurantPrefetch = new HashSet<>();
-
-        List<Set<String>> uniqueCheckHashMap = new ArrayList<>();
-        for (int i = 0; i < yelpThreads.length; i++) {
-            uniqueCheckHashMap.add(new HashSet<>());
-        }
-
+        Set<String> uniqueNames = new HashSet<>();
         List<List<Itinerary>> itineraries = new ArrayList<>();
         try {
             for (int i = 0; i < yelpThreads.length; i++) {
                 System.out.println(tagList);
                 String tag = "Yelp " + i;
-                yelpThreads[i] = new YelpThread(potentialAttractionStack, days, tagList, i, tag, uniqueCheckHashMap.get(i));
+                yelpThreads[i] = new YelpThread(potentialAttractionStack, days, tagList, i, tag);
                 yelpThreads[i].setName(YelpThread.getYelpName(i));
                 yelpThreads[i].start();
             }
@@ -98,13 +93,26 @@ public class ItineraryServiceImpl implements ItineraryService {
                 thread.join();
 
                 itineraries.add(thread.getItineraries());
-                attractionsPrefetch.addAll(thread.getAttractionsPrefetch());
-                restaurantPrefetch.addAll(thread.getRestaurantPrefetch());
+                for (Attraction attraction : thread.getAttractionsPrefetch()) {
+                    if (!uniqueNames.contains(attraction.getName())) {
+                        attractionsPrefetch.add(attraction);
+                        uniqueNames.add(attraction.getName());
+                    }
+                }
+
+                for (Attraction attraction : thread.getRestaurantPrefetch()) {
+                    if (!uniqueNames.contains(attraction.getName())) {
+                        restaurantPrefetch.add(attraction);
+                        uniqueNames.add(attraction.getName());
+                    }
+                }
             }
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
 
+
+        System.out.println(restaurantPrefetch);
         HeartAndSoulPackage heartAndSoulPackage = new HeartAndSoulPackage.Builder()
                 .itineraries(itineraries)
                 .extraAttractions(new ArrayList<>(attractionsPrefetch))
