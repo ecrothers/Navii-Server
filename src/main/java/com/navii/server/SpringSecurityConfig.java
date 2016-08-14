@@ -56,8 +56,8 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
     .antMatchers("**/*.css").permitAll()
     .antMatchers("**/*.js").permitAll()
 
-    // Allow webtool traffic
-    .antMatchers("/webtool/**").permitAll()
+    // Allow webtool traffic (take care to protect DB if this is enabled)
+    // .antMatchers("/webtool/**").permitAll()
     // Allow anonymous logins
     .antMatchers("/login/**").permitAll()
     // Allow anonymous account creation
