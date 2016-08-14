@@ -271,7 +271,7 @@ public class YelpThread extends Thread {
         String address = categories.stream().collect(Collectors.joining(", "));
 
         Location location = new Location.Builder()
-                .countryCode(locationObject.getOrDefault("country_code", "N/A").toString())
+                .countryCode(locationObject.getOrDefault("country_code", DEFAULT_NA).toString())
                 .address(address)
                 .latitude(latitude)
                 .longitude(longitude)
@@ -311,20 +311,6 @@ public class YelpThread extends Thread {
             List<Attraction> attractions = new ArrayList<>();
             for (int i = 0; i < 3; i++) {
                 Attraction restaurant = restaurants.remove(0);
-                int price = ZomatoAPI.fetchZomatoPrice(restaurant.getName(), restaurant.getDescription(),
-                        restaurant.getLocation().getLatitude(), restaurant.getLocation().getLongitude());
-
-                restaurant = new Attraction.Builder()
-                        .name(restaurant.getName())
-                        .photoUri(restaurant.getPhotoUri())
-                        .blurbUri(restaurant.getBlurbUri())
-                        .location(restaurant.getLocation())
-                        .duration(restaurant.getDuration())
-                        .price(price)
-                        .rating(restaurant.getRating())
-                        .description(restaurant.getDescription())
-                        .phoneNumber(restaurant.getPhoneNumber())
-                        .build();
                 Attraction sight = sights.remove(0);
                 if (i < 2) {
                     attractions.add(restaurant);

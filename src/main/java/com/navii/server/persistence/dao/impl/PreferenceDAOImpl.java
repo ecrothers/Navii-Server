@@ -72,9 +72,6 @@ public class PreferenceDAOImpl implements PreferenceDAO {
         List<String> list;
         try {
             list = jdbc.queryForList(fetchQuery, String.class, userEmail);
-            for (String str : list) {
-                System.out.println("Categories:"+str);
-            }
         } catch (DataAccessException e) {
             list = new ArrayList<>();
             e.printStackTrace();
