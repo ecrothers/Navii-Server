@@ -3,6 +3,7 @@ package com.navii.server.persistence.dao;
 import com.navii.server.persistence.domain.Preference;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created by sjung on 08/12/15.
@@ -33,5 +34,11 @@ public interface PreferenceDAO {
      * @retun list of yelp categories corresponding to preferences
      */
     List<String> getYelpCategories(String userEmail);
+
+    /**
+     * Returns a set of categories to filter from yelp search
+     * @return Set of categories to filter
+     */
+    Set<String> getYelpFilters();
 
 }

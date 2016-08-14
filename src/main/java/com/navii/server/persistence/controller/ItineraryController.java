@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.websocket.server.PathParam;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -110,13 +111,13 @@ public class ItineraryController {
      */
     @RequestMapping(value="/tags/{tag_list}/{num_days}" , method= RequestMethod.GET)
     public ResponseEntity<HeartAndSoulPackage> getItinerariesFromTags(@PathVariable("tag_list") String[] tagList, @PathVariable("num_days") int days) {
-        List<String> tags = new ArrayList<>();
+        ArrayList<String> tags = new ArrayList<>();
         if (tagList != null) {
-            tags = Arrays.asList(tagList);
+            tags = new ArrayList<>(Arrays.asList(tagList));
         }
         HeartAndSoulPackage packages = itineraryService.getItineraries(tags, days);
 
-        if (packages.getItineraries().length > 0) {
+        if (packages.getItineraries().size() > 0) {
             return new ResponseEntity<>(packages, HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
@@ -128,9 +129,9 @@ public class ItineraryController {
         return getItinerariesFromTags(null, days);
     }
 
-    @RequestMapping(value="/saveList", method = RequestMethod.POST)
-    public ResponseEntity<Void> saveItineraries(@RequestBody List<Itinerary> itineraries) {
-        if (itineraryService.createList(itineraries) > 0) {
+    @RequestMapping(value="/saveList/{title}", method = RequestMethod.POST)
+    public ResponseEntity<Void> saveItineraries(@RequestBody List<Itinerary> itineraries, @PathVariable String title) {
+        if (itineraryService.createList(itineraries, title) > 0) {
             return new ResponseEntity<>(HttpStatus.CREATED);
         } else {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);

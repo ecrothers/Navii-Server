@@ -1,6 +1,7 @@
 package com.navii.server.persistence.yelpAPI;
 
 import com.navii.server.persistence.domain.Attraction;
+import com.navii.server.persistence.domain.Itinerary;
 import com.navii.server.persistence.domain.Location;
 import com.navii.server.persistence.domain.Venture;
 import org.json.simple.JSONArray;
@@ -17,8 +18,6 @@ import org.scribe.oauth.OAuthService;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static com.navii.server.persistence.yelpAPI.ZomatoAPI.fetchZomatoPrice;
-
 /**
  * Code sample for accessing the Yelp API V2.
  * <p>
@@ -34,16 +33,20 @@ public class YelpThread extends Thread {
 
     private static final String API_HOST = "api.yelp.com";
     private static final String DEFAULT_LOCATION = "Toronto, ON";
-    private static final String DEFAULT_RADIUS_FILTER = "3300";
+    private int radius = 3000;
     //TODO: CHANGE TO ACTUAL LIMIT
-    private static final int SEARCH_LIMIT = 8;
+    private static final int SEARCH_LIMIT = 20;
 
     private static final String SEARCH_PATH = "/v2/search";
 
-    private static final String CONSUMER_KEY = "bC7-svAVQhRSS5Xt6mWx_w";
-    private static final String CONSUMER_SECRET = "xu1yiJin42FEUg8xl4RFviDZqdg";
-    private static final String TOKEN = "55bwV2Mxx8ZFvR41cx-pWawFpGLKlRoa";
-    private static final String TOKEN_SECRET = "I55U5TwC4APJ-St6_LGDtN_GBFM";
+    private static final String V3_APPID = "XH4jpCC5i6JC1bATfWvNxA";
+    private static final String V3_APPSECRET = "CgefNNDRCXQ1C2sApqpDxG1T0KJkNQy7iJ1UFTb7K3zgvAOXlhOuV2ytHyoX40Im";
+    private static final String V3_API_HOST = "https://api.yelp.com/v3";
+
+    private static final String CONSUMER_KEY = "iTmWPOyJ1wneoYALeoXuJA";
+    private static final String CONSUMER_SECRET = "X_rMRFPKqZhDhZvWeow7hS3BYcY";
+    private static final String TOKEN = "CXw2pupEi9Ige8xD0_RCiv0wlidxILrX";
+    private static final String TOKEN_SECRET = "MsoAW60bef21LrDTWJFm___lmGk";
 
     private static final String REQUEST_TERM = "term";
     private static final String REQUEST_LOCATION = "location";
@@ -61,13 +64,22 @@ public class YelpThread extends Thread {
     private static final String JSON_SNIPPET_TEXT = "snippet_text";
     private static final String JSON_RATING = "rating";
     private static final String JSON_PHONE_NUMBER = "display_phone";
+    private static final String JSON_COORDINATES = "coordinate";
+    private static final String JSON_LATITUDE = "latitude";
+    private static final String JSON_LONGITUDE = "longitude";
 
-    private List<Attraction> attractions;
+    private static final String DEFAULT_NA = "N/A";
+
+    private List<Itinerary> itineraries;
     private Set<String> uniqueCheckHashSet;
     private List<Venture> potentialAttractionStack;
-    private Set<Attraction> attractionsPrefetch;
-    private Set<Attraction> restaurantPrefetch;
+    private List<Attraction> attractionsPrefetch;
+    private List<Attraction> restaurantPrefetch;
+    private Set<String> filterCategories = new HashSet<>();
+
+    List<String> terms = new ArrayList<>();
     private int sort;
+    private int days;
     private String TAG;
 
     private static Map<Integer, String> nameMap = new HashMap<>();
@@ -85,17 +97,16 @@ public class YelpThread extends Thread {
     OAuthService service;
     Token accessToken;
 
-    public YelpThread(List<Venture> potentialAttractionStack, int sort, String tag, Set<Attraction> attractionsPrefetch, Set<Attraction> restaurantPrefetch, Set<String> uniqueCheckHashSet) {
-        this.service = new ServiceBuilder().provider(TwoStepOAuth.class).apiKey(CONSUMER_KEY)
-                .apiSecret(CONSUMER_SECRET).build();
+    public YelpThread(List<Venture> potentialAttractionStack, int days, List<String> terms, int sort, String tag, Set<String> filterCategories) {
+        this.service = new ServiceBuilder().provider(TwoStepOAuth.class).apiKey(CONSUMER_KEY).apiSecret(CONSUMER_SECRET).build();
         this.accessToken = new Token(TOKEN, TOKEN_SECRET);
         this.potentialAttractionStack = potentialAttractionStack;
+        this.days = days;
+        this.terms = terms;
         this.sort = sort;
         this.TAG = tag;
-
-        this.uniqueCheckHashSet = uniqueCheckHashSet;
-        this.attractionsPrefetch = attractionsPrefetch;
-        this.restaurantPrefetch = restaurantPrefetch;
+        this.uniqueCheckHashSet = new HashSet<>();
+        this.filterCategories = filterCategories;
     }
 
     /**
@@ -107,7 +118,7 @@ public class YelpThread extends Thread {
      * @param venture <tt>String</tt> of the search venture to be queried
      * @return <tt>String</tt> JSON Response
      */
-    public String searchForBusinessesByLocation(Venture venture, String cll, int sort) {
+    public String searchForBusinessesByLocation(Venture venture, String cll) {
         OAuthRequest request = createOAuthRequest(SEARCH_PATH);
         //TODO: PUT INTO OBJECTS
         if (venture.getTerm() != "") {
@@ -116,7 +127,7 @@ public class YelpThread extends Thread {
         request.addQuerystringParameter(REQUEST_LOCATION, DEFAULT_LOCATION);
         request.addQuerystringParameter(REQUEST_CLL, cll);
         request.addQuerystringParameter(REQUEST_LIMIT, String.valueOf(SEARCH_LIMIT));
-        request.addQuerystringParameter(REQUEST_RADIUS_FILTER, DEFAULT_RADIUS_FILTER);
+        request.addQuerystringParameter(REQUEST_RADIUS_FILTER, String.valueOf(radius));
         request.addQuerystringParameter(REQUEST_SORT, String.valueOf(sort));
         if (!venture.getCategories().isEmpty()) {
             request.addQuerystringParameter(REQUEST_CATEGORY_FILTER, venture.getCategories());
@@ -157,107 +168,111 @@ public class YelpThread extends Thread {
      * @param cll     location of current search place
      * @return an Attraction object
      */
-    private Attraction getAttraction(Venture venture, String cll, int sort) {
-        String searchResponseJSON = searchForBusinessesByLocation(venture, cll, sort);
+    private List<Attraction> parseYelpResponse(Venture venture, String cll) {
+        String searchResponseJSON = searchForBusinessesByLocation(venture, cll);
 
+        JSONArray businesses = parseYelpToJSON(searchResponseJSON);
+        List<Attraction> attractions = new ArrayList<>();
+        if (businesses == null) {
+            return attractions;
+        }
+        for (Object object : businesses) {
+
+            JSONObject businessObject = (JSONObject) object;
+            String name = businessObject.getOrDefault(JSON_NAME, DEFAULT_NA).toString();
+
+            if (uniqueCheckHashSet.contains(name)) {
+                continue;
+            }
+            uniqueCheckHashSet.add(name);
+
+            List<String> categories = new ArrayList<>();
+            if (businessObject.containsKey(JSON_CATEGORIES)) {
+                JSONArray jsonArray = (JSONArray) businessObject.get(JSON_CATEGORIES);
+                categories = convertJSONStringArray(jsonArray);
+            }
+            if (!Collections.disjoint(filterCategories, categories)) {
+                continue;
+            }
+
+            JSONObject locationObject = (JSONObject) businessObject.get(JSON_LOCATION);
+            Location location = retreiveLocation(locationObject);
+
+            int price = 0;
+
+            String photoUri = businessObject.getOrDefault(JSON_IMAGE_URL, DEFAULT_NA).toString().replace("ms.jpg", "o.jpg");
+            String blurb = businessObject.getOrDefault(JSON_SNIPPET_TEXT, DEFAULT_NA).toString();
+            double rating = 0;
+            if (businessObject.containsKey(JSON_RATING)) {
+                rating = Double.parseDouble(businessObject.get(JSON_RATING).toString());
+            }
+
+            String phoneNumber = "";
+            if (businessObject.containsKey(JSON_PHONE_NUMBER)) {
+                phoneNumber = businessObject.get(JSON_PHONE_NUMBER).toString();
+            }
+            Attraction attraction = new Attraction.Builder()
+                    .name(name)
+                    .photoUri(photoUri)
+                    .blurbUri(blurb)
+                    .location(location)
+                    .duration(3)
+                    .price(price)
+                    .rating(rating)
+                    .description(categories.stream().collect(Collectors.joining(", ")))
+                    .phoneNumber(phoneNumber)
+                    .build();
+            attractions.add(attraction);
+        }
+        return attractions;
+    }
+
+    private JSONArray parseYelpToJSON(String searchResponseJSON) {
         JSONParser parser = new JSONParser();
-        JSONObject response = null;
+        JSONObject response;
         try {
             response = (JSONObject) parser.parse(searchResponseJSON);
         } catch (ParseException pe) {
             System.out.println("Error: could not parse JSON response:");
             System.out.println(searchResponseJSON);
+            return null;
+        } catch (Exception e) {
+            System.out.println("Error: could not parse JSON response:");
+            System.out.println(e.getMessage());
+            return null;
         }
+        return (JSONArray) response.get(JSON_BUSINESSES);
 
-        JSONArray businesses = (JSONArray) response.get(JSON_BUSINESSES);
-
-        if (businesses.size() < 1) {
-            Venture newVenture = new Venture(venture.getType(), venture.getTerm());
-            return getAttraction(newVenture, cll, sort);
-        }
-        int index = new Random().nextInt(businesses.size());
-
-        JSONObject businessObject = (JSONObject) businesses.remove(index);
-
-        String name = businessObject.getOrDefault(JSON_NAME, "N/A").toString();
-
-        //Check if the business is unique
-        while (uniqueCheckHashSet.contains(name)) {
-            if (businesses.size() < 1) {
-                Venture newVenture = new Venture(venture.getType(), venture.getTerm());
-                return getAttraction(newVenture, cll, sort);
-            }
-            index = new Random().nextInt(businesses.size());
-            businessObject = (JSONObject) businesses.remove(index);
-            name = businessObject.getOrDefault(JSON_NAME, "N/A").toString();
-        }
-        uniqueCheckHashSet.add(name);
-
-        //create location
-        JSONObject locationObject = (JSONObject) businessObject.get(JSON_LOCATION);
-        Location location = retreiveLocation(locationObject);
-
-        String categories = "";
-        if (businessObject.containsKey(JSON_CATEGORIES)) {
-            JSONArray jsonArray = (JSONArray) businessObject.get(JSON_CATEGORIES);
-            categories = convertCategories(jsonArray);
-        }
-
-        int price = 0;
-        if (venture.getType().equals(Venture.Type.RESTAURANT)) {
-            if (businessObject.containsKey(JSON_CATEGORIES)) {
-                price = fetchZomatoPrice(name, categories, location.getLatitude(), location.getLongitude());
-            }
-        }
-
-        String photoUri = businessObject.getOrDefault(JSON_IMAGE_URL, "N/A").toString().replace("ms.jpg", "o.jpg");
-        String blurb = businessObject.getOrDefault(JSON_SNIPPET_TEXT, "N/A").toString();
-        double rating = 0;
-        if (businessObject.containsKey(JSON_RATING)) {
-            rating = Double.parseDouble(businessObject.get(JSON_RATING).toString());
-        }
-
-        String phoneNumber = "";
-        if (businessObject.containsKey(JSON_PHONE_NUMBER)) {
-            phoneNumber = businessObject.get(JSON_PHONE_NUMBER).toString();
-        }
-
-        Attraction attraction = new Attraction.Builder()
-                .name(name)
-                .photoUri(photoUri)
-                .blurbUri(blurb)
-                .location(location)
-                .duration(3)
-                .price(price)
-                .rating(rating)
-                .description(categories)
-                .phoneNumber(phoneNumber)
-                .build();
-
-        createPrefetchData(businesses, venture);
-        return attraction;
     }
 
-    private String convertCategories(JSONArray jsonArray) {
+    private List<String> convertJSONStringArray(JSONArray jsonArray) {
         List<String> categories = new ArrayList<>();
         for (Object object : jsonArray.toArray()) {
             JSONArray array = (JSONArray) object;
             categories.add(array.get(1).toString());
         }
-        return categories.stream().collect(Collectors.joining(","));
+        return categories;
     }
 
     private Location retreiveLocation(JSONObject locationObject) {
         double latitude = 43.644176, longitude = -79.387375;
-        if (locationObject.containsKey("coordinate")) {
-            JSONObject coordinate = (JSONObject) locationObject.get("coordinate");
-            latitude = (double) coordinate.get("latitude");
-            longitude = (double) coordinate.get("longitude");
+        if (locationObject.containsKey(JSON_COORDINATES)) {
+            JSONObject coordinate = (JSONObject) locationObject.get(JSON_COORDINATES);
+            latitude = (double) coordinate.get(JSON_LATITUDE);
+            longitude = (double) coordinate.get(JSON_LONGITUDE);
         }
 
+        JSONArray addressArray = (JSONArray) locationObject.getOrDefault("display_address", "No Location Found");
+        List<String> categories = new ArrayList<>();
+        for (Object object : addressArray.toArray()) {
+            String string = (String) object;
+            categories.add(string);
+        }
+        String address = categories.stream().collect(Collectors.joining(", "));
+
         Location location = new Location.Builder()
-                .countryCode(locationObject.getOrDefault("country_code", "N/A").toString())
-                .address(locationObject.getOrDefault("display_address", "No Location Found").toString())
+                .countryCode(locationObject.getOrDefault("country_code", DEFAULT_NA).toString())
+                .address(address)
                 .latitude(latitude)
                 .longitude(longitude)
                 .city("Toronto")
@@ -267,92 +282,92 @@ public class YelpThread extends Thread {
         return location;
     }
 
-    private void createPrefetchData(JSONArray businesses, Venture venture) {
-        for (int i = 0; i < businesses.size(); i++) {
-            JSONObject businessObject = (JSONObject) businesses.get(i);
-            if (!businessObject.isEmpty()) {
-                String name = businessObject.getOrDefault(JSON_NAME, "N/A").toString();
-                JSONObject locationObject = (JSONObject) businessObject.get(JSON_LOCATION);
-                Location location = retreiveLocation(locationObject);
-                String photoUri = businessObject.getOrDefault(JSON_IMAGE_URL, "N/A").toString().replace("ms.jpg", "o.jpg");
-                String blurb = businessObject.getOrDefault(JSON_SNIPPET_TEXT, "N/A").toString();
-                String phoneNumber = "";
-                if (businessObject.containsKey(JSON_PHONE_NUMBER)) {
-                    phoneNumber = businessObject.get(JSON_PHONE_NUMBER).toString();
-                }
+    public List<Itinerary> buildItinerary() {
+        Venture restaurantVenture = potentialAttractionStack.get(0);
+        Venture sightVenture = potentialAttractionStack.get(1);
 
-                int price = 0;
-//                if (businessObject.containsKey(JSON_CATEGORIES) && venture.getType() == Venture.Type.RESTAURANT) {
-//                    JSONArray jsonArray = (JSONArray) businessObject.get(JSON_CATEGORIES);
-//                    String zomatoCategories = convertCategories(jsonArray);
-//                    price = fetchZomatoPrice(name, zomatoCategories, location.getLatitude(), location.getLongitude());
-//                }
-                String categories = "";
-                if (businessObject.containsKey(JSON_CATEGORIES)) {
-                    JSONArray jsonArray = (JSONArray) businessObject.get(JSON_CATEGORIES);
-                    categories = convertCategories(jsonArray);
-                }
+        List<Attraction> restaurants = new ArrayList<>();
+        while (restaurants.size() < (days * 3)) {
+            radius += 1000;
+            restaurants.addAll(fetchAttractions(restaurantVenture));
+        }
+        radius = 3000;
 
-                double rating = 0;
-                if (businessObject.containsKey(JSON_RATING)) {
-                    rating = Double.parseDouble(businessObject.get(JSON_RATING).toString());
-                }
-                Attraction attraction = new Attraction.Builder()
-                        .name(name)
-                        .rating(rating)
-                        .description(categories)
-                        .phoneNumber(phoneNumber)
-                        .photoUri(photoUri)
-                        .location(location)
-                        .duration(3)
-                        .price(price)
-                        .build();
+        List<Attraction> sights = new ArrayList<>();
+        while (sights.size() < (days * 3)) {
+            for (String term : terms) {
+                sightVenture.setTerm(term);
+                sights.addAll(fetchAttractions(sightVenture));
+            }
+            //if caught in loop
+            if (radius >= 7000) {
+                sightVenture.setTerm("Attraction");
+                sights.addAll(fetchAttractions(sightVenture));
+            }
+            radius += 1000;
+        }
+        List<Itinerary> itineraries = new ArrayList<>();
+        for (int day = 0; day < days; day++) {
+            List<Attraction> attractions = new ArrayList<>();
+            for (int i = 0; i < 3; i++) {
 
-
-
-                if (venture.getType() == Venture.Type.ATTRACTION) {
-                    attractionsPrefetch.add(attraction);
+                Attraction restaurant;
+                Attraction sight;
+                if (sort == 1) {
+                    restaurant = restaurants.remove(0);
+                    sight = sights.remove(0);
                 } else {
-                    restaurantPrefetch.add(attraction);
+                    restaurant = restaurants.remove(new Random().nextInt(restaurants.size()));
+                    sight = sights.remove(new Random().nextInt(sights.size()));
+                }
+
+                if (i < 2) {
+                    attractions.add(restaurant);
+                    attractions.add(sight);
+                } else {
+                    attractions.add(sight);
+                    attractions.add(restaurant);
                 }
             }
+            Itinerary itinerary = new Itinerary.Builder()
+                    .attractions(attractions)
+                    .authorId("Yelp")
+                    .description(nameMap.get(sort))
+                    .build();
+            itineraries.add(itinerary);
         }
+
+        attractionsPrefetch = sights;
+        restaurantPrefetch = restaurants;
+
+        return itineraries;
     }
 
-    public List<Attraction> buildItinerary(List<Venture> potentialAttractionStack, int sort) {
-        //TODO: REPLACE WITH ACTUAL COORDINTATES
-        String cll = "43.644176,-79.387375";
-        List<Attraction> attractionList = new ArrayList<>();
-        for (Venture potentialAttraction : potentialAttractionStack) {
-            Attraction attraction = getAttraction(potentialAttraction, cll, sort);
-            attractionList.add(attraction);
-            double latitude = attraction.getLocation().getLongitude();
-            double longitude = attraction.getLocation().getLongitude();
-            cll = latitude + "," + longitude;
-        }
-
-        return attractionList;
+    private List<Attraction> fetchAttractions(Venture venture) {
+        double latitude = 43.644176, longitude = -79.387375;
+        String cll = latitude + "," + longitude;
+        return parseYelpResponse(venture, cll);
     }
 
     @Override
     public void run() {
-        attractions = new ArrayList<>();
-        setAttractions(buildItinerary(potentialAttractionStack, sort));
+        itineraries = new ArrayList<>();
+        setItineraries(buildItinerary());
     }
 
-    private void setAttractions(List<Attraction> attractions) {
-        this.attractions = attractions;
+    private void setItineraries(List<Itinerary> itineraries) {
+        this.itineraries = itineraries;
     }
 
-    public List<Attraction> getAttractions() {
-        return attractions;
+    public List<Itinerary> getItineraries() {
+        return itineraries;
     }
 
-    public Set<Attraction> getAttractionsPrefetch() {
+    public List<Attraction> getAttractionsPrefetch() {
         return attractionsPrefetch;
     }
 
-    public Set<Attraction> getRestaurantPrefetch() {
+    public List<Attraction> getRestaurantPrefetch() {
         return restaurantPrefetch;
     }
 

@@ -21,6 +21,6 @@ DROP TABLE IF EXISTS itinerariespreferences;
 DROP TABLE IF EXISTS itinereariestags;
 DROP TABLE IF EXISTS yelp_categories;
 DROP TABLE IF EXISTS yelp_preference_category;
-
+DROP TABLE IF EXISTS yelp_filters;
 
 SET FOREIGN_KEY_CHECKS = 1;
