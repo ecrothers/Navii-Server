@@ -12,9 +12,7 @@ import com.mysql.jdbc.Statement;
 import com.navii.server.UserAuth;
 import com.navii.server.persistence.dao.AttractionDAO;
 import com.navii.server.persistence.dao.ItineraryDAO;
-import com.navii.server.persistence.domain.Attraction;
-import com.navii.server.persistence.domain.Itinerary;
-import com.navii.server.persistence.domain.Location;
+import com.navii.server.persistence.domain.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -166,12 +164,14 @@ public class ItineraryDAOImpl implements ItineraryDAO {
     }
 
     @Override
-    public int createList(List<Itinerary> itineraries, String title) {
+    public int createList(Itinerary itinerary, String title) {
         String itineraryQuery = "INSERT INTO " + TABLE_NAME + " (" +
                 SQL_AUTHOR + ", " +
                 SQL_TITLE +" " +
                 ") VALUES (?, ?)";
-        String mapQuery = "INSERT INTO itineraries_days_attraction_positions (itineraryid, _day, _position, attractionid) VALUES (?, ?, ?, ?)";
+
+        String headerQuery = "INSERT INTO package_itinerary_map (itineraryid, typeid, position) VALUES (?, ?, ?)";
+        String mapQuery = "INSERT INTO package_itinerary_map (itineraryid, typeid, position, attractionid) VALUES (?, ?, ?, ?)";
         UserAuth auth = (UserAuth) SecurityContextHolder.getContext().getAuthentication();
         String userEmail = auth.getDetails().getEmail();
 
@@ -188,74 +188,99 @@ public class ItineraryDAOImpl implements ItineraryDAO {
         }, holder);
 
         int itineraryId = holder.getKey().intValue();
-        for (int day = 0; day < itineraries.size(); day++) {
-            for (int position = 0; position < itineraries.get(day).getAttractions().size(); position++) {
-                int attractionId = attractionDAO.createAttraction(itineraries.get(day).getAttractions().get(position));
-                jdbc.update(mapQuery, itineraryId, day, position, attractionId);
+        List<PackageScheduleListItem> itemList = itinerary.getPackageScheduleListItems();
+        for (int i = 0 ; i < itemList.size(); i++) {
+            PackageScheduleListItem item = itemList.get(i);
+            int attractionid = -1;
+            if (item.getItemType() == 4) {
+                Attraction attraction = item.getAttraction();
+                attractionid = attractionDAO.findAttractionIdbyName(attraction.getName(), attraction.getLocation().getAddress());
+                if (attractionid == -1) {
+                    attractionid = attractionDAO.createAttraction(attraction);
+                }
+                jdbc.update(mapQuery, itineraryId, item.getItemType(), i, attractionid);
+            } else {
+                jdbc.update(headerQuery, itineraryId, item.getItemType(), i);
             }
         }
         return 1;
     }
 
     @Override
-    public List<List<Itinerary>> retrieveSavedItineraries() {
+    public List<Itinerary> retrieveSavedItineraries() {
         UserAuth auth = (UserAuth) SecurityContextHolder.getContext().getAuthentication();
         String userEmail = auth.getDetails().getEmail();
-
-        List<List<Itinerary>> itineraries = new ArrayList<>();
-        List<Itinerary> fullItinerary = new ArrayList<>();
-        Itinerary dayItinerary;
-        List<Attraction> dayAttractions = new ArrayList<>();
+//
+        List<Itinerary> itineraries = new ArrayList<>();
+        List<PackageScheduleListItem> packageScheduleListItems = new ArrayList<>();
         int currentId = -1;
-        int currentDay = 0;
-        String query = "SELECT itin.itineraryid, itin.title, map._day, a.name, a.address," +
-                " a.photoURI, a.latitude, a.longitude, a.description, a.rating, a.phone_number, a.price " +
-                "FROM itineraries itin INNER JOIN itineraries_days_attraction_positions map ON map.itineraryid = itin.itineraryid " +
-                "INNER JOIN attractions a ON map.attractionid = a.attractionid WHERE itin.authorid = ? ORDER BY itineraryid, _day, _position";
+        String query = "SELECT itineraries.itineraryid, itineraries.title, package_itinerary_map.typeid, a.name, a.address, a.photoURI, a.latitude, a.longitude, " +
+                "a.description, a.rating, a.phone_number, a.price FROM itineraries " +
+                "INNER JOIN package_itinerary_map ON itineraries.itineraryid = package_itinerary_map.itineraryid " +
+                "LEFT JOIN attractions a ON a.attractionid = package_itinerary_map.attractionid " +
+                "WHERE itineraries.authorid = ? ORDER BY itineraries.itineraryid, position";
         try {
+            String title = "";
             List<Map<String, Object>> rows = jdbc.queryForList(query, userEmail);
-
+            int dayCounter = 1;
             for (Map row : rows) {
-                if (currentDay != Integer.parseInt(row.get("_day").toString())) {
-                    dayItinerary = new Itinerary.Builder()
-                            .attractions(dayAttractions)
-                            .description(row.get("title").toString())
+                if (currentId != Integer.parseInt(row.get(SQL_ID).toString()) && currentId != -1) {
+                    Itinerary itinerary = new Itinerary.Builder()
+                            .packageScheduleListItems(packageScheduleListItems)
+                            .authorId(userEmail)
+                            .description(title)
                             .build();
-                    fullItinerary.add(dayItinerary);
-                    dayAttractions = new ArrayList<>();
+                    itineraries.add(itinerary);
+                    packageScheduleListItems = new ArrayList<>();
+                    dayCounter = 1;
                 }
-
-                if (currentId != Integer.parseInt(row.get("itineraryid").toString()) && currentId != -1) {
-                    itineraries.add(fullItinerary);
-                    fullItinerary = new ArrayList<>();
+                currentId = Integer.parseInt(row.get(SQL_ID).toString());
+                title = row.get(SQL_TITLE).toString();
+                int typeId = Integer.parseInt(row.get("typeid").toString());
+                PackageScheduleListItem packageScheduleListItem;
+                if (typeId == PackageScheduleListItem.TYPE_DAY_HEADER) {
+                    packageScheduleListItem = new PackageScheduleListItem.Builder()
+                            .itemType(PackageScheduleListItem.TYPE_DAY_HEADER)
+                            .name("Day " + dayCounter)
+                            .build();
+                    ++dayCounter;
+                } else if (typeId == PackageScheduleListItem.TYPE_ITEM) {
+                    Location location = new Location.Builder()
+                            .address(row.get(SQL_ADDRESS).toString())
+                            .latitude(Double.parseDouble(row.get(SQL_LATITUDE).toString()))
+                            .longitude(Double.parseDouble(row.get(SQL_LONGITUDE).toString()))
+                            .build();
+                    Attraction attraction = new Attraction.Builder()
+                            .name(row.get(SQL_NAME).toString())
+                            .photoUri(row.get(SQL_PHOTOURI).toString())
+                            .description(row.get(SQL_TITLE).toString())
+                            .location(location)
+                            .phoneNumber(row.get(SQL_PHONENUMBER).toString())
+                            .price(Integer.parseInt(row.get(SQL_PRICE).toString()))
+                            .rating(Double.parseDouble(row.get(SQL_RATING).toString()))
+                            .build();
+                    packageScheduleListItem = new PackageScheduleListItem.Builder()
+                            .itemType(PackageScheduleListItem.TYPE_ITEM)
+                            .attraction(attraction)
+                            .build();
+                } else {
+                    packageScheduleListItem = new PackageScheduleListItem.Builder()
+                            .itemType(typeId)
+                            .build();
                 }
-                currentId = Integer.parseInt(row.get("itineraryid").toString());
-                currentDay = Integer.parseInt(row.get("_day").toString());
-                Location location = new Location.Builder()
-                        .address(row.get(SQL_ADDRESS).toString())
-                        .latitude(Double.parseDouble(row.get(SQL_LATITUDE).toString()))
-                        .longitude(Double.parseDouble(row.get(SQL_LONGITUDE).toString()))
-                        .build();
-                Attraction attraction = new Attraction.Builder()
-                        .name(row.get(SQL_NAME).toString())
-                        .photoUri(row.get(SQL_PHOTOURI).toString())
-                        .description(row.get(SQL_TITLE).toString())
-                        .location(location)
-                        .phoneNumber(row.get(SQL_PHONENUMBER).toString())
-                        .price(Integer.parseInt(row.get(SQL_PRICE).toString()))
-                        .rating(Double.parseDouble(row.get(SQL_RATING).toString()))
-                        .build();
-                dayAttractions.add(attraction);
+                packageScheduleListItems.add(packageScheduleListItem);
             }
+            Itinerary itinerary = new Itinerary.Builder()
+                    .packageScheduleListItems(packageScheduleListItems)
+                    .authorId(userEmail)
+                    .description(title)
+                    .build();
+            itineraries.add(itinerary);
 
         } catch (EmptyResultDataAccessException e) {
             logger.warn("None found.");
         }
-        dayItinerary = new Itinerary.Builder()
-                .attractions(dayAttractions)
-                .build();
-        fullItinerary.add(dayItinerary);
-        itineraries.add(fullItinerary);
+
         return itineraries;
     }
 

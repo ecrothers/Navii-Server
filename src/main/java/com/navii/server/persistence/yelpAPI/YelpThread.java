@@ -1,9 +1,6 @@
 package com.navii.server.persistence.yelpAPI;
 
-import com.navii.server.persistence.domain.Attraction;
-import com.navii.server.persistence.domain.Itinerary;
-import com.navii.server.persistence.domain.Location;
-import com.navii.server.persistence.domain.Venture;
+import com.navii.server.persistence.domain.*;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -70,7 +67,7 @@ public class YelpThread extends Thread {
 
     private static final String DEFAULT_NA = "N/A";
 
-    private List<Itinerary> itineraries;
+    private Itinerary itinerary;
     private Set<String> uniqueCheckHashSet;
     private List<Venture> potentialAttractionStack;
     private List<Attraction> attractionsPrefetch;
@@ -282,7 +279,7 @@ public class YelpThread extends Thread {
         return location;
     }
 
-    public List<Itinerary> buildItinerary() {
+    public Itinerary buildItinerary() {
         Venture restaurantVenture = potentialAttractionStack.get(0);
         Venture sightVenture = potentialAttractionStack.get(1);
 
@@ -306,13 +303,21 @@ public class YelpThread extends Thread {
             }
             radius += 1000;
         }
-        List<Itinerary> itineraries = new ArrayList<>();
+        List<PackageScheduleListItem> packageScheduleListItem = new ArrayList<>();
         for (int day = 0; day < days; day++) {
-            List<Attraction> attractions = new ArrayList<>();
+            int currentDay = day+1;
+            packageScheduleListItem.add(
+                    new PackageScheduleListItem.Builder()
+                    .itemType(PackageScheduleListItem.TYPE_DAY_HEADER)
+                    .name("Day "+currentDay).build());
             for (int i = 0; i < 3; i++) {
-
+                int header = i+1;
+                packageScheduleListItem.add(new PackageScheduleListItem.Builder()
+                        .itemType(header)
+                        .build());
                 Attraction restaurant;
                 Attraction sight;
+
                 if (sort == 1) {
                     restaurant = restaurants.remove(0);
                     sight = sights.remove(0);
@@ -322,25 +327,35 @@ public class YelpThread extends Thread {
                 }
 
                 if (i < 2) {
-                    attractions.add(restaurant);
-                    attractions.add(sight);
+                    packageScheduleListItem.add(new PackageScheduleListItem.Builder()
+                            .itemType(PackageScheduleListItem.TYPE_ITEM)
+                            .attraction(restaurant)
+                            .build());
+                    packageScheduleListItem.add(new PackageScheduleListItem.Builder()
+                            .itemType(PackageScheduleListItem.TYPE_ITEM)
+                            .attraction(sight)
+                            .build());
                 } else {
-                    attractions.add(sight);
-                    attractions.add(restaurant);
+                    packageScheduleListItem.add(new PackageScheduleListItem.Builder()
+                            .itemType(PackageScheduleListItem.TYPE_ITEM)
+                            .attraction(sight)
+                            .build());
+                    packageScheduleListItem.add(new PackageScheduleListItem.Builder()
+                            .itemType(PackageScheduleListItem.TYPE_ITEM)
+                            .attraction(restaurant)
+                            .build());
                 }
             }
-            Itinerary itinerary = new Itinerary.Builder()
-                    .attractions(attractions)
-                    .authorId("Yelp")
-                    .description(nameMap.get(sort))
-                    .build();
-            itineraries.add(itinerary);
         }
-
+        Itinerary itinerary = new Itinerary.Builder()
+                .packageScheduleListItems(packageScheduleListItem)
+                .authorId("Yelp")
+                .description(nameMap.get(sort))
+                .build();
         attractionsPrefetch = sights;
         restaurantPrefetch = restaurants;
 
-        return itineraries;
+        return itinerary;
     }
 
     private List<Attraction> fetchAttractions(Venture venture) {
@@ -351,16 +366,15 @@ public class YelpThread extends Thread {
 
     @Override
     public void run() {
-        itineraries = new ArrayList<>();
-        setItineraries(buildItinerary());
+        setItinerary(buildItinerary());
     }
 
-    private void setItineraries(List<Itinerary> itineraries) {
-        this.itineraries = itineraries;
+    private void setItinerary(Itinerary itinerary) {
+        this.itinerary = itinerary;
     }
 
-    public List<Itinerary> getItineraries() {
-        return itineraries;
+    public Itinerary getItinerary() {
+        return itinerary;
     }
 
     public List<Attraction> getAttractionsPrefetch() {

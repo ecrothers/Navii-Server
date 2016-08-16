@@ -48,4 +48,12 @@ public interface AttractionDAO {
      * @return
      */
     int createAttraction(Attraction create);
+
+    /**
+     * Retreives id from name and location
+     * @param name
+     * @param location
+     * @return an id
+     */
+    int findAttractionIdbyName(final String name, final String location);
 }

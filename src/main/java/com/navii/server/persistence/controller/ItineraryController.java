@@ -2,6 +2,7 @@ package com.navii.server.persistence.controller;
 
 import com.navii.server.persistence.domain.HeartAndSoulPackage;
 import com.navii.server.persistence.domain.Itinerary;
+import com.navii.server.persistence.domain.PackageScheduleListItem;
 import com.navii.server.persistence.service.ItineraryService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -130,8 +131,8 @@ public class ItineraryController {
     }
 
     @RequestMapping(value="/saveList/{title}", method = RequestMethod.POST)
-    public ResponseEntity<Void> saveItineraries(@RequestBody List<Itinerary> itineraries, @PathVariable String title) {
-        if (itineraryService.createList(itineraries, title) > 0) {
+    public ResponseEntity<Void> saveItineraries(@RequestBody Itinerary itinerary, @PathVariable String title) {
+        if (itineraryService.createList(itinerary, title) > 0) {
             return new ResponseEntity<>(HttpStatus.CREATED);
         } else {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
@@ -139,8 +140,8 @@ public class ItineraryController {
     }
 
     @RequestMapping(value="/retreiveList", method=RequestMethod.GET)
-    public ResponseEntity<List<List<Itinerary>>> getSavedItineraries() {
-        List<List<Itinerary>> itineraries = itineraryService.retrieveSavedItineraries();
+    public ResponseEntity<List<Itinerary>> getSavedItineraries() {
+        List<Itinerary> itineraries = itineraryService.retrieveSavedItineraries();
         if (itineraries != null) {
             return new ResponseEntity<>(itineraries, HttpStatus.OK);
         } else {

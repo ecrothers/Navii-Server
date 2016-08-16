@@ -3,20 +3,14 @@ package com.navii.server.persistence.service.impl;
 import com.navii.server.UserAuth;
 import com.navii.server.persistence.dao.ItineraryDAO;
 import com.navii.server.persistence.dao.PreferenceDAO;
-import com.navii.server.persistence.domain.Attraction;
-import com.navii.server.persistence.domain.HeartAndSoulPackage;
-import com.navii.server.persistence.domain.Itinerary;
-import com.navii.server.persistence.domain.Venture;
+import com.navii.server.persistence.domain.*;
 import com.navii.server.persistence.service.ItineraryService;
 import com.navii.server.persistence.yelpAPI.YelpThread;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.dao.SystemWideSaltSource;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
-import java.io.UnsupportedEncodingException;
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * Created by ecrothers on 2015-10-08.
@@ -78,7 +72,8 @@ public class ItineraryServiceImpl implements ItineraryService {
         Set<Attraction> attractionsPrefetch = new HashSet<>();
         Set<Attraction> restaurantPrefetch = new HashSet<>();
         Set<String> uniqueNames = new HashSet<>();
-        List<List<Itinerary>> itineraries = new ArrayList<>();
+        List<Itinerary> itineraries = new ArrayList<>();
+
         try {
             for (int i = 0; i < yelpThreads.length; i++) {
                 String tag = "Yelp " + i;
@@ -89,8 +84,8 @@ public class ItineraryServiceImpl implements ItineraryService {
             for (int i = 0; i < yelpThreads.length; i++) {
                 YelpThread thread = yelpThreads[i];
                 thread.join();
+                itineraries.add(thread.getItinerary());
 
-                itineraries.add(thread.getItineraries());
                 for (Attraction attraction : thread.getAttractionsPrefetch()) {
                     if (!uniqueNames.contains(attraction.getName())) {
                         attractionsPrefetch.add(attraction);
@@ -120,12 +115,12 @@ public class ItineraryServiceImpl implements ItineraryService {
     }
 
     @Override
-    public int createList(List<Itinerary> itineraries, String title) {
-        return itineraryDAO.createList(itineraries, title);
+    public int createList(Itinerary itinerary, String title) {
+        return itineraryDAO.createList(itinerary, title);
     }
 
     @Override
-    public List<List<Itinerary>> retrieveSavedItineraries() {
+    public List<Itinerary> retrieveSavedItineraries() {
         return itineraryDAO.retrieveSavedItineraries();
     }
 

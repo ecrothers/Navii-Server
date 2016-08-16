@@ -85,7 +85,7 @@ public class AttractionDAOImpl implements AttractionDAO {
     public Attraction findOne(final int attractionId) {
         String query =
                 "SELECT * FROM " + TABLE_NAME + " " +
-                        "WHERE " + SQL_ID + " = ?;";
+                        "WHERE " + SQL_ID + " = ?";
 
         try {
             return jdbc.queryForObject(query, new Object[]{attractionId}, new RowMapper<Attraction>() {
@@ -111,6 +111,30 @@ public class AttractionDAOImpl implements AttractionDAO {
         } catch (EmptyResultDataAccessException e) {
             logger.warn("Attraction: findOne returns no rows");
             return null;
+        }
+    }
+
+    public int findAttractionIdbyName(final String name, final String location) {
+        String query =
+                "SELECT attractionid FROM " + TABLE_NAME + " " +
+                        "WHERE " + SQL_NAME + " = ? AND " +
+                        SQL_ADDRESS +" = ? LIMIT 1";
+
+        try {
+            return jdbc.queryForObject(query, new Object[]{name, location}, new RowMapper<Integer>() {
+                @Override
+                public Integer mapRow(ResultSet rs, int rowNum) throws SQLException {
+
+                    if (rs.getRow() < 1) {
+                        return -1;
+                    } else {
+                        return rs.getInt(SQL_ID);
+                    }
+                }
+            });
+        } catch (EmptyResultDataAccessException e) {
+            logger.warn("Attraction: findOne returns no rows");
+            return -1;
         }
     }
 

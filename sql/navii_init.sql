@@ -65,8 +65,9 @@ CREATE TABLE IF NOT EXISTS diets (
 	PRIMARY KEY (dietid)
 );
 
-CREATE TABLE IF NOT EXISTS types (
-	typeid INT,
+CREATE TABLE IF NOT EXISTS package_types (
+	typeid TINYINT(1),
+	item_name VARCHAR(16),
 	PRIMARY KEY (typeid)
 );
 
@@ -160,13 +161,12 @@ CREATE TABLE IF NOT EXISTS yelp_filters (
 	PRIMARY KEY (category)
 );
 
-CREATE TABLE IF NOT EXISTS itineraries_days_attraction_positions(
+CREATE TABLE IF NOT EXISTS package_itinerary_map (
 	itineraryid INT,
-	_day INT,
-	_position INT,
-	attractionid INT,
-	FOREIGN KEY (attractionid) REFERENCES attractions(attractionid) ON DELETE SET NULL,
-	FOREIGN KEY (itineraryid) REFERENCES itineraries(itineraryid) ON DELETE SET NULL
+	typeid INT,
+	position INT,
+	attractionid INT NULL,
+	FOREIGN KEY (itineraryid) REFERENCES itineraries(itineraryid) ON DELETE CASCADE,
+	FOREIGN KEY (attractionid) REFERENCES attractions(attractionid) ON DELETE CASCADE,
+	FOREIGN KEY (typeid) REFERENCES package_types(typeid) ON DELETE CASCADE ON UPDATE CASCADE
 );
-
-

@@ -2,6 +2,7 @@ package com.navii.server.persistence.service;
 
 import com.navii.server.persistence.domain.HeartAndSoulPackage;
 import com.navii.server.persistence.domain.Itinerary;
+import com.navii.server.persistence.domain.PackageScheduleListItem;
 
 import java.util.List;
 
@@ -58,13 +59,13 @@ public interface ItineraryService {
      * @param title Itinerary title
      * @return number of itineraries created
      */
-    int createList(List<Itinerary> itineraries, String title);
+    int createList(Itinerary itinerary, String title);
 
 
     /**
      * Retreived saved List
      * @return sitinerary list
      */
-    List<List<Itinerary>> retrieveSavedItineraries();
+    List<Itinerary> retrieveSavedItineraries();
 }
 

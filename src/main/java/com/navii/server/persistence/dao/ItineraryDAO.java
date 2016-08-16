@@ -1,6 +1,7 @@
 package com.navii.server.persistence.dao;
 
 import com.navii.server.persistence.domain.Itinerary;
+import com.navii.server.persistence.domain.PackageScheduleListItem;
 
 import java.util.List;
 
@@ -50,15 +51,15 @@ public interface ItineraryDAO {
 
     /**
      * Creates a persistent list in the database
-     * @param itineraries   The list of itineraries
+     * @param itinerary   The list of itineraries
      * @parar title         The name of itinerary
      * @return          number of rows created
      */
-    int createList(List<Itinerary> itineraries, String title);
+    int createList(Itinerary itinerary, String title);
 
     /**
      * retrieves itineraries from the database
      * @return list of itineraries
      */
-    List<List<Itinerary>> retrieveSavedItineraries();
+    List<Itinerary> retrieveSavedItineraries();
 }
