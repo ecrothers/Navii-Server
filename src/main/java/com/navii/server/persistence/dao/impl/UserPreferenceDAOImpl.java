@@ -24,7 +24,11 @@ import java.util.List;
 public class UserPreferenceDAOImpl implements UserPreferenceDAO {
 
     private static final Logger logger = LoggerFactory.getLogger(UserPreferenceDAOImpl.class);
-
+    private static final String PARAM_PREFERENCE = "preference";
+    private static final String PARAM_PREFERENCE_TYPE = "preference_type";
+    private static final String PARAM_PHOTO_URL = "photoURL";
+    private static final String PARAM_COUNTER = "counter";
+    private static final String PARAM_CATEGORY = "category";
     @Autowired
     protected JdbcTemplate jdbc;
 
@@ -58,22 +62,19 @@ public class UserPreferenceDAOImpl implements UserPreferenceDAO {
     @Override
     public List<Preference> obtain(final String username) {
         String selectString =
-                "SELECT preference FROM userspreferences WHERE email = ?";
+                "SELECT preference, preference_type FROM userspreferences WHERE email = ? ORDER BY preference_type";
         try {
-            List<Preference> retrieved = jdbc.queryForObject(selectString,
+            List<Preference> retrieved = jdbc.query(selectString,
                     new String[]{username},
-                    new RowMapper<List<Preference>>() {
+                    new RowMapper<Preference>() {
                         @Override
-                        public List<Preference> mapRow(ResultSet rs, int rowNum) throws SQLException {
-                            ArrayList<Preference> preferences = new ArrayList<>();
-                            while (rs.next()) {
-                                Preference preference = new Preference.Builder()
-                                        .preference(rs.getString("preference"))
-                                        .build();
+                        public Preference mapRow(ResultSet rs, int rowNum) throws SQLException {
+                            Preference preference = new Preference.Builder()
+                                    .preference(rs.getString(PARAM_PREFERENCE))
+                                    .preferenceType(rs.getInt(PARAM_PREFERENCE_TYPE))
+                                    .build();
 
-                                preferences.add(preference);
-                            }
-                            return preferences;
+                            return preference;
                         }
                     });
             return retrieved;

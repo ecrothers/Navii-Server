@@ -1,10 +1,12 @@
 package com.navii.server.persistence.controller;
 
+import com.navii.server.UserAuth;
 import com.navii.server.persistence.domain.Preference;
 import com.navii.server.persistence.service.UserPreferenceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -48,6 +50,18 @@ public class UserPreferenceController {
 
         if (deletedUsersPreferences > 0) {
             return new ResponseEntity<>(HttpStatus.ACCEPTED);
+        } else {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @RequestMapping(value = "/preferences", method = RequestMethod.GET)
+    public ResponseEntity<?> getUsersPreference() {
+        UserAuth auth = (UserAuth) SecurityContextHolder.getContext().getAuthentication();
+        String email = auth.getDetails().getEmail();
+        List<Preference> preferences = userPreferenceService.obtain(email);
+        if (preferences != null) {
+            return new ResponseEntity<>(preferences, HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
