@@ -214,8 +214,8 @@ public class ItineraryDAOImpl implements ItineraryDAO {
         List<Itinerary> itineraries = new ArrayList<>();
         List<PackageScheduleListItem> packageScheduleListItems = new ArrayList<>();
         int currentId = -1;
-        String query = "SELECT itineraries.itineraryid, itineraries.title, package_itinerary_map.typeid, a.name, a.address, a.photoURI, a.latitude, a.longitude, " +
-                "a.description, a.rating, a.phone_number, a.price FROM itineraries " +
+        String query = "SELECT itineraries.itineraryid, itineraries.title, package_itinerary_map.typeid, a.name, a.address, " +
+                "a.photoURI, a.latitude, a.longitude, a.description, a.rating, a.phone_number, a.price FROM itineraries " +
                 "INNER JOIN package_itinerary_map ON itineraries.itineraryid = package_itinerary_map.itineraryid " +
                 "LEFT JOIN attractions a ON a.attractionid = package_itinerary_map.attractionid " +
                 "WHERE itineraries.authorid = ? ORDER BY itineraries.itineraryid, position";
@@ -250,9 +250,10 @@ public class ItineraryDAOImpl implements ItineraryDAO {
                             .latitude(Double.parseDouble(row.get(SQL_LATITUDE).toString()))
                             .longitude(Double.parseDouble(row.get(SQL_LONGITUDE).toString()))
                             .build();
+                    String uri = (row.get(SQL_PHOTOURI) != null) ? row.get(SQL_PHOTOURI).toString() : "No URI";
                     Attraction attraction = new Attraction.Builder()
                             .name(row.get(SQL_NAME).toString())
-                            .photoUri(row.get(SQL_PHOTOURI).toString())
+                            .photoUri(uri)
                             .description(row.get(SQL_TITLE).toString())
                             .location(location)
                             .phoneNumber(row.get(SQL_PHONENUMBER).toString())
