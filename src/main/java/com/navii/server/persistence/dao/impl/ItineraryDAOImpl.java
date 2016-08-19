@@ -47,6 +47,9 @@ public class ItineraryDAOImpl implements ItineraryDAO {
     private static final String SQL_NAME = "name";
     private static final String SQL_PHOTOURI = "photoURI";
     private static final String SQL_PRICE = "price";
+    private static final String SQL_DESCRIPTION = "description";
+
+    private static final String RESULT_NULL = "N/A";
 
     @Autowired
     protected JdbcTemplate jdbc;
@@ -245,18 +248,22 @@ public class ItineraryDAOImpl implements ItineraryDAO {
                             .build();
                     ++dayCounter;
                 } else if (typeId == PackageScheduleListItem.TYPE_ITEM) {
+                    String name = row.get(SQL_NAME) != null ? row.get(SQL_NAME).toString() : "No name";
+                    String description = row.get(SQL_DESCRIPTION) != null ? row.get(SQL_DESCRIPTION).toString() : " No description";
+                    String uri = (row.get(SQL_PHOTOURI) != null) ? row.get(SQL_PHOTOURI).toString() : "No URI";
+                    String phoneNumber = row.get(SQL_PHONENUMBER) != null ? row.get(SQL_PHONENUMBER).toString() : "No phone number";
+                    String address = row.get(SQL_ADDRESS) != null ? row.get(SQL_ADDRESS).toString() : "No address";
                     Location location = new Location.Builder()
-                            .address(row.get(SQL_ADDRESS).toString())
+                            .address(address)
                             .latitude(Double.parseDouble(row.get(SQL_LATITUDE).toString()))
                             .longitude(Double.parseDouble(row.get(SQL_LONGITUDE).toString()))
                             .build();
-                    String uri = (row.get(SQL_PHOTOURI) != null) ? row.get(SQL_PHOTOURI).toString() : "No URI";
                     Attraction attraction = new Attraction.Builder()
-                            .name(row.get(SQL_NAME).toString())
+                            .name(name)
                             .photoUri(uri)
-                            .description(row.get(SQL_TITLE).toString())
+                            .description(description)
                             .location(location)
-                            .phoneNumber(row.get(SQL_PHONENUMBER).toString())
+                            .phoneNumber(phoneNumber)
                             .price(Integer.parseInt(row.get(SQL_PRICE).toString()))
                             .rating(Double.parseDouble(row.get(SQL_RATING).toString()))
                             .build();

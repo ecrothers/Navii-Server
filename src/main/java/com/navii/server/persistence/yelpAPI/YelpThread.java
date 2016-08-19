@@ -106,6 +106,8 @@ public class YelpThread extends Thread {
         this.filterCategories = filterCategories;
     }
 
+
+
     /**
      * Creates and sends a request to the Search API by venture and location.
      * <p>
